@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="scheme-light-dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Folvyn Console</title>
+    <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('console_theme')
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.classList.remove('scheme-light-dark')
+            document.documentElement.classList.add('scheme-' + stored)
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-bg text-ink font-body text-[0.95rem] leading-[1.6] transition-colors duration-500 motion-reduce:transition-none"
+  >
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
