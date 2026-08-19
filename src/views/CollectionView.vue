@@ -1,25 +1,30 @@
 <template>
   <div v-if="!collection">
-    <EmptyState title="Unknown collection" description="The sidebar lists every editable screen." />
+    <EmptyState
+      :title="t('views.collection.unknownTitle')"
+      :description="t('views.collection.unknownDesc')"
+    />
   </div>
 
   <div v-else class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">{{ collection.label }}</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">{{ label }}</h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
-          {{ rows.length }} of {{ all.length }} shown · drag a row to reorder
+          {{ t('views.collection.shown', { shown: rows.length, total: all.length }) }}
         </p>
       </div>
 
-      <div class="flex items-center gap-1.5 rounded-[9px] border border-line/8 bg-surface px-2.5">
+      <div
+        class="flex min-w-0 items-center gap-1.5 rounded-[9px] border border-line/8 bg-surface px-2.5 max-480:basis-full"
+      >
         <Search :size="14" :stroke-width="1.9" class="shrink-0 text-muted" aria-hidden="true" />
         <input
           v-model="query"
           type="text"
-          class="w-[160px] bg-transparent py-[7px] text-[0.8rem] outline-none placeholder:text-muted"
-          placeholder="Filter…"
-          :aria-label="`Filter ${collection.label}`"
+          class="w-[160px] min-w-0 shrink bg-transparent py-[7px] text-[0.8rem] outline-none placeholder:text-muted max-480:w-full"
+          :placeholder="t('common.filter')"
+          :aria-label="t('views.collection.filterAria', { label })"
         />
       </div>
 
@@ -27,34 +32,49 @@
         v-if="collection.i18n && langs.length"
         v-model="missingLang"
         class="rounded-[9px] border border-line/8 bg-surface px-2.5 py-[7px] text-[0.8rem] outline-none"
-        aria-label="Filter by missing translation"
+        :aria-label="t('views.collection.missingAria')"
       >
-        <option value="">All translations</option>
-        <option v-for="code in langs" :key="code" :value="code">Missing {{ code }}</option>
+        <option value="">{{ t('views.collection.allTranslations') }}</option>
+        <option v-for="code in langs" :key="code" :value="code">
+          {{ t('views.collection.missing', { code }) }}
+        </option>
       </select>
 
       <AppButton variant="primary" @click="router.push(`/c/${collection.key}/new`)">
         <Plus :size="14" :stroke-width="2.2" aria-hidden="true" />
-        New
+        {{ t('common.new') }}
       </AppButton>
     </header>
 
     <EmptyState
-      v-if="all.length === 0"
+      v-if="content.failed"
+      icon="Shield"
+      :title="t('errors.collection', { label })"
+      :description="content.error ?? t('common.unreachableDesc')"
+    >
+      <AppButton variant="primary" :busy="content.loading" @click="content.loadAll(true)">{{
+        t('common.retry')
+      }}</AppButton>
+    </EmptyState>
+
+    <SkeletonList v-else-if="!content.loaded" :label="t('loading.collection', { label })" />
+
+    <EmptyState
+      v-else-if="all.length === 0"
       :icon="collection.icon"
-      :title="`No ${collection.label.toLowerCase()} yet`"
-      description="Everything the portfolio renders in this section comes from here."
+      :title="t('views.collection.emptyTitle', { label: label.toLowerCase() })"
+      :description="t('views.collection.emptyDesc')"
     >
       <AppButton variant="primary" @click="router.push(`/c/${collection.key}/new`)">
-        Create the first one
+        {{ t('views.collection.createFirst') }}
       </AppButton>
     </EmptyState>
 
     <EmptyState
       v-else-if="rows.length === 0"
       icon="Search"
-      title="Nothing matches this filter"
-      description="Clear the search box or the translation filter."
+      :title="t('views.collection.noMatchTitle')"
+      :description="t('views.collection.noMatchDesc')"
     />
 
     <ul v-else class="space-y-1.5" role="list">
@@ -101,14 +121,16 @@
           <span class="block truncate text-[0.86rem] font-medium">{{
             titleOf(collection, row, lang)
           }}</span>
-          <span
-            v-if="subtitleOf(collection, row, lang)"
-            class="block truncate text-[0.74rem] text-muted"
-            >{{ subtitleOf(collection, row, lang) }}</span
-          >
+          <span v-if="subtitle(collection, row)" class="block truncate text-[0.74rem] text-muted">{{
+            subtitle(collection, row)
+          }}</span>
         </RouterLink>
 
-        <span v-if="attachmentCount(row)" class="shrink-0 text-muted" title="Has attachments">
+        <span
+          v-if="attachmentCount(row)"
+          class="shrink-0 text-muted"
+          :title="t('views.collection.hasAttachments')"
+        >
           <Paperclip :size="13" :stroke-width="1.9" />
         </span>
 
@@ -120,17 +142,13 @@
           :langs="langs"
         />
 
-        <span class="hidden shrink-0 font-mono text-[0.64rem] tabular-nums text-muted 900:block">{{
-          row.order ?? 0
-        }}</span>
-
         <div class="flex shrink-0 items-center gap-0.5">
           <button
             v-if="collection.duplicable !== false"
             type="button"
             class="grid h-7 w-7 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-            title="Duplicate"
-            aria-label="Duplicate"
+            :title="t('common.duplicate')"
+            :aria-label="t('common.duplicate')"
             @click="duplicate(row)"
           >
             <Copy :size="14" :stroke-width="1.9" />
@@ -138,8 +156,8 @@
           <button
             type="button"
             class="grid h-7 w-7 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-            title="Delete"
-            aria-label="Delete"
+            :title="t('common.delete')"
+            :aria-label="t('common.delete')"
             @click="askDelete(row)"
           >
             <Trash2 :size="14" :stroke-width="1.9" />
@@ -150,7 +168,7 @@
 
     <ConfirmDialog
       :open="pending !== null"
-      :title="`Delete this ${collection.singular.toLowerCase()}?`"
+      :title="t('views.collection.deleteTitle', { singular: singular.toLowerCase() })"
       :subject="pendingTitle"
       message="will disappear from your portfolio as soon as you confirm. Undo is available for the rest of this session."
       confirm-word="delete"
@@ -168,15 +186,28 @@ import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import FlagBadge from '@/components/ui/FlagBadge.vue'
+import SkeletonList from '@/components/ui/SkeletonList.vue'
 import TranslationChips from '@/components/ui/TranslationChips.vue'
-import { getCollection } from '@/registry/collections'
+import { getCollection, type CollectionDef } from '@/registry/collections'
+import { collectionLabel, collectionSingular } from '@/i18n/labels'
 import { iconComponent } from '@/registry/icons'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
-import { assetKeysOf, copyOf, hasTranslation, subtitleOf, titleOf } from '@/utils/entity'
+import {
+  assetKeysOf,
+  copyOf,
+  fieldTypeOf,
+  hasTranslation,
+  monthLabel,
+  optionKeyOf,
+  subtitleOf,
+  titleOf,
+} from '@/utils/entity'
 import { clone } from '@/utils/diff'
 import type { AdminDocument } from '@/types/admin'
+import { useI18n } from 'vue-i18n'
 
+const { t, te, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const content = useContentStore()
@@ -189,8 +220,21 @@ const overIndex = ref(-1)
 const pending = ref<AdminDocument | null>(null)
 
 const collection = computed(() => getCollection(String(route.params.collection)))
+const label = computed(() => (collection.value ? collectionLabel(collection.value) : ''))
+const singular = computed(() => (collection.value ? collectionSingular(collection.value) : ''))
 const langs = computed(() => content.langs)
 const lang = computed(() => ui.editingLang || content.referenceLang)
+
+function subtitle(def: CollectionDef, doc: AdminDocument): string {
+  const raw = subtitleOf(def, doc, lang.value)
+  if (!def.subtitleField || !raw) return raw
+
+  if (fieldTypeOf(def, def.subtitleField) === 'month') return monthLabel(raw, locale.value)
+
+  const group = optionKeyOf(def, def.subtitleField)
+  const key = `vocabularies.${group}.${raw}`
+  return group && te(key) ? t(key) : raw
+}
 
 const all = computed(() => (collection.value ? content.list(collection.value.key) : []))
 
@@ -206,7 +250,7 @@ const rows = computed(() => {
 
     const haystack = [
       titleOf(def, doc, lang.value),
-      subtitleOf(def, doc, lang.value),
+      subtitle(def, doc),
       ...def.fields.map((field) => String(doc[field.name] ?? '')),
     ]
       .join(' ')
@@ -252,7 +296,11 @@ async function onDrop(): Promise<void> {
   try {
     await content.reorder(collection.value, ids)
   } catch (error) {
-    ui.notify('bad', 'Reorder failed', error instanceof Error ? error.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.collection.reorderFailed'),
+      error instanceof Error ? error.message : undefined,
+    )
   }
 }
 
@@ -262,10 +310,14 @@ async function duplicate(doc: AdminDocument): Promise<void> {
 
   try {
     const created = await content.create(def, copyOf(def, clone(doc)))
-    ui.notify('good', 'Duplicated', 'Opening the copy for editing')
+    ui.notify('good', t('views.collection.duplicated'), 'Opening the copy for editing')
     await router.push(`/c/${def.key}/${created.id}`)
   } catch (error) {
-    ui.notify('bad', 'Duplicate failed', error instanceof Error ? error.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.collection.duplicateFailed'),
+      error instanceof Error ? error.message : undefined,
+    )
   }
 }
 
@@ -281,9 +333,17 @@ async function confirmDelete(): Promise<void> {
 
   try {
     await content.remove(def, doc.id)
-    ui.notify('good', 'Deleted', 'Undo from the top bar while this tab stays open')
+    ui.notify(
+      'good',
+      t('views.collection.deleted'),
+      'Undo from the top bar while this tab stays open',
+    )
   } catch (error) {
-    ui.notify('bad', 'Delete failed', error instanceof Error ? error.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.collection.deleteFailed'),
+      error instanceof Error ? error.message : undefined,
+    )
   }
 }
 

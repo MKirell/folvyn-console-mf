@@ -1,7 +1,15 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { COLLECTIONS, type CollectionDef, type FieldDef } from '@/registry/collections'
+import en from '@/locales/en.json'
+import fr from '@/locales/fr.json'
+import {
+  COLLECTIONS,
+  HONORS,
+  LANGUAGE_LEVELS,
+  type CollectionDef,
+  type FieldDef,
+} from '@/registry/collections'
 
 const SERVICE_ROOT = resolve(__dirname, '../../folvyn-portfolio-ms/src/portfolio')
 
@@ -40,12 +48,10 @@ const SOURCES: Record<string, { file: string; create: string; translation?: stri
   certification: {
     file: 'education/certification.dto.ts',
     create: 'CreateCertificationDto',
-    translation: 'CertificationTranslationDto',
   },
   spokenLanguage: {
     file: 'education/spoken-language.dto.ts',
     create: 'CreateSpokenLanguageDto',
-    translation: 'SpokenLanguageTranslationDto',
   },
   volunteering: {
     file: 'achievement/volunteering.dto.ts',
@@ -165,4 +171,42 @@ describe.skipIf(!available)('registry mirrors the portfolio-ms DTOs', () => {
       }
     })
   }
+})
+
+const messages = { en, fr }
+
+describe('registry mirrors the portfolio-ms vocabularies', () => {
+  const VOCABULARIES = resolve(SERVICE_ROOT, '../common/dto/vocabularies.ts')
+
+  function listedIn(name: string): string[] {
+    const text = readFileSync(VOCABULARIES, 'utf8')
+    const start = text.indexOf(`export const ${name} = [`)
+    if (start === -1) return []
+
+    const open = text.indexOf('[', start)
+    const close = text.indexOf(']', open)
+    return [...text.slice(open + 1, close).matchAll(/'([^']+)'/g)].map((entry) => entry[1])
+  }
+
+  it('offers exactly the honours the API accepts, in the same order', () => {
+    expect(HONORS).toEqual(listedIn('HONORS'))
+  })
+
+  it('offers exactly the language levels the API accepts, in the same order', () => {
+    expect(LANGUAGE_LEVELS).toEqual(listedIn('LANGUAGE_LEVELS'))
+  })
+
+  it('translates every option it offers, in both languages', () => {
+    for (const [group, values] of [
+      ['honors', HONORS],
+      ['levels', LANGUAGE_LEVELS],
+    ] as const) {
+      for (const locale of ['en', 'fr'] as const) {
+        const block = messages[locale].vocabularies as Record<string, Record<string, string>>
+        for (const value of values) {
+          expect(block[group]?.[value], `${locale}.${group}.${value} is missing`).toBeTruthy()
+        }
+      }
+    }
+  })
 })

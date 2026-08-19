@@ -44,7 +44,10 @@ export const useUiStore = defineStore('ui', () => {
   const editingLang = ref(readString(LANG_KEY))
   const paletteOpen = ref(false)
   const dirty = ref(false)
+  const leaveOpen = ref(false)
   const toasts = ref<Toast[]>([])
+
+  let settleLeave: ((leaving: boolean) => void) | null = null
 
   watch(railCollapsed, (value) => write(RAIL_KEY, value ? '1' : '0'))
   watch(editingLang, (value) => value && write(LANG_KEY, value))
@@ -75,17 +78,36 @@ export const useUiStore = defineStore('ui', () => {
     window.setTimeout(() => dismiss(toast.id), TOAST_MS)
   }
 
+  function confirmLeave(): Promise<boolean> {
+    if (!dirty.value) return Promise.resolve(true)
+    if (settleLeave) settleLeave(false)
+
+    leaveOpen.value = true
+    return new Promise<boolean>((resolve) => {
+      settleLeave = resolve
+    })
+  }
+
+  function answerLeave(leaving: boolean): void {
+    leaveOpen.value = false
+    settleLeave?.(leaving)
+    settleLeave = null
+  }
+
   return {
     railCollapsed,
     mobileNavOpen,
     editingLang,
     paletteOpen,
     dirty,
+    leaveOpen,
     toasts,
     hasToasts,
     toggleRail,
     setEditingLang,
     reconcileEditingLang,
+    confirmLeave,
+    answerLeave,
     notify,
     dismiss,
   }

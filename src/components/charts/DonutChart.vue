@@ -1,11 +1,8 @@
 <template>
-  <div
-    v-if="total > 0"
-    class="flex min-h-0 flex-1 items-center justify-center gap-4 max-700:flex-col max-700:items-start"
-  >
+  <div v-if="total > 0" class="flex min-h-0 flex-1 items-center justify-center gap-4 max-700:gap-3">
     <svg
       :viewBox="`0 0 ${SIZE} ${SIZE}`"
-      class="h-[122px] w-[122px] shrink-0 -rotate-90"
+      class="h-[122px] w-[122px] shrink-0 -rotate-90 max-700:h-[92px] max-700:w-[92px]"
       role="img"
       :aria-label="`${label}: ${slices.map((s) => `${s.key} ${s.share}%`).join(', ')}`"
     >

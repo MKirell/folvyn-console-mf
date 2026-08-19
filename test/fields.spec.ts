@@ -156,11 +156,11 @@ describe('asset fields', () => {
 
   it('removes one entry from an asset list', async () => {
     const wrapper = mount(AssetListField, {
-      props: { modelValue: ['awards/a.jpg', 'awards/b.jpg'], accept: 'image' },
+      props: { modelValue: ['a.jpg', 'b.jpg'], accept: 'image' },
     })
 
-    await wrapper.find('button[aria-label="Remove awards/a.jpg"]').trigger('click')
-    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['awards/b.jpg']])
+    await wrapper.find('button[aria-label="Remove a.jpg"]').trigger('click')
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['b.jpg']])
   })
 
   it('keys the résumé map by locale and drops emptied entries', async () => {
@@ -259,21 +259,18 @@ describe('field renderer', () => {
     expect(wrapper.text()).toContain('6/200')
   })
 
-  it('shows the pattern hint under the input', () => {
+  it('leaves the field uncluttered, with no hint line under the input', () => {
     const wrapper = mount(FieldRenderer, {
-      props: {
-        field: { name: 'phone', type: 'text', pattern: '^\\+', patternHint: 'E.164 only' },
-        modelValue: '',
-      },
+      props: { field: { name: 'phone', type: 'text', pattern: '^\+' }, modelValue: '' },
     })
 
-    expect(wrapper.text()).toContain('E.164 only')
+    expect(wrapper.findAll('p')).toHaveLength(0)
   })
 
   it('shows a field error in place of the hint', () => {
     const wrapper = mount(FieldRenderer, {
       props: {
-        field: { name: 'phone', type: 'text', patternHint: 'E.164 only' },
+        field: { name: 'phone', type: 'text' },
         modelValue: '',
         error: 'Phone is required',
       },

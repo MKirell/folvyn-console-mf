@@ -2,24 +2,41 @@
   <div class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Locales</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+          {{ t('views.locales.title') }}
+        </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
-          Every locale here costs one translation per entry — drag a row to reorder.
+          {{ t('blurbs.locales') }}
         </p>
       </div>
       <AppButton variant="primary" @click="router.push('/c/locale/new')">
         <Plus :size="14" :stroke-width="2.2" aria-hidden="true" />
-        Add locale
+        {{ t('views.locales.add') }}
       </AppButton>
     </header>
 
     <EmptyState
-      v-if="locales.length === 0"
-      icon="Globe"
-      title="No locales yet"
-      description="The portfolio needs at least one to render."
+      v-if="content.failed"
+      icon="Shield"
+      :title="t('errors.locales')"
+      :description="content.error ?? t('common.unreachableDesc')"
     >
-      <AppButton variant="primary" @click="router.push('/c/locale/new')">Add the first</AppButton>
+      <AppButton variant="primary" :busy="content.loading" @click="content.loadAll(true)">{{
+        t('common.retry')
+      }}</AppButton>
+    </EmptyState>
+
+    <SkeletonList v-else-if="!content.loaded" :rows="3" :label="t('loading.locales')" />
+
+    <EmptyState
+      v-else-if="locales.length === 0"
+      icon="Globe"
+      :title="t('views.locales.emptyTitle')"
+      :description="t('views.locales.emptyDesc')"
+    >
+      <AppButton variant="primary" @click="router.push('/c/locale/new')">{{
+        t('views.locales.addFirst')
+      }}</AppButton>
     </EmptyState>
 
     <ul v-else class="space-y-1.5" role="list">
@@ -27,7 +44,7 @@
         v-for="(locale, index) in locales"
         :key="locale.id"
         draggable="true"
-        class="group flex flex-wrap items-center gap-3 rounded-[11px] border bg-surface px-3.5 py-3 transition-[border-color,opacity] motion-reduce:transition-none"
+        class="group flex items-center gap-3 rounded-[11px] border bg-surface px-3.5 py-3 transition-[border-color,opacity] motion-reduce:transition-none max-700:gap-2 max-700:px-3"
         :class="[
           dragIndex === index ? 'opacity-45' : '',
           overIndex === index && dragIndex !== index
@@ -50,54 +67,44 @@
 
         <RouterLink :to="`/c/locale/${locale.id}`" class="min-w-0">
           <span class="block truncate font-mono text-[0.82rem] font-medium uppercase">{{
-            locale.label || locale.code
+            locale.code.toUpperCase()
           }}</span>
         </RouterLink>
 
-        <div
-          class="ms-auto flex items-center gap-4 max-700:ms-0 max-700:w-full max-700:flex-wrap max-700:gap-y-2.5"
-        >
-          <div class="w-[132px] max-700:w-full">
-            <div class="mb-1 flex items-baseline justify-between">
-              <span class="font-mono text-[0.62rem] uppercase tracking-[0.1em] text-muted"
-                >translated</span
-              >
-              <span class="font-mono text-[0.66rem] tabular-nums" :class="toneFor(locale.code)"
-                >{{ percent(locale.code) }}%</span
-              >
-            </div>
-            <span class="block h-1.5 overflow-hidden rounded-full bg-bg-tint">
-              <span
-                class="block h-full rounded-full transition-[width] duration-500 motion-reduce:transition-none"
-                :class="barFor(locale.code)"
-                :style="{ width: `${percent(locale.code)}%` }"
-              ></span>
-            </span>
-          </div>
-
+        <div class="ms-auto flex shrink-0 items-center gap-4 max-700:gap-2">
           <span
             v-if="share(locale.code) !== null"
-            class="font-mono text-[0.68rem] tabular-nums text-muted"
-            title="Share of sessions in the selected analytics period"
-            >{{ share(locale.code) }}% traffic</span
+            class="shrink-0 rounded-[6px] bg-bg-tint px-2 py-[3px] font-mono text-[0.66rem] tabular-nums text-muted"
+            :title="t('views.locales.shareTitle')"
+            >{{ t('views.locales.traffic', { pct: share(locale.code) }) }}</span
           >
 
-          <span
-            class="rounded-[6px] px-2 py-[2px] font-mono text-[0.62rem] uppercase"
-            :class="locale.enabled ? 'bg-sage/14 text-sage' : 'bg-surface-2/60 text-muted'"
-            >{{ locale.enabled ? 'enabled' : 'disabled' }}</span
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="locale.enabled"
+            :aria-label="t('views.locales.toggleAria', { code: locale.code.toUpperCase() })"
+            :disabled="busy === locale.id"
+            class="flex shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-[3px] font-mono text-[0.62rem] uppercase transition-colors disabled:opacity-50"
+            :class="
+              locale.enabled
+                ? 'bg-sage/14 text-sage hover:bg-sage/20'
+                : 'bg-rust/14 text-rust hover:bg-rust/20'
+            "
+            @click="toggleEnabled(locale)"
           >
-
-          <AppButton size="sm" @click="router.push(`/locales/queue/${locale.code}`)">
-            Work queue
-            <ChevronRight :size="13" :stroke-width="2" aria-hidden="true" />
-          </AppButton>
+            <span
+              class="h-1.5 w-1.5 rounded-full"
+              :class="locale.enabled ? 'bg-sage' : 'bg-rust'"
+            ></span>
+            {{ locale.enabled ? t('common.on') : t('common.off') }}
+          </button>
 
           <span class="flex shrink-0 items-center gap-0.5">
             <button
               type="button"
               class="grid h-7 w-7 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-              :aria-label="`Delete ${locale.code}`"
+              :aria-label="t('views.locales.deleteAria', { code: locale.code })"
               @click="pending = locale"
             >
               <Trash2 :size="14" :stroke-width="1.9" />
@@ -109,9 +116,9 @@
 
     <ConfirmDialog
       :open="pending !== null"
-      title="Delete this locale?"
-      :subject="pending?.label ?? ''"
-      message="and every translation written in it disappear from your portfolio."
+      :title="t('views.locales.deleteTitle')"
+      :subject="pending?.code.toUpperCase() ?? ''"
+      :message="t('views.locales.deleteMessage')"
       confirm-word="delete"
       @cancel="pending = null"
       @confirm="removeLocale"
@@ -122,19 +129,21 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { ChevronRight, GripVertical, Plus, Trash2 } from '@lucide/vue'
+import { GripVertical, Plus, Trash2 } from '@lucide/vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import FlagBadge from '@/components/ui/FlagBadge.vue'
+import SkeletonList from '@/components/ui/SkeletonList.vue'
 import { useAnalyticsStore } from '@/stores/analytics'
 import { useContentStore } from '@/stores/content'
 import { useMediaStore } from '@/stores/media'
-import { localeProgress } from '@/utils/locale-queue'
 import { COLLECTIONS } from '@/registry/collections'
 import { useUiStore } from '@/stores/ui'
 import type { AdminLocale } from '@/types/admin'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const content = useContentStore()
 const media = useMediaStore()
@@ -143,6 +152,7 @@ const ui = useUiStore()
 
 const locales = computed(() => content.locales)
 const pending = ref<AdminLocale | null>(null)
+const busy = ref('')
 
 const dragIndex = ref(-1)
 const overIndex = ref(-1)
@@ -162,7 +172,27 @@ async function onDrop(): Promise<void> {
   try {
     await content.reorder(COLLECTIONS.locale, ids)
   } catch (cause) {
-    ui.notify('bad', 'Reorder failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.locales.reorderFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
+  }
+}
+
+async function toggleEnabled(locale: AdminLocale): Promise<void> {
+  busy.value = locale.id
+
+  try {
+    await content.update(COLLECTIONS.locale, locale.id, { enabled: !locale.enabled })
+  } catch (cause) {
+    ui.notify(
+      'bad',
+      t('views.locales.toggleFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
+  } finally {
+    busy.value = ''
   }
 }
 
@@ -173,26 +203,14 @@ async function removeLocale(): Promise<void> {
 
   try {
     await content.remove(COLLECTIONS.locale, locale.id)
-    ui.notify('good', `${locale.label} deleted`)
+    ui.notify('good', t('views.locales.deleted', { label: locale.code.toUpperCase() }))
   } catch (cause) {
-    ui.notify('bad', 'Delete failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.locales.deleteFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
-}
-
-function percent(code: string): number {
-  return localeProgress(content, code).percent
-}
-
-function toneFor(code: string): string {
-  const value = percent(code)
-  if (value >= 100) return 'text-sage'
-  return value >= 50 ? 'text-gold' : 'text-rust'
-}
-
-function barFor(code: string): string {
-  const value = percent(code)
-  if (value >= 100) return 'bg-sage'
-  return value >= 50 ? 'bg-gold' : 'bg-rust'
 }
 
 function share(code: string): number | null {

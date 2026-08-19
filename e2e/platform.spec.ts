@@ -19,7 +19,7 @@ const OVERVIEW = {
   owners: { total: 48, published: 31, draft: 14, suspended: 3 },
   signups: { last7: 5, last30: 17 },
   portfolios: [
-    { slug: 'mohamed-khalil-zrelly', status: 'published', sessions: 1840, visitors: 1210 },
+    { slug: 'ada-lovelace', status: 'published', sessions: 1840, visitors: 1210 },
     { slug: 'ada-lovelace', status: 'published', sessions: 1320, visitors: 890 },
     { slug: 'grace-hopper', status: 'published', sessions: 940, visitors: 610 },
     { slug: 'alan-turing', status: 'draft', sessions: 420, visitors: 280 },
@@ -160,5 +160,29 @@ test.describe('operator overview', () => {
       )
       expect(overflow, `overflows at ${width}px`).toBeLessThanOrEqual(0)
     }
+  })
+})
+
+test.describe('operator command palette', () => {
+  test.beforeEach(async ({ page, recorder }) => {
+    await stubApi(page, recorder, ['folvyn-platform'])
+    await page.addInitScript((token) => {
+      sessionStorage.setItem('console_refresh_token', token)
+    }, REFRESH_TOKEN)
+  })
+
+  test('offers the platform screens, never the owner ones an operator cannot reach', async ({
+    page,
+  }) => {
+    await stubOverview(page)
+    await page.goto('/platform')
+    await page.keyboard.press('Control+k')
+
+    const palette = page.getByRole('dialog')
+    await expect(palette.getByText('Erasure queue')).toBeVisible()
+    await expect(palette.getByText('Audit')).toBeVisible()
+    await expect(palette.getByText('Insights')).toHaveCount(0)
+    await expect(palette.getByText('Hero')).toHaveCount(0)
+    await expect(palette.getByText('Certifications')).toHaveCount(0)
   })
 })

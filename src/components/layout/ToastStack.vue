@@ -27,7 +27,7 @@
       <button
         type="button"
         class="shrink-0 text-muted transition-colors hover:text-ink"
-        aria-label="Dismiss"
+        :aria-label="t('ui.dismiss')"
         @click="ui.dismiss(toast.id)"
       >
         <X :size="14" :stroke-width="2" />
@@ -40,7 +40,9 @@
 import type { Component } from 'vue'
 import { CircleCheck, Info, TriangleAlert, X, CircleX } from '@lucide/vue'
 import { useUiStore, type ToastTone } from '@/stores/ui'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const ui = useUiStore()
 
 const TONES: Record<ToastTone, { icon: Component; text: string; border: string }> = {

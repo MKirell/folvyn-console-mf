@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 import { reactive } from 'vue'
-import { LEGAL, LEGAL_DOCUMENTS, OPERATOR_EMAIL } from '@/registry/legal'
+import { legalDocument, legalDocuments, OPERATOR_EMAIL } from '@/registry/legal'
+import type { LegalSection } from '@/registry/legal'
 
 const route = reactive<{ params: Record<string, string> }>({ params: {} })
 
@@ -36,7 +37,7 @@ describe('legal pages', () => {
     const wrapper = mount(LegalView)
 
     expect(wrapper.text()).toContain('Privacy')
-    for (const section of LEGAL.privacy.sections) {
+    for (const section of legalDocument('privacy').sections) {
       expect(wrapper.text()).toContain(section.heading)
     }
   })
@@ -50,8 +51,8 @@ describe('legal pages', () => {
   })
 
   it('states the three sub-processors the plan requires naming', () => {
-    const text = LEGAL.privacy.sections
-      .flatMap((s) => [...(s.bullets ?? []), ...(s.paragraphs ?? [])])
+    const text = legalDocument('privacy')
+      .sections.flatMap((s: LegalSection) => [...(s.bullets ?? []), ...(s.paragraphs ?? [])])
       .join(' ')
 
     expect(text).toContain('Amazon Web Services')
@@ -61,14 +62,18 @@ describe('legal pages', () => {
   })
 
   it('states the retention periods that the code actually enforces', () => {
-    const text = LEGAL.privacy.sections.flatMap((s) => s.bullets ?? []).join(' ')
+    const text = legalDocument('privacy')
+      .sections.flatMap((s: LegalSection) => s.bullets ?? [])
+      .join(' ')
 
     expect(text).toContain('30 days')
     expect(text).toContain('25 months')
   })
 
   it('explains why there is no cookie banner, and when there is one', () => {
-    const banner = LEGAL.privacy.sections.find((s) => s.heading.includes('cookie banner'))
+    const banner = legalDocument('privacy').sections.find((s) =>
+      s.heading.includes('cookie banner'),
+    )
 
     expect(banner).toBeDefined()
     expect(banner?.paragraphs?.join(' ')).toContain('audience measurement')
@@ -76,7 +81,7 @@ describe('legal pages', () => {
   })
 
   it('names the erasure and export rights the Portfolio screen provides', () => {
-    const rights = LEGAL.privacy.sections.find((s) => s.heading === 'Your rights')
+    const rights = legalDocument('privacy').sections.find((s) => s.heading === 'Your rights')
 
     expect(rights?.bullets?.join(' ')).toContain('Export everything')
     expect(rights?.bullets?.join(' ')).toContain('Delete your account')
@@ -92,7 +97,7 @@ describe('legal pages', () => {
     const wrapper = mount(LegalView)
     const targets = wrapper.findAllComponents(RouterLinkStub).map((link) => link.props('to'))
 
-    for (const entry of LEGAL_DOCUMENTS) {
+    for (const entry of legalDocuments()) {
       expect(targets).toContain(`/legal/${entry.slug}`)
     }
   })

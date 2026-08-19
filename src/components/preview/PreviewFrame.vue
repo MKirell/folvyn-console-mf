@@ -12,7 +12,7 @@
           :src="src"
           :width="width"
           :height="frameHeight"
-          title="Live preview"
+          :title="t('ui.livePreview')"
           class="block origin-top-left border-0"
           :style="{ transform: `scale(${scale})` }"
           sandbox="allow-scripts allow-same-origin"
@@ -29,7 +29,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { PREVIEW_PATH, SITE_URL } from '@/config/env'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = withDefaults(
   defineProps<{
     width: number

@@ -172,15 +172,15 @@ describe('identity', () => {
     const { decodeIdToken } = await import('@/services/pkce')
     const body = {
       sub: 'Google_110510927257595594969',
-      email: 'admin@mkirell.com',
-      name: 'Mohamed Khalil ZRELLY',
+      email: 'ada.lovelace@example.com',
+      name: 'Ada Lovelace',
       picture: 'https://lh3.googleusercontent.com/a/photo',
     }
     const token = `x.${btoa(JSON.stringify(body)).replace(/=+$/, '')}.y`
 
     const claims = decodeIdToken(token)
 
-    expect(claims?.name).toBe('Mohamed Khalil ZRELLY')
+    expect(claims?.name).toBe('Ada Lovelace')
     expect(claims?.picture).toContain('googleusercontent')
   })
 })

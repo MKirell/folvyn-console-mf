@@ -15,14 +15,12 @@ export interface AdminDocument {
 
 export interface AdminLocale extends AdminDocument {
   code: string
-  label: string
   flagCode: string
   enabled: boolean
 }
 
 export interface AdminPersonTranslation extends TranslationEntry {
   aboutParagraphs: string[]
-  contactDesc: string
   headline: string
 }
 
@@ -34,8 +32,8 @@ export interface AdminPerson extends AdminDocument {
   linkedin: string
   github: string
   affiliation: string
-  city: string
   country: string
+  city: string
   photo: string
   resumes: Record<string, string>
   translations: Record<string, AdminPersonTranslation>
@@ -47,8 +45,6 @@ export interface ProfileTranslation extends TranslationEntry {
 }
 
 export interface AdminProfile extends AdminDocument {
-  highlights: string[]
-  highlightFocus: string[]
   translations: Record<string, ProfileTranslation>
   createdAt?: string
   updatedAt?: string
@@ -109,4 +105,5 @@ export interface OwnerRecord {
   consentMode: ConsentMode
   plan: string
   publishedAt: string | null
+  assetPrefix?: string
 }

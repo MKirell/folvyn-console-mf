@@ -1,6 +1,7 @@
 export type FieldType =
   | 'text'
   | 'textarea'
+  | 'month'
   | 'number'
   | 'boolean'
   | 'email'
@@ -14,12 +15,15 @@ export type FieldType =
   | 'asset'
   | 'asset-list'
   | 'asset-map'
+  | 'select'
 
 export type AssetKind = 'pdf' | 'image'
 
 export interface FieldDef {
   name: string
   type: FieldType
+  options?: string[]
+  optionsKey?: string
   label?: string
   required?: boolean
   maxLength?: number
@@ -28,12 +32,12 @@ export interface FieldDef {
   min?: number
   max?: number
   pattern?: string
-  patternHint?: string
   placeholder?: string
   group?: string
   protocol?: 'https' | 'http'
   accept?: AssetKind
   wide?: boolean
+  hidden?: boolean
 }
 
 export type CollectionMode = 'list' | 'singleton' | 'locale-keyed'
@@ -50,10 +54,15 @@ export interface CollectionDef {
   duplicable?: boolean
   i18n: boolean
   titleField?: string
+  titleFormat?: 'languageName'
   subtitleField?: string
   fields: FieldDef[]
   translated: FieldDef[]
 }
+
+export const HONORS = ['pass', 'satisfactory', 'good', 'very-good', 'excellent']
+
+export const LANGUAGE_LEVELS = ['a1', 'a2', 'b1', 'b2', 'c1', 'c2']
 
 const LANG_PATTERN = '^[a-z]{2}(-[A-Z]{2})?$'
 const FLAG_PATTERN = '^[a-z]{2}$'
@@ -110,7 +119,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         type: 'text',
         required: true,
         pattern: '^\\+[1-9]\\d{6,14}$',
-        patternHint: 'E.164 — a plus, the country code, then the number',
         placeholder: 'No spaces, with country code : +33612345678',
       },
       {
@@ -132,18 +140,18 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         placeholder: 'Your profile : https://github.com/janedoe',
       },
       {
+        name: 'country',
+        group: 'Location',
+        type: 'country',
+        required: true,
+      },
+      {
         name: 'city',
         group: 'Location',
         type: 'text',
         required: true,
         maxLength: 80,
         placeholder: 'City : Berlin',
-      },
-      {
-        name: 'country',
-        group: 'Location',
-        type: 'country',
-        required: true,
       },
       { name: 'photo', type: 'asset', accept: 'image', required: true, maxLength: 255 },
       { name: 'resumes', type: 'asset-map', accept: 'pdf', label: 'Résumés', wide: true },
@@ -167,15 +175,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         wide: true,
         placeholder: 'One paragraph per entry : I build backend services at **Acme**.',
       },
-      {
-        name: 'contactDesc',
-        group: 'Contact',
-        type: 'textarea',
-        required: true,
-        maxLength: 220,
-        wide: true,
-        placeholder: 'Status, then an invitation : Currently at **Acme**. Do reach out.',
-      },
     ],
   },
 
@@ -189,27 +188,8 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     mode: 'singleton',
     ordered: false,
     i18n: true,
-    titleField: 'highlightFocus',
-    fields: [
-      {
-        name: 'highlights',
-        group: 'Hero',
-        type: 'tags',
-        maxItems: 20,
-        itemMaxLength: 80,
-        wide: true,
-        placeholder: 'One per chip : Go, Postgres, Docker',
-      },
-      {
-        name: 'highlightFocus',
-        group: 'Hero',
-        type: 'tags',
-        maxItems: 20,
-        itemMaxLength: 80,
-        wide: true,
-        placeholder: 'The ones to highlight : Postgres, Redis',
-      },
-    ],
+    titleField: 'tagline',
+    fields: [],
     translated: [
       {
         name: 'subtitles',
@@ -244,19 +224,11 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     ordered: true,
     duplicable: false,
     i18n: false,
-    titleField: 'label',
+    titleField: 'code',
     fields: [
       { name: 'code', type: 'language', required: true, pattern: LANG_PATTERN, label: 'Language' },
-      {
-        name: 'label',
-        type: 'text',
-        required: true,
-        maxLength: 20,
-        label: 'Short label',
-        placeholder: 'Switcher label : EN',
-      },
-      { name: 'flagCode', type: 'flag', required: true, pattern: FLAG_PATTERN, label: 'Flag' },
-      { name: 'enabled', type: 'boolean' },
+      { name: 'flagCode', type: 'flag', required: true, pattern: FLAG_PATTERN, label: 'Country' },
+      { name: 'enabled', type: 'boolean', hidden: true },
     ],
     translated: [],
   },
@@ -281,29 +253,30 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         maxLength: 120,
         placeholder: 'Employer : Acme Corp',
       },
-      { name: 'current', type: 'boolean' },
       {
         name: 'startDate',
-        type: 'text',
+        type: 'month',
         required: true,
         pattern: MONTH_PATTERN,
         maxLength: 7,
-        patternHint: 'Year and month, as YYYY-MM',
-        placeholder: 'Year and month : 2024-09',
       },
       {
         name: 'endDate',
-        type: 'text',
+        type: 'month',
         pattern: MONTH_PATTERN,
         maxLength: 7,
-        patternHint: 'Year and month, as YYYY-MM. Leave empty while ongoing.',
-        placeholder: 'Year and month, empty if ongoing : 2025-06',
       },
       {
         name: 'country',
         type: 'country',
         maxLength: 2,
         pattern: '^[A-Z]{2}$',
+      },
+      {
+        name: 'city',
+        type: 'text',
+        maxLength: 80,
+        placeholder: 'City : Berlin',
       },
       {
         name: 'tags',
@@ -338,7 +311,7 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         name: 'bullets',
         type: 'string-list',
         required: true,
-        maxItems: 30,
+        maxItems: 3,
         itemMaxLength: 300,
         wide: true,
         placeholder: 'One outcome per entry : Built a **billing service**, errors down 30%.',
@@ -359,11 +332,17 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     titleField: 'title',
     fields: [
       {
-        name: 'title',
-        type: 'text',
+        name: 'startDate',
+        type: 'month',
         required: true,
-        maxLength: 80,
-        placeholder: 'Project name : PhotoSort',
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
+      {
+        name: 'endDate',
+        type: 'month',
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
       },
       {
         name: 'tags',
@@ -382,11 +361,11 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     ],
     translated: [
       {
-        name: 'period',
+        name: 'title',
         type: 'text',
         required: true,
-        maxLength: 60,
-        placeholder: 'Stage — year : In Production — 2024',
+        maxLength: 80,
+        placeholder: 'Project name : PhotoSort',
       },
       {
         name: 'badge',
@@ -458,14 +437,44 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     ordered: true,
     i18n: true,
     titleField: 'title',
-    subtitleField: 'years',
+    subtitleField: 'school',
     fields: [
       {
-        name: 'years',
-        type: 'text',
+        name: 'startDate',
+        type: 'month',
         required: true,
-        maxLength: 30,
-        placeholder: 'Year span : 2021 — 2024',
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
+      {
+        name: 'endDate',
+        type: 'month',
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
+      {
+        name: 'school',
+        type: 'text',
+        maxLength: 120,
+        placeholder: 'School – University : Institute – TU Berlin',
+      },
+      {
+        name: 'country',
+        type: 'country',
+        maxLength: 2,
+        pattern: '^[A-Z]{2}$',
+      },
+      {
+        name: 'city',
+        type: 'text',
+        maxLength: 80,
+        placeholder: 'City : Berlin',
+      },
+      {
+        name: 'honors',
+        type: 'select',
+        options: HONORS,
+        optionsKey: 'honors',
       },
       {
         name: 'doc',
@@ -488,24 +497,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         maxLength: 120,
         placeholder: 'Degree name : MSc in Computer Science',
       },
-      {
-        name: 'school',
-        type: 'text',
-        maxLength: 120,
-        placeholder: 'School – University : Institute – TU Berlin',
-      },
-      {
-        name: 'location',
-        type: 'text',
-        maxLength: 80,
-        placeholder: 'City, Country : Berlin, Germany',
-      },
-      {
-        name: 'mention',
-        type: 'text',
-        maxLength: 80,
-        placeholder: 'Honours, if any : High Distinction',
-      },
     ],
   },
 
@@ -518,7 +509,7 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     group: 'Education',
     mode: 'list',
     ordered: true,
-    i18n: true,
+    i18n: false,
     titleField: 'title',
     subtitleField: 'issuer',
     fields: [
@@ -538,21 +529,20 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         placeholder: 'Issuer, platform in brackets : Acme (Coursera)',
       },
       {
+        name: 'date',
+        type: 'month',
+        required: true,
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
+      {
         name: 'doc',
         type: 'asset',
         accept: 'pdf',
         maxLength: 255,
       },
     ],
-    translated: [
-      {
-        name: 'date',
-        type: 'text',
-        required: true,
-        maxLength: 40,
-        placeholder: 'Short month, year : Mar 2024',
-      },
-    ],
+    translated: [],
   },
 
   spokenLanguage: {
@@ -564,11 +554,26 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     group: 'Education',
     mode: 'list',
     ordered: true,
-    i18n: true,
-    titleField: 'name',
+    i18n: false,
+    titleField: 'code',
+    titleFormat: 'languageName',
     subtitleField: 'level',
     fields: [
-      { name: 'flagCode', type: 'flag', required: true, pattern: FLAG_PATTERN, label: 'Flag' },
+      { name: 'code', type: 'language', required: true, pattern: LANG_PATTERN, label: 'Language' },
+      {
+        name: 'country',
+        type: 'country',
+        required: true,
+        maxLength: 2,
+        pattern: '^[A-Z]{2}$',
+      },
+      {
+        name: 'level',
+        type: 'select',
+        required: true,
+        options: LANGUAGE_LEVELS,
+        optionsKey: 'levels',
+      },
       {
         name: 'pct',
         type: 'number',
@@ -583,22 +588,7 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         maxLength: 255,
       },
     ],
-    translated: [
-      {
-        name: 'name',
-        type: 'text',
-        required: true,
-        maxLength: 60,
-        placeholder: 'Language : English',
-      },
-      {
-        name: 'level',
-        type: 'text',
-        required: true,
-        maxLength: 40,
-        placeholder: 'Level and test : B2 · TOEIC',
-      },
-    ],
+    translated: [],
   },
 
   volunteering: {
@@ -614,6 +604,19 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     titleField: 'role',
     subtitleField: 'org',
     fields: [
+      {
+        name: 'startDate',
+        type: 'month',
+        required: true,
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
+      {
+        name: 'endDate',
+        type: 'month',
+        pattern: MONTH_PATTERN,
+        maxLength: 7,
+      },
       {
         name: 'org',
         type: 'text',
@@ -643,13 +646,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         placeholder: 'Your role there : Project Manager',
       },
       {
-        name: 'period',
-        type: 'text',
-        required: true,
-        maxLength: 60,
-        placeholder: 'Span · duration : 09/2021 — 08/2024 · 3 years',
-      },
-      {
         name: 'desc',
         type: 'textarea',
         required: true,
@@ -674,7 +670,14 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     subtitleField: 'place',
     fields: [
       { name: 'icon', type: 'icon', required: true, maxLength: 60 },
-      { name: 'flagCode', type: 'flag', pattern: FLAG_PATTERN, label: 'Flag' },
+      { name: 'country', type: 'country' },
+      {
+        name: 'city',
+        type: 'text',
+        maxLength: 80,
+        placeholder: 'City : Berlin',
+      },
+      { name: 'date', type: 'month', pattern: MONTH_PATTERN, maxLength: 7 },
       {
         name: 'images',
         type: 'asset-list',
@@ -682,12 +685,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         maxItems: 30,
         itemMaxLength: 255,
         wide: true,
-      },
-      {
-        name: 'doc',
-        type: 'asset',
-        accept: 'pdf',
-        maxLength: 255,
       },
     ],
     translated: [
@@ -697,18 +694,6 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         required: true,
         maxLength: 120,
         placeholder: 'Competition and placing : Startup Cup — Second Place',
-      },
-      {
-        name: 'place',
-        type: 'text',
-        maxLength: 80,
-        placeholder: 'Country only : Germany',
-      },
-      {
-        name: 'date',
-        type: 'text',
-        maxLength: 40,
-        placeholder: 'Short month, year : Mar 2024',
       },
     ],
   },

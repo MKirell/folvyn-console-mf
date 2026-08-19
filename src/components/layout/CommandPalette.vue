@@ -4,7 +4,7 @@
     class="fixed inset-0 z-[120] grid place-items-start justify-center bg-scrim/40 px-4 pt-[14vh] backdrop-blur-[6px]"
     role="dialog"
     aria-modal="true"
-    aria-label="Command palette"
+    :aria-label="t('palette.aria')"
     @click.self="close"
   >
     <div
@@ -17,8 +17,8 @@
           v-model="query"
           type="text"
           class="w-full bg-transparent py-3.5 text-[0.9rem] outline-none placeholder:text-muted"
-          placeholder="Jump to a screen or an entry…"
-          aria-label="Search"
+          :placeholder="t('palette.placeholder')"
+          :aria-label="t('common.search')"
           @keydown.down.prevent="move(1)"
           @keydown.up.prevent="move(-1)"
           @keydown.enter.prevent="choose(results[cursor])"
@@ -64,11 +64,14 @@
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@lucide/vue'
-import { LIST_COLLECTIONS } from '@/registry/collections'
+import { COLLECTIONS, LIST_COLLECTIONS } from '@/registry/collections'
 import { iconComponent } from '@/registry/icons'
+import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import { titleOf } from '@/utils/entity'
+import { useI18n } from 'vue-i18n'
+import { collectionLabel, collectionSingular, screenLabel } from '@/i18n/labels'
 
 interface PaletteResult {
   label: string
@@ -77,9 +80,11 @@ interface PaletteResult {
   to: string
 }
 
+const { t } = useI18n()
 const MAX_RESULTS = 40
 
 const router = useRouter()
+const auth = useAuthStore()
 const content = useContentStore()
 const ui = useUiStore()
 
@@ -87,23 +92,109 @@ const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
 const query = ref('')
 const cursor = ref(0)
 
-const screens = computed<PaletteResult[]>(() => [
-  { label: 'Insights', scope: 'screen', icon: 'Gauge', to: '/insights' },
-  { label: 'Portfolio', scope: 'screen', icon: 'Rocket', to: '/portfolio' },
-  { label: 'Person', scope: 'screen', icon: 'User', to: '/person' },
-  { label: 'Hero', scope: 'screen', icon: 'Sparkles', to: '/profile' },
-  { label: 'Locales', scope: 'screen', icon: 'Globe', to: '/locales' },
-  { label: 'Media', scope: 'screen', icon: 'Image', to: '/media' },
-  { label: 'History', scope: 'screen', icon: 'History', to: '/history' },
+const platformScreens = computed<PaletteResult[]>(() => [
+  {
+    label: screenLabel('overview', 'Overview'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Gauge',
+    to: '/platform',
+  },
+  {
+    label: screenLabel('portfolios', 'Portfolios'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Users',
+    to: '/platform/portfolios',
+  },
+  {
+    label: screenLabel('erasureQueue', 'Erasure queue'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Trash2',
+    to: '/platform/erasures',
+  },
+  {
+    label: screenLabel('traffic', 'Traffic'),
+    scope: t('palette.scopeScreen'),
+    icon: 'TrendingUp',
+    to: '/platform/traffic',
+  },
+  {
+    label: screenLabel('health', 'Health'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Activity',
+    to: '/platform/health',
+  },
+  {
+    label: screenLabel('audit', 'Audit'),
+    scope: t('palette.scopeScreen'),
+    icon: 'History',
+    to: '/platform/audit',
+  },
+  {
+    label: screenLabel('platformConfig', 'Platform config'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Settings',
+    to: '/platform/config',
+  },
+])
+
+const ownerScreens = computed<PaletteResult[]>(() => [
+  {
+    label: screenLabel('insights', 'Insights'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Gauge',
+    to: '/insights',
+  },
+  {
+    label: screenLabel('portfolio', 'Portfolio'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Rocket',
+    to: '/portfolio',
+  },
+  {
+    label: collectionLabel(COLLECTIONS.person),
+    scope: t('palette.scopeScreen'),
+    icon: 'User',
+    to: '/person',
+  },
+  {
+    label: collectionLabel(COLLECTIONS.profile),
+    scope: t('palette.scopeScreen'),
+    icon: 'Sparkles',
+    to: '/profile',
+  },
+  {
+    label: collectionLabel(COLLECTIONS.locale),
+    scope: t('palette.scopeScreen'),
+    icon: 'Globe',
+    to: '/locales',
+  },
+  {
+    label: screenLabel('media', 'Media'),
+    scope: t('palette.scopeScreen'),
+    icon: 'Image',
+    to: '/media',
+  },
+  {
+    label: screenLabel('history', 'History'),
+    scope: t('palette.scopeScreen'),
+    icon: 'History',
+    to: '/history',
+  },
   ...LIST_COLLECTIONS.filter((collection) => collection.key !== 'locale').map((collection) => ({
-    label: collection.label,
-    scope: 'screen',
+    label: collectionLabel(collection),
+    scope: t('palette.scopeScreen'),
     icon: collection.icon,
     to: `/c/${collection.key}`,
   })),
 ])
 
+const screens = computed<PaletteResult[]>(() =>
+  auth.isPlatform ? platformScreens.value : ownerScreens.value,
+)
+
 const entries = computed<PaletteResult[]>(() => {
+  if (auth.isPlatform) return []
+
   const lang = ui.editingLang || content.referenceLang
   const results: PaletteResult[] = []
 
@@ -111,7 +202,7 @@ const entries = computed<PaletteResult[]>(() => {
     for (const doc of content.list(collection.key)) {
       results.push({
         label: titleOf(collection, doc, lang),
-        scope: collection.singular,
+        scope: collectionSingular(collection),
         icon: collection.icon,
         to: `/c/${collection.key}/${doc.id}`,
       })

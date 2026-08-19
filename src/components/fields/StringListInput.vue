@@ -29,7 +29,7 @@
           type="button"
           class="grid h-5 w-5 place-items-center rounded-[5px] text-muted transition-colors hover:bg-bg-tint hover:text-ink disabled:opacity-30"
           :disabled="index === 0"
-          aria-label="Move up"
+          :aria-label="t('list.moveUp')"
           @click="move(index, -1)"
         >
           <ChevronUp :size="13" :stroke-width="2" />
@@ -38,7 +38,7 @@
           type="button"
           class="grid h-5 w-5 place-items-center rounded-[5px] text-muted transition-colors hover:bg-bg-tint hover:text-ink disabled:opacity-30"
           :disabled="index === modelValue.length - 1"
-          aria-label="Move down"
+          :aria-label="t('list.moveDown')"
           @click="move(index, 1)"
         >
           <ChevronDown :size="13" :stroke-width="2" />
@@ -46,7 +46,7 @@
         <button
           type="button"
           class="grid h-5 w-5 place-items-center rounded-[5px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-          aria-label="Remove entry"
+          :aria-label="t('list.remove')"
           @click="removeAt(index)"
         >
           <X :size="13" :stroke-width="2" />
@@ -56,7 +56,7 @@
 
     <AppButton v-if="canAdd" size="sm" @click="add">
       <Plus :size="13" :stroke-width="2" aria-hidden="true" />
-      Add entry
+      {{ t('list.add') }}
     </AppButton>
   </div>
 </template>
@@ -65,7 +65,9 @@
 import { computed } from 'vue'
 import { ChevronDown, ChevronUp, Plus, X } from '@lucide/vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = withDefaults(
   defineProps<{
     modelValue: string[]

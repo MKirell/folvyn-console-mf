@@ -9,7 +9,7 @@
       v-if="periods.length"
       class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
       role="group"
-      aria-label="Reporting period"
+      :aria-label="t('platform.common.reportingPeriod')"
     >
       <button
         v-for="days in periods"
@@ -29,10 +29,13 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 withDefaults(
   defineProps<{ title: string; description: string; periods?: number[]; period?: number }>(),
   { periods: () => [], period: 30 },
 )
 
 const emit = defineEmits<{ select: [days: number] }>()
+
+const { t } = useI18n()
 </script>

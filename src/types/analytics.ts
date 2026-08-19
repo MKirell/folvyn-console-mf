@@ -161,7 +161,7 @@ export interface PlatformConfig {
   reservedSlugs: string[]
   limits: { slugMin: number; slugMax: number; reasonMax: number; erasureDeadlineDays: number }
   retention: { rawEventDays: number; rollupMonths: number }
-  environment: { nodeEnv: string; database: string; image: string }
+  environment: { nodeEnv: string; name?: string; database: string; image: string }
   runtime: ConfigEntry[]
   ingest: ConfigEntry[]
   privacy: ConfigEntry[]

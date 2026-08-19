@@ -22,5 +22,5 @@ const props = withDefaults(defineProps<{ code?: string | null; showCode?: boolea
   showCode: true,
 })
 
-const url = computed(() => flagUrl(props.code))
+const url = computed(() => flagUrl(props.code).value)
 </script>

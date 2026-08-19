@@ -3,6 +3,14 @@ import type { AdminDocument, FieldValue, TranslationEntry } from '@/types/admin'
 
 const LIST_TYPES = new Set(['tags', 'string-list', 'asset-list'])
 
+export function languageName(code: string): string {
+  try {
+    return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code.toUpperCase()
+  } catch {
+    return code.toUpperCase()
+  }
+}
+
 export function emptyValue(field: FieldDef): FieldValue | Record<string, string> {
   if (LIST_TYPES.has(field.type)) return []
   if (field.type === 'boolean') return false
@@ -66,8 +74,14 @@ export function titleOf(collection: CollectionDef, doc: AdminDocument, lang: str
 
   const translated = collection.translated.some((field) => field.name === key)
   const raw = translated ? translationOf(doc, lang)?.[key] : doc[key]
+  const isCode = [...collection.fields, ...collection.translated].some(
+    (field) => field.name === key && (field.type === 'language' || field.type === 'flag'),
+  )
 
-  if (typeof raw === 'string' && raw.trim().length > 0) return raw
+  if (typeof raw === 'string' && raw.trim().length > 0) {
+    if (collection.titleFormat === 'languageName') return languageName(raw)
+    return isCode ? raw.toUpperCase() : raw
+  }
   if (typeof raw === 'number') return String(raw)
 
   const fallbackLang = Object.keys(doc.translations ?? {})[0]
@@ -83,9 +97,39 @@ export function subtitleOf(collection: CollectionDef, doc: AdminDocument, lang: 
   const key = collection.subtitleField
   if (!key) return ''
 
-  const translated = collection.translated.some((field) => field.name === key)
-  const raw = translated ? translationOf(doc, lang)?.[key] : doc[key]
-  return typeof raw === 'string' || typeof raw === 'number' ? String(raw) : ''
+  const field = [...collection.fields, ...collection.translated].find((entry) => entry.name === key)
+  const raw =
+    field && collection.translated.includes(field) ? translationOf(doc, lang)?.[key] : doc[key]
+  if (typeof raw !== 'string' && typeof raw !== 'number') return ''
+
+  return String(raw)
+}
+
+export function monthLabel(value: string, locale: string): string {
+  const [year, month] = value.split('-').map(Number)
+  if (!year || !month) return value
+
+  try {
+    return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
+      new Date(Date.UTC(year, month - 1, 1)),
+    )
+  } catch {
+    return value
+  }
+}
+
+export function fieldTypeOf(collection: CollectionDef, name: string): string {
+  const field = [...collection.fields, ...collection.translated].find(
+    (entry) => entry.name === name,
+  )
+  return field?.type ?? ''
+}
+
+export function optionKeyOf(collection: CollectionDef, name: string): string {
+  const field = [...collection.fields, ...collection.translated].find(
+    (entry) => entry.name === name,
+  )
+  return field?.optionsKey ?? ''
 }
 
 function isBlank(value: unknown): boolean {
@@ -161,7 +205,7 @@ function validateField(field: FieldDef, value: unknown): string | null {
       return `${label} must be at most ${field.maxLength} characters`
     }
     if (field.pattern && !new RegExp(field.pattern).test(value)) {
-      return field.patternHint ?? `${label} has an invalid format`
+      return `${label} has an invalid format`
     }
     if (field.type === 'email' && !EMAIL_PATTERN.test(value)) {
       return `${label} must be an email address`

@@ -10,7 +10,7 @@
         <span class="grid h-7 w-7 place-items-center rounded-[8px] bg-accent/12 text-accent-deep">
           <ArrowLeft :size="14" :stroke-width="2" aria-hidden="true" />
         </span>
-        Back
+        {{ t('views.legal.back') }}
       </button>
 
       <h1 class="mt-4 font-disp text-[1.7rem] font-semibold tracking-tight">
@@ -18,9 +18,9 @@
       </h1>
       <p class="mt-1.5 text-[0.86rem] text-ink-soft">{{ document.summary }}</p>
 
-      <nav class="mt-4 flex gap-1.5" aria-label="Legal documents">
+      <nav class="mt-4 flex gap-1.5" :aria-label="t('views.legal.documents')">
         <RouterLink
-          v-for="entry in LEGAL_DOCUMENTS"
+          v-for="entry in documents"
           :key="entry.slug"
           :to="`/legal/${entry.slug}`"
           class="rounded-[8px] px-2.5 py-[5px] text-[0.78rem] transition-colors"
@@ -68,7 +68,7 @@
 
     <footer class="mt-9 border-t border-line/8 pt-4">
       <p class="font-mono text-[0.68rem] text-muted">
-        Questions to
+        {{ t('views.legal.questionsTo') }}
         <a :href="`mailto:${OPERATOR_EMAIL}`" class="text-accent-deep underline">{{
           OPERATOR_EMAIL
         }}</a>
@@ -82,12 +82,15 @@ import { computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import MeasurementChoice from '@/components/legal/MeasurementChoice.vue'
 import { ArrowLeft } from '@lucide/vue'
-import { LEGAL, LEGAL_DOCUMENTS, OPERATOR_EMAIL } from '@/registry/legal'
+import { legalDocument, legalDocuments, OPERATOR_EMAIL } from '@/registry/legal'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const document = computed(() => LEGAL[route.params.slug === 'terms' ? 'terms' : 'privacy'])
+const documents = computed(() => legalDocuments())
+const document = computed(() => legalDocument(route.params.slug === 'terms' ? 'terms' : 'privacy'))
 
 const cameFromConsole = computed(() =>
   Boolean((router.options.history.state as { back?: unknown } | null)?.back),

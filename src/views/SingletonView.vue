@@ -5,7 +5,9 @@
         <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">{{ heading }}</h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">{{ blurb }}</p>
       </div>
-      <AppButton variant="primary" type="submit" :busy="saving" :disabled="!dirty">Save</AppButton>
+      <AppButton variant="primary" type="submit" :busy="saving" :disabled="!dirty">{{
+        t('common.save')
+      }}</AppButton>
     </header>
 
     <p
@@ -19,7 +21,7 @@
       v-if="previewable"
       class="mb-4 flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
       role="tablist"
-      aria-label="Editor view"
+      :aria-label="t('views.singleton.editorView')"
     >
       <button
         v-for="option in TABS"
@@ -36,63 +38,45 @@
     </div>
 
     <div v-show="!previewable || tab === 'fields'" class="space-y-4">
-      <PanelCard v-for="group in plainGroups" :key="group.title" :title="group.title">
-        <div class="grid grid-cols-3 gap-x-4 gap-y-3.5 max-900:grid-cols-2 max-700:grid-cols-1">
+      <PanelCard
+        v-for="group in groups"
+        :key="group.title"
+        :title="groupTitle(group.title)"
+        :hint="group.assets ? t('views.singleton.filesHint') : ''"
+      >
+        <div
+          :class="
+            group.assets
+              ? 'grid grid-cols-1 gap-x-4 gap-y-3.5'
+              : 'grid grid-cols-2 gap-x-4 gap-y-3.5 max-700:grid-cols-1'
+          "
+        >
           <FieldRenderer
             v-for="entry in group.entries"
-            :key="`${entry.key}:${entry.field.name}`"
+            :key="`${entry.translated ? editingLang : 'shared'}:${entry.field.name}`"
             :field="entry.field"
-            :model-value="drafts[entry.key]?.[entry.field.name]"
-            :error="errorsFor(entry.key).fields[entry.field.name]"
-            @update:model-value="setField(entry.key, entry.field.name, $event)"
-          />
-        </div>
-      </PanelCard>
-
-      <PanelCard
-        v-if="assetFields.length"
-        title="Files"
-        hint="stored as keys, served from the bucket"
-      >
-        <div class="grid grid-cols-1 gap-x-4 gap-y-3.5">
-          <FieldRenderer
-            v-for="entry in assetFields"
-            :key="`${entry.key}:${entry.field.name}`"
-            :field="entry.field"
-            :model-value="drafts[entry.key]?.[entry.field.name]"
-            :error="errorsFor(entry.key).fields[entry.field.name]"
-            @update:model-value="setField(entry.key, entry.field.name, $event)"
-          />
-        </div>
-      </PanelCard>
-
-      <PanelCard
-        v-if="translatedFields.length"
-        :key="`translations:${editingLang}`"
-        title="Translations"
-        :hint="`${langs.length} locales`"
-      >
-        <div class="space-y-3">
-          <FieldRenderer
-            v-for="entry in translatedFields"
-            :key="`${editingLang}:${entry.key}:${entry.field.name}`"
-            :field="entry.field"
-            :model-value="drafts[entry.key]?.translations?.[editingLang]?.[entry.field.name]"
-            :error="errorsFor(entry.key).translations[editingLang]?.[entry.field.name]"
-            @update:model-value="setTranslation(entry.key, editingLang, entry.field.name, $event)"
+            :full="entry.full"
+            :locale="entry.translated ? editingLang : ''"
+            :translated="entry.translated && hasValue(translationOf(entry.field.name))"
+            :model-value="valueOf(entry)"
+            :error="errorOf(entry)"
+            @update:model-value="write(entry, $event)"
           />
         </div>
       </PanelCard>
     </div>
 
     <div v-if="previewable && tab === 'preview'">
-      <PanelCard title="Live preview" :hint="`as ${editingLang} reads it`">
+      <PanelCard
+        :title="t('views.singleton.tabPreview')"
+        :hint="t('views.singleton.previewHint', { lang: editingLang })"
+      >
         <template #actions>
           <div
             v-if="offeredViewports.length > 1"
             class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-bg p-[3px]"
             role="group"
-            aria-label="Preview viewport"
+            :aria-label="t('views.singleton.previewViewport')"
           >
             <button
               v-for="option in offeredViewports"
@@ -122,12 +106,32 @@
     </div>
   </form>
 
-  <EmptyState
-    v-else
-    icon="User"
-    :title="`The ${heading.toLowerCase()} document has not loaded`"
-    description="It arrives with the rest of the content."
-  />
+  <SkeletonForm v-else-if="!content.loaded && !content.failed" :heading="heading" :blurb="blurb" />
+
+  <div v-else class="mx-auto w-full max-w-[1180px]">
+    <header class="mb-4">
+      <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">{{ heading }}</h2>
+      <p class="mt-0.5 text-[0.78rem] text-muted">{{ blurb }}</p>
+    </header>
+
+    <EmptyState
+      v-if="content.failed"
+      icon="Shield"
+      :title="t('errors.singleton', { heading })"
+      :description="content.error ?? t('common.unreachableDesc')"
+    >
+      <AppButton variant="primary" :busy="content.loading" @click="content.loadAll(true)">{{
+        t('common.retry')
+      }}</AppButton>
+    </EmptyState>
+
+    <EmptyState
+      v-else
+      icon="User"
+      :title="t('views.singleton.notLoadedTitle', { heading: heading.toLowerCase() })"
+      :description="t('views.singleton.notLoadedDesc')"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -135,15 +139,16 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import SkeletonForm from '@/components/ui/SkeletonForm.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
 import FieldRenderer from '@/components/fields/FieldRenderer.vue'
 import PreviewFrame from '@/components/preview/PreviewFrame.vue'
 import { buildPreviewPayload, hasPreview } from '@/utils/preview-payload'
-import { COLLECTIONS, type CollectionDef, type FieldDef } from '@/registry/collections'
+import { COLLECTIONS, type CollectionDef } from '@/registry/collections'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import { ApiError } from '@/services/admin.api'
-import { changedFields, clone, deepEqual } from '@/utils/diff'
+import { changedFields, clone, deepEqual, writableKeys } from '@/utils/diff'
 import {
   blankTranslation,
   mapServerErrors,
@@ -152,9 +157,13 @@ import {
   type ValidationResult,
 } from '@/utils/entity'
 import type { AdminDocument, TranslationEntry } from '@/types/admin'
+import { useI18n } from 'vue-i18n'
+import { fieldGroups, hasValue, type FieldEntry } from '@/utils/field-groups'
+import { collectionBlurb, collectionLabel } from '@/i18n/labels'
 
 const EMPTY: ValidationResult = { fields: {}, translations: {}, ok: true }
 
+const { t, te } = useI18n()
 const route = useRoute()
 const content = useContentStore()
 const ui = useUiStore()
@@ -164,8 +173,10 @@ const collection = computed(
 )
 const collections = computed<CollectionDef[]>(() => [collection.value])
 
-const heading = computed(() => (route.meta.title as string | undefined) ?? collection.value.label)
-const blurb = computed(() => (route.meta.blurb as string | undefined) ?? '')
+const heading = computed(() => collectionLabel(collection.value))
+const blurb = computed(() =>
+  collectionBlurb(collection.value, (route.meta.blurb as string | undefined) ?? ''),
+)
 
 const drafts = ref<Record<string, AdminDocument | null>>({})
 const originals = ref<Record<string, AdminDocument | null>>({})
@@ -183,46 +194,43 @@ const dirty = computed(() =>
   ),
 )
 
-const plainFields = computed(() =>
-  collections.value.flatMap((collection) =>
-    collection.fields
-      .filter((field) => !field.type.startsWith('asset'))
-      .map((field) => ({ key: collection.key, field })),
-  ),
-)
+const groups = computed(() => fieldGroups(collection.value))
 
-const assetFields = computed(() =>
-  collections.value.flatMap((collection) =>
-    collection.fields
-      .filter((field) => field.type.startsWith('asset'))
-      .map((field) => ({ key: collection.key, field })),
-  ),
-)
-
-const GROUP_ORDER = ['Details', 'Hero', 'About']
-const AS_DETAILS = new Set(['Identity', 'Contact', 'Location'])
-const TRANSLATION_ORDER = ['Identity', 'Hero', 'About', 'Location', 'Details', 'Contact']
-
-function grouped(entries: { key: string; field: FieldDef }[], order: string[] = GROUP_ORDER) {
-  const buckets = new Map<string, { key: string; field: FieldDef }[]>()
-
-  for (const entry of entries) {
-    const declared = entry.field.group ?? 'Details'
-    const title = order === GROUP_ORDER && AS_DETAILS.has(declared) ? 'Details' : declared
-    buckets.set(title, [...(buckets.get(title) ?? []), entry])
-  }
-
-  return [...buckets.entries()]
-    .map(([title, list]) => ({ title, entries: list }))
-    .sort((a, b) => order.indexOf(a.title) - order.indexOf(b.title))
+function draftOf(): AdminDocument | null {
+  return drafts.value[collection.value.key] ?? null
 }
 
-const plainGroups = computed(() => grouped(plainFields.value))
+function translationOf(name: string): unknown {
+  return draftOf()?.translations?.[editingLang.value]?.[name]
+}
 
-const TABS = [
-  { key: 'fields' as const, label: 'Fields' },
-  { key: 'preview' as const, label: 'Live preview' },
-]
+function valueOf(entry: FieldEntry): unknown {
+  return entry.translated ? translationOf(entry.field.name) : draftOf()?.[entry.field.name]
+}
+
+function errorOf(entry: FieldEntry): string | undefined {
+  const found = errorsFor(collection.value.key)
+  return entry.translated
+    ? found.translations[editingLang.value]?.[entry.field.name]
+    : found.fields[entry.field.name]
+}
+
+function write(entry: FieldEntry, value: unknown): void {
+  if (entry.translated) {
+    setTranslation(collection.value.key, editingLang.value, entry.field.name, value)
+    return
+  }
+  setField(collection.value.key, entry.field.name, value)
+}
+
+function groupTitle(title: string): string {
+  return te(`groups.${title}`) ? t(`groups.${title}`) : title
+}
+
+const TABS = computed(() => [
+  { key: 'fields' as const, label: t('views.singleton.tabFields') },
+  { key: 'preview' as const, label: t('views.singleton.tabPreview') },
+])
 
 const VIEWPORTS = [
   { key: 'desktop' as const, label: 'Desktop', width: 1512 },
@@ -262,15 +270,6 @@ function measureHost(): void {
   narrowHost.value = window.innerWidth < 900
   if (narrowHost.value) viewport.value = 'mobile'
 }
-
-const translatedFields = computed(() =>
-  grouped(
-    collections.value.flatMap((collection) =>
-      collection.translated.map((field) => ({ key: collection.key, field })),
-    ),
-    TRANSLATION_ORDER,
-  ).flatMap((group) => group.entries),
-)
 
 function errorsFor(key: string): ValidationResult {
   return errors.value[key] ?? EMPTY
@@ -322,7 +321,7 @@ async function save(): Promise<void> {
   errors.value = found
 
   if (Object.values(found).some((result) => !result.ok)) {
-    ui.notify('warn', 'Some fields need attention')
+    ui.notify('warn', t('views.singleton.needsAttention'))
     return
   }
 
@@ -338,7 +337,7 @@ async function save(): Promise<void> {
       const payload = payloadFrom(collection, draft)
       const before = originals.value[collection.key]
       const previous = before ? payloadFrom(collection, before) : null
-      const changes = changedFields(previous, payload, Object.keys(payload))
+      const changes = changedFields(previous, payload, writableKeys(previous, payload))
       if (Object.keys(changes).length === 0) continue
 
       const updated = await content.saveSingleton(collection, changes)
@@ -348,12 +347,12 @@ async function save(): Promise<void> {
     }
 
     if (saved === 0) {
-      ui.notify('info', 'Nothing changed')
+      ui.notify('info', t('views.singleton.nothingChanged'))
       return
     }
 
     ui.dirty = false
-    ui.notify('good', `${heading.value} saved`)
+    ui.notify('good', t('views.singleton.saved', { heading: heading.value }))
   } catch (error) {
     if (error instanceof ApiError) {
       const first = collections.value[0]
@@ -370,7 +369,7 @@ async function save(): Promise<void> {
     } else {
       serverError.value = error instanceof Error ? error.message : 'The save failed'
     }
-    ui.notify('bad', 'Save failed')
+    ui.notify('bad', t('views.singleton.saveFailed'))
   } finally {
     saving.value = false
   }

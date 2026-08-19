@@ -117,8 +117,8 @@ const SUMMARY = {
   ],
   docsOpened: pick(
     [
-      ['resume_en_mkzrelly.pdf', 0.46],
-      ['resume_fr_mkzrelly.pdf', 0.21],
+      ['resume_en_ada-lovelace.pdf', 0.46],
+      ['resume_fr_ada-lovelace.pdf', 0.21],
       ['degree-bachelor-2024.pdf', 0.18],
       ['certificate-azure-ai900.pdf', 0.15],
     ],
@@ -182,10 +182,10 @@ async function stubSummary(page: Page, overrides: Partial<typeof SUMMARY> = {}):
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify([
-        { id: 'p1', order: 0, title: 'Folvyn' },
-        { id: 'p2', order: 1, title: 'Atlas Migrator' },
-        { id: 'p3', order: 2, title: 'Shellbird' },
-        { id: 'p4', order: 3, title: 'Tideline' },
+        { id: 'p1', order: 0, translations: { en: { title: 'Folvyn' } } },
+        { id: 'p2', order: 1, translations: { en: { title: 'Atlas Migrator' } } },
+        { id: 'p3', order: 2, translations: { en: { title: 'Shellbird' } } },
+        { id: 'p4', order: 3, translations: { en: { title: 'Tideline' } } },
       ]),
     }),
   )

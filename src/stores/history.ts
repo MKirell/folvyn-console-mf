@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 import {
+  clearSnapshots as wipeSnapshots,
   listSnapshots,
   purgeExpiredSnapshots,
   putSnapshot,
@@ -73,6 +74,11 @@ export const useHistoryStore = defineStore('history', () => {
     snapshots.value = await listSnapshots()
   }
 
+  async function clearSnapshots(): Promise<void> {
+    await wipeSnapshots()
+    snapshots.value = []
+  }
+
   return {
     entries,
     snapshots,
@@ -84,5 +90,6 @@ export const useHistoryStore = defineStore('history', () => {
     clear,
     snapshot,
     loadSnapshots,
+    clearSnapshots,
   }
 })

@@ -12,8 +12,8 @@
         :id="id"
         :value="modelValue"
         type="text"
-        class="min-w-0 flex-1 rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50"
-        placeholder="Trophy"
+        class="min-w-0 flex-1 h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50"
+        :placeholder="t('fieldLabels.icon')"
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
       <AppButton size="sm" @click="expanded = !expanded">
@@ -52,7 +52,9 @@
 import { computed, ref } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import { ICONS, PORTFOLIO_ICONS, iconComponent, rendersInPortfolio } from '@/registry/icons'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = withDefaults(defineProps<{ modelValue: string; id?: string }>(), { id: undefined })
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 

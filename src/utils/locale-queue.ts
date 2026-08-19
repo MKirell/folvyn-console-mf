@@ -1,13 +1,9 @@
-import { TRANSLATED_COLLECTIONS } from '@/registry/collections'
+import { SINGLETON_COLLECTIONS, TRANSLATED_COLLECTIONS, fieldLabel } from '@/registry/collections'
+import { collectionLabel, collectionSingular } from '@/i18n/labels'
 import type { useContentStore } from '@/stores/content'
 import { isTranslationComplete, titleOf } from '@/utils/entity'
 
 type ContentStore = ReturnType<typeof useContentStore>
-
-function hasProfileTranslation(content: ContentStore, code: string): boolean {
-  const entry = content.profile?.translations?.[code]
-  return Boolean(entry && entry.tagline)
-}
 
 export interface QueueTask {
   key: string
@@ -32,44 +28,41 @@ export interface LocaleProgress {
 
 export function localeProgress(content: ContentStore, code: string): LocaleProgress {
   const groups: QueueGroup[] = []
-
-  const locale = content.locales.find((entry) => entry.code === code)
-  groups.push({
-    key: 'foundation',
-    label: 'Foundation',
-    tasks: [
-      {
-        key: 'locale-row',
-        label: 'Locale row',
-        detail: locale ? `${locale.label} · flag ${locale.flagCode}` : 'Not created yet',
-        done: Boolean(locale),
-        to: locale ? `/c/locale/${locale.id}` : '/c/locale/new',
-      },
-      {
-        key: 'profile',
-        label: 'Hero',
-        detail: hasProfileTranslation(content, code)
-          ? 'Written — subtitles, tagline, about and contact blurb'
-          : 'Missing — the hero and about section fall back to nothing',
-        done: hasProfileTranslation(content, code),
-        to: `/profile?lang=${code}`,
-      },
-    ],
-  })
-
   const reference = content.referenceLang
+
+  const singletons = SINGLETON_COLLECTIONS.filter(
+    (collection) => collection.i18n && collection.translated.length > 0,
+  )
+
+  const foundation = singletons
+    .map((collection) => ({ collection, doc: content.singleton(collection.key) }))
+    .filter((entry) => entry.doc !== null)
+
+  if (foundation.length > 0) {
+    groups.push({
+      key: 'foundation',
+      label: 'Foundation',
+      tasks: foundation.map(({ collection, doc }) => ({
+        key: collection.key,
+        label: collectionSingular(collection),
+        detail: collection.translated.map((field) => fieldLabel(field)).join(' · '),
+        done: isTranslationComplete(collection, doc!, code),
+        to: `/${collection.key}?lang=${code}`,
+      })),
+    })
+  }
 
   for (const collection of TRANSLATED_COLLECTIONS) {
     const docs = content.list(collection.key)
-    if (docs.length === 0) continue
+    if (docs.length === 0 || collection.translated.length === 0) continue
 
     groups.push({
       key: collection.key,
-      label: collection.label,
+      label: collectionLabel(collection),
       tasks: docs.map((doc) => ({
         key: doc.id,
         label: titleOf(collection, doc, reference),
-        detail: collection.translated.map((field) => field.name).join(' · '),
+        detail: collection.translated.map((field) => fieldLabel(field)).join(' · '),
         done: isTranslationComplete(collection, doc, code),
         to: `/c/${collection.key}/${doc.id}?lang=${code}`,
       })),

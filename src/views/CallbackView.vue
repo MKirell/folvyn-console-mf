@@ -1,10 +1,12 @@
 <template>
   <div class="grid min-h-screen place-items-center px-5 text-center">
     <div v-if="error" class="max-w-[400px]">
-      <h1 class="font-disp text-[1.1rem] font-semibold tracking-tight">Sign-in did not complete</h1>
+      <h1 class="font-disp text-[1.1rem] font-semibold tracking-tight">
+        {{ t('views.callback.failed') }}
+      </h1>
       <p class="mt-2 text-[0.84rem] text-muted">{{ error }}</p>
       <AppButton class="mt-5" variant="primary" @click="router.replace('/login')">
-        Back to sign in
+        {{ t('ui.backToSignIn') }}
       </AppButton>
     </div>
 
@@ -12,7 +14,7 @@
       <span
         class="mx-auto block h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
       ></span>
-      <p class="mt-4 text-[0.82rem] text-muted">Completing sign-in…</p>
+      <p class="mt-4 text-[0.82rem] text-muted">{{ t('views.callback.working') }}</p>
     </div>
   </div>
 </template>
@@ -22,7 +24,9 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppButton from '@/components/ui/AppButton.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()

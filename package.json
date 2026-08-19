@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode local",
+    "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --mode prod",
     "preview": "vite preview --mode prod",
     "typecheck": "vue-tsc --noEmit",
@@ -25,6 +25,7 @@
     "country-flag-icons": "^1.6.20",
     "pinia": "^4.0.2",
     "vue": "^3.5.13",
+    "vue-i18n": "^11.4.8",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

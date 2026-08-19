@@ -2,7 +2,9 @@
   <div class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Portfolios</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+          {{ t('platform.portfolios.title') }}
+        </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
           Every account, and the ones worth a second look. Draft content stays private — suspension
           takes a portfolio offline, it never opens it.
@@ -12,8 +14,8 @@
       <input
         v-model="query"
         type="search"
-        placeholder="Address or email…"
-        aria-label="Search accounts"
+        :placeholder="t('platform.portfolios.searchPlaceholder')"
+        aria-:label="t('platform.portfolios.search')"
         class="rounded-[9px] border border-line/8 bg-surface px-3 py-[7px] text-[0.8rem] outline-none focus:border-accent/50"
         @input="reload"
       />
@@ -22,7 +24,7 @@
     <div
       class="mb-3 flex flex-wrap items-center gap-1.5"
       role="group"
-      aria-label="Account segments"
+      aria-:label="t('platform.portfolios.segments')"
     >
       <button
         v-for="entry in segments"
@@ -44,17 +46,22 @@
 
     <p v-if="active.hint" class="mb-3 text-[0.78rem] text-muted">{{ active.hint }}</p>
 
-    <div v-if="loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonList v-if="loading" :rows="8" :label="t('platform.portfolios.title')" />
+
+    <EmptyState
+      v-else-if="error"
+      icon="Shield"
+      :title="t('errors.portfolios')"
+      :description="error"
+    >
+      <AppButton variant="primary" @click="reload">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="visible.length === 0"
       icon="Users"
       :title="active.emptyTitle"
-      :description="error ?? active.emptyBody"
+      :description="active.emptyBody"
     />
 
     <ul v-else class="space-y-1.5" role="list">
@@ -90,15 +97,17 @@
             size="sm"
             variant="secondary"
             @click="ask(entry.row, 'suspend')"
-            >Suspend</AppButton
+            >{{ t('platform.portfolios.suspend') }}</AppButton
           >
-          <AppButton v-else size="sm" variant="secondary" @click="restoreOne(entry.row)"
-            >Restore</AppButton
-          >
-          <AppButton size="sm" variant="secondary" @click="exportOne(entry.row)">Export</AppButton>
-          <AppButton size="sm" variant="danger" @click="ask(entry.row, 'erase')"
-            >Queue erasure</AppButton
-          >
+          <AppButton v-else size="sm" variant="secondary" @click="restoreOne(entry.row)">{{
+            t('platform.portfolios.restore')
+          }}</AppButton>
+          <AppButton size="sm" variant="secondary" @click="exportOne(entry.row)">{{
+            t('platform.portfolios.export')
+          }}</AppButton>
+          <AppButton size="sm" variant="danger" @click="ask(entry.row, 'erase')">{{
+            t('platform.portfolios.queueErasure')
+          }}</AppButton>
         </span>
       </li>
     </ul>
@@ -119,9 +128,9 @@
       <input
         v-model="reason"
         type="text"
-        placeholder="Reason, recorded in the audit log"
-        aria-label="Reason"
-        class="w-full rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.82rem] outline-none focus:border-accent/50"
+        :placeholder="t('platform.portfolios.reasonPlaceholder')"
+        aria-:label="t('platform.portfolios.reason')"
+        class="w-full h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.82rem] outline-none focus:border-accent/50"
       />
     </ConfirmDialog>
   </div>
@@ -133,6 +142,7 @@ import { RouterLink } from 'vue-router'
 import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import SkeletonList from '@/components/ui/SkeletonList.vue'
 import {
   exportPortfolio,
   fetchModeration,
@@ -142,6 +152,7 @@ import {
   suspendPortfolio,
 } from '@/services/admin.api'
 import { useUiStore } from '@/stores/ui'
+import { useI18n } from 'vue-i18n'
 import type { ModerationBoard, PortfolioRow } from '@/types/analytics'
 
 type Segment = 'all' | 'published' | 'draft' | 'suspended' | 'recent' | 'thin' | 'silent' | 'risky'
@@ -151,6 +162,7 @@ interface Entry {
   note?: string
 }
 
+const { t } = useI18n()
 const DEADLINE_DAYS = 30
 
 const STATE_CLASS: Record<string, string> = {
@@ -312,7 +324,7 @@ async function commit(): Promise<void> {
   if (!request) return
 
   if (!reason.value.trim()) {
-    ui.notify('bad', 'A reason is required', 'It is written to the audit log.')
+    ui.notify('bad', t('platform.reasonRequired'), t('platform.reasonRequiredDetail'))
     return
   }
 
@@ -331,7 +343,11 @@ async function commit(): Promise<void> {
 
     await reload()
   } catch (cause) {
-    ui.notify('bad', 'That did not work', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.failed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   } finally {
     pending.value = null
   }
@@ -343,7 +359,11 @@ async function restoreOne(row: PortfolioRow): Promise<void> {
     ui.notify('good', `/${row.slug} restored`)
     await reload()
   } catch (cause) {
-    ui.notify('bad', 'That did not work', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.failed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
@@ -359,7 +379,11 @@ async function exportOne(row: PortfolioRow): Promise<void> {
     link.click()
     URL.revokeObjectURL(url)
   } catch (cause) {
-    ui.notify('bad', 'Export failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.exportFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 

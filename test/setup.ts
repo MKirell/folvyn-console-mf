@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { config } from '@vue/test-utils'
 import { RouterLinkStub } from '@vue/test-utils'
 import { autosize } from '@/directives/autosize'
+import { i18n } from '@/i18n'
 import type {
   AdminDocument,
   AdminLocale,
@@ -12,9 +13,9 @@ import type {
 } from '@/types/admin'
 
 export const locales: AdminLocale[] = [
-  { id: 'l1', order: 0, code: 'en', label: 'English', flagCode: 'gb', enabled: true },
-  { id: 'l2', order: 1, code: 'fr', label: 'Français', flagCode: 'fr', enabled: true },
-  { id: 'l3', order: 2, code: 'nl', label: 'Nederlands', flagCode: 'nl', enabled: true },
+  { id: 'l1', order: 0, code: 'en', flagCode: 'gb', enabled: true },
+  { id: 'l2', order: 1, code: 'fr', flagCode: 'fr', enabled: true },
+  { id: 'l3', order: 2, code: 'nl', flagCode: 'nl', enabled: true },
 ]
 
 export const certifications: AdminDocument[] = [
@@ -25,7 +26,8 @@ export const certifications: AdminDocument[] = [
     title: 'AI-900',
     issuer: 'Microsoft',
     doc: 'certificate-azure-ai900.pdf',
-    translations: { en: { date: 'June 2024' }, fr: { date: 'Juin 2024' } },
+    date: '2024-06',
+    translations: { en: {}, fr: {} },
   },
   {
     id: 'c2',
@@ -34,36 +36,34 @@ export const certifications: AdminDocument[] = [
     title: 'DP-900',
     issuer: 'Microsoft',
     doc: null,
-    translations: { en: { date: 'May 2024' } },
+    date: '2024-05',
+    translations: { en: {} },
   },
 ]
 
 export const person: AdminPerson = {
   id: 'p1',
-  givenName: 'Mohamed Khalil',
-  familyName: 'ZRELLY',
-  email: 'hello@mkirell.com',
-  phone: '+21612345678',
-  linkedin: 'https://www.linkedin.com/in/mkirell',
-  github: 'https://github.com/MKirell',
+  givenName: 'Ada',
+  familyName: 'Lovelace',
+  email: 'ada.lovelace@example.com',
+  phone: '+33612345678',
+  linkedin: 'https://www.linkedin.com/in/ada-lovelace',
+  github: 'https://github.com/adalovelace',
   affiliation: 'Freelance',
-  city: 'Tunis',
-  country: 'TN',
+  country: 'GB',
+  city: 'London',
   photo: 'off-image.jpeg',
-  resumes: { en: 'resume_en_mkzrelly.pdf' },
+  resumes: { en: 'resume_en_ada-lovelace.pdf' },
   translations: {
     en: {
       headline: 'Data engineer',
       aboutParagraphs: ['A paragraph about the work.'],
-      contactDesc: 'Say hello.',
     },
   },
 }
 
 export const profile: AdminProfile = {
   id: 'pr1',
-  highlights: ['Python', 'Airflow'],
-  highlightFocus: ['Python'],
   translations: {
     en: {
       subtitles: ['Data engineer'],
@@ -77,7 +77,7 @@ export const experiences: AdminDocument[] = [
     id: 'e1',
     order: 0,
     current: true,
-    company: 'Crédit Agricole',
+    company: 'Acme Corp',
     startDate: '2025-09',
     endDate: null,
     country: 'FR',
@@ -85,21 +85,22 @@ export const experiences: AdminDocument[] = [
     doc: null,
     link: null,
     translations: {
-      en: { role: 'GenAI Engineer', bullets: ['Built agents'] },
-      fr: { role: 'Ingénieur IA', bullets: ['Développé des agents'] },
+      en: { role: 'Backend Engineer', bullets: ['Built agents'] },
+      fr: { role: 'Ingénieur backend', bullets: ['Développé des agents'] },
     },
   },
 ]
 
 export const owner: OwnerRecord = {
   id: 'o1',
-  slug: 'mohamed-khalil-zrelly',
+  slug: 'ada-lovelace',
   email: 'someone@example.com',
-  displayName: 'Mohamed Khalil ZRELLY',
+  displayName: 'Ada Lovelace',
   status: 'draft',
   consentMode: 'measurement',
   plan: 'free',
   publishedAt: null,
+  assetPrefix: 'o1',
 }
 
 vi.mock('@/services/admin.api', () => ({
@@ -163,8 +164,23 @@ beforeEach(() => {
   setActivePinia(createPinia())
 })
 
+config.global.plugins = [i18n]
 config.global.stubs = { RouterLink: RouterLinkStub, teleport: true }
 config.global.directives = { autosize }
+
+Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+  writable: true,
+  configurable: true,
+  value: () => null,
+})
+
+const { origin, href, pathname, search, hash } = window.location
+
+Object.defineProperty(window, 'location', {
+  writable: true,
+  configurable: true,
+  value: { origin, href, pathname, search, hash, assign: vi.fn(), replace: vi.fn() },
+})
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

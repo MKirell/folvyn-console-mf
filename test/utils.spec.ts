@@ -11,7 +11,7 @@ import {
   isImageKey,
   sanitizeFilename,
 } from '@/utils/assets'
-import { changedFields, deepEqual } from '@/utils/diff'
+import { changedFields, clone, deepEqual, writableKeys } from '@/utils/diff'
 import { flatten, getPath, setPath } from '@/utils/path'
 import { assetKeysOf, copyOf, mapServerErrors } from '@/utils/entity'
 import { COLLECTIONS } from '@/registry/collections'
@@ -20,10 +20,10 @@ describe('asset keys', () => {
   it('accepts every filename the database already stores', () => {
     for (const key of [
       'degree-bachelor-2024.pdf',
-      'resume_en_mkzrelly.pdf',
+      'resume_en_ada-lovelace.pdf',
       'off-image.jpeg',
       'folvyn-logo-dark.png',
-      'awards/award-awa-2023-1.jpg',
+      'award-awa-2023-1.jpg',
       'flags/tn.svg',
     ]) {
       expect(KEY_PATTERN.test(key), key).toBe(true)
@@ -49,7 +49,7 @@ describe('asset keys', () => {
   })
 
   it('classifies images by extension', () => {
-    expect(isImageKey('awards/x.jpg')).toBe(true)
+    expect(isImageKey('x.jpg')).toBe(true)
     expect(isImageKey('x.pdf')).toBe(false)
   })
 
@@ -59,45 +59,79 @@ describe('asset keys', () => {
     expect(formatBytes(3 * 1024 * 1024)).toBe('3.0 MB')
   })
 
-  it('collects every asset a document points at', () => {
+  it('collects every image an award points at', () => {
     const keys = assetKeysOf(COLLECTIONS.award, {
       id: 'a1',
       icon: 'Trophy',
       flagCode: 'tn',
-      images: ['awards/one.jpg', 'awards/two.jpg'],
+      images: ['one.jpg', 'two.jpg'],
+    })
+
+    expect(keys).toEqual(['one.jpg', 'two.jpg'])
+  })
+
+  it('ignores a document on an award, which carries none', () => {
+    const keys = assetKeysOf(COLLECTIONS.award, {
+      id: 'a1',
+      icon: 'Trophy',
+      images: ['one.jpg'],
       doc: 'attestation.pdf',
     })
 
-    expect(keys).toEqual(['awards/one.jpg', 'awards/two.jpg', 'attestation.pdf'])
+    expect(keys).toEqual(['one.jpg'])
+  })
+
+  it('collects the document a certification points at', () => {
+    const keys = assetKeysOf(COLLECTIONS.certification, {
+      id: 'c1',
+      icon: 'Award',
+      doc: 'certificate-azure-ai900.pdf',
+    })
+
+    expect(keys).toEqual(['certificate-azure-ai900.pdf'])
   })
 })
 
 describe('duplicating', () => {
   it('marks a shared title field as a copy', () => {
-    const copy = copyOf(COLLECTIONS.project, { id: 'p1', order: 0, title: 'CVision' })
+    const copy = copyOf(COLLECTIONS.certification, { id: 'c1', order: 0, title: 'AI-900' })
 
-    expect(copy.title).toBe('CVision (copy)')
+    expect(copy.title).toBe('AI-900 (copy)')
+  })
+
+  it('marks a project title in every locale, now that a project name is translated', () => {
+    const copy = copyOf(COLLECTIONS.project, {
+      id: 'p1',
+      order: 0,
+      translations: {
+        en: { title: 'Retail recommender', desc: 'A thing' },
+        fr: { title: 'Moteur de recommandation', desc: 'Un truc' },
+      },
+    })
+
+    expect(copy.translations?.en.title).toBe('Retail recommender (copy)')
+    expect(copy.translations?.fr.title).toBe('Moteur de recommandation (copy)')
   })
 
   it('marks a translated title in every locale, which a shared-field-only rule missed', () => {
     const copy = copyOf(COLLECTIONS.experience, {
       id: 'e1',
       order: 0,
-      company: 'Crédit Agricole',
+      company: 'Acme Corp',
       translations: {
-        en: { role: 'GenAI Engineer', bullets: ['Built agents'] },
-        fr: { role: 'Ingénieur IA', bullets: ['Développé des agents'] },
+        en: { role: 'Backend Engineer', bullets: ['Built agents'] },
+        fr: { role: 'Ingénieur backend', bullets: ['Développé des agents'] },
       },
     })
 
-    expect(copy.translations?.en.role).toBe('GenAI Engineer (copy)')
-    expect(copy.translations?.fr.role).toBe('Ingénieur IA (copy)')
+    expect(copy.translations?.en.role).toBe('Backend Engineer (copy)')
+    expect(copy.translations?.fr.role).toBe('Ingénieur backend (copy)')
     expect(copy.translations?.en.bullets).toEqual(['Built agents'])
-    expect(copy.company).toBe('Crédit Agricole')
+    expect(copy.company).toBe('Acme Corp')
   })
 
   it('leaves an empty title alone rather than producing " (copy)"', () => {
-    const copy = copyOf(COLLECTIONS.project, { id: 'p1', order: 0, title: '' })
+    const copy = copyOf(COLLECTIONS.certification, { id: 'c1', order: 0, title: '' })
 
     expect(copy.title).toBe('')
   })
@@ -123,6 +157,29 @@ describe('diffing', () => {
 
   it('treats a null original as a full create payload', () => {
     expect(changedFields(null, { a: 1, b: 2 }, ['a', 'b'])).toEqual({ a: 1, b: 2 })
+  })
+
+  it('sends null for an optional field the payload builder dropped once cleared', () => {
+    const before = { title: 'AI-900', doc: 'certificate.pdf' }
+    const after = { title: 'AI-900' }
+
+    expect(changedFields(before, after, writableKeys(before, after))).toEqual({ doc: null })
+  })
+
+  it('leaves a field alone when it was blank before and after', () => {
+    const before = { title: 'AI-900' }
+    const after = { title: 'AI-900' }
+
+    expect(changedFields(before, after, writableKeys(before, after))).toEqual({})
+  })
+
+  it('never invents a null on a create', () => {
+    expect(changedFields(null, { a: 1 }, writableKeys(null, { a: 1 }))).toEqual({ a: 1 })
+  })
+
+  it('clones an absent key without throwing, so building an undo cannot crash', () => {
+    expect(() => clone(undefined)).not.toThrow()
+    expect(clone(undefined)).toBeUndefined()
   })
 })
 

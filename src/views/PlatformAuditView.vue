@@ -1,23 +1,25 @@
 <template>
   <div class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4">
-      <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Audit</h2>
+      <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+        {{ t('platform.audit.title') }}
+      </h2>
       <p class="mt-0.5 text-[0.78rem] text-muted">
-        Every platform action, append-only. Nothing here can be edited or removed.
+        {{ t('platform.auditBlurb') }}
       </p>
     </header>
 
-    <div v-if="loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonList v-if="loading" :rows="8" :label="t('platform.audit.title')" />
+
+    <EmptyState v-else-if="error" icon="Shield" :title="t('errors.audit')" :description="error">
+      <AppButton variant="primary" @click="load">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="entries.length === 0"
       icon="History"
-      title="Nothing has happened yet"
-      :description="error ?? 'Suspensions, erasures and exports are recorded here.'"
+      :title="t('platform.audit.none')"
+      description="Suspensions, erasures and exports are recorded here."
     />
 
     <ul v-else class="space-y-1.5" role="list">
@@ -54,9 +56,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import SkeletonList from '@/components/ui/SkeletonList.vue'
 import { fetchAuditLog } from '@/services/admin.api'
 import type { AuditEntry } from '@/types/analytics'
+import { useI18n } from 'vue-i18n'
 
 const ACTION_CLASS: Record<string, string> = {
   erase: 'bg-rust/15 text-rust',
@@ -64,6 +69,7 @@ const ACTION_CLASS: Record<string, string> = {
   restore: 'bg-sage/15 text-sage',
 }
 
+const { t } = useI18n()
 const entries = ref<AuditEntry[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -72,13 +78,19 @@ function when(value: string): string {
   return new Date(value).toISOString().slice(0, 16).replace('T', ' ')
 }
 
-onMounted(async () => {
+async function load(): Promise<void> {
+  loading.value = true
+  error.value = null
+
   try {
     entries.value = await fetchAuditLog()
   } catch (cause) {
+    entries.value = []
     error.value = cause instanceof Error ? cause.message : 'The audit log is unavailable'
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(() => void load())
 </script>

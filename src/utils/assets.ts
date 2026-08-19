@@ -32,16 +32,40 @@ export function matchesKind(key: string, kind: AssetKind | undefined): boolean {
   return kind === 'pdf' ? extensionOf(key) === 'pdf' : isImageKey(key)
 }
 
+let ownerPrefix = ''
+
+export function setAssetPrefix(prefix: string): void {
+  ownerPrefix = prefix.replace(/^\/+|\/+$/g, '')
+}
+
+export function assetPrefix(): string {
+  return ownerPrefix
+}
+
+function assetPath(folder: string, key: string): string {
+  const owner = ownerPrefix ? `${ownerPrefix}/` : ''
+  return `${ASSETS_BASE_URL}/${folder}/${owner}${key}`
+}
+
 export function docUrl(key: string | null | undefined): string | undefined {
-  return key ? `${ASSETS_BASE_URL}/files/${key}` : undefined
+  return key ? assetPath('files', key) : undefined
 }
 
 export function imgUrl(key: string | null | undefined): string | undefined {
-  return key ? `${ASSETS_BASE_URL}/imgs/${key}` : undefined
+  return key ? assetPath('imgs', key) : undefined
+}
+
+export function isPdfKey(key: string): boolean {
+  return extensionOf(key) === 'pdf'
 }
 
 export function assetUrl(key: string): string | undefined {
-  return extensionOf(key) === 'pdf' ? docUrl(key) : imgUrl(key)
+  return isPdfKey(key) ? docUrl(key) : imgUrl(key)
+}
+
+export function pdfPreviewUrl(key: string): string | undefined {
+  const url = docUrl(key)
+  return url ? `${url}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0` : undefined
 }
 
 export function sanitizeFilename(filename: string): string {

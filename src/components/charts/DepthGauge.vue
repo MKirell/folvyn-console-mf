@@ -21,7 +21,9 @@
     </div>
 
     <div class="flex w-[92px] shrink-0 flex-col justify-center border-s border-line/8 ps-4">
-      <p class="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-muted">Typical read</p>
+      <p class="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-muted">
+        {{ t('ui.typicalRead') }}
+      </p>
       <p class="font-disp text-[1.6rem] font-semibold leading-none tracking-tight">
         {{ median }}<span class="text-[1rem]">%</span>
       </p>
@@ -36,7 +38,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const DEPTHS = [25, 50, 75, 100]
 const LABELS = ['Past the hero', 'Halfway down', 'Most of the way', 'To the very end']
 const WEIGHTS = [0.34, 0.55, 0.78, 1]

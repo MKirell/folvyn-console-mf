@@ -1,0 +1,854 @@
+{
+  "app": {
+    "name": "Console",
+    "brand": "Folvyn"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "create": "Create",
+    "close": "Close",
+    "back": "Back",
+    "retry": "Try again",
+    "unreachable": "The API did not answer",
+    "unreachableDesc": "Nothing could be loaded. Check your connection, then try again.",
+    "search": "Search",
+    "filter": "Filter…",
+    "new": "New",
+    "loading": "Loading",
+    "unsaved": "unsaved",
+    "yes": "Yes",
+    "no": "No",
+    "leaveConfirm": "Your unsaved changes on this screen will be lost.",
+    "leaveTitle": "Leave without saving?",
+    "leaveAnyway": "Leave without saving",
+    "on": "On",
+    "off": "Off"
+  },
+  "nav": {
+    "aria": "Console navigation",
+    "open": "Open navigation",
+    "close": "Close navigation",
+    "expand": "Expand navigation",
+    "collapse": "Collapse navigation",
+    "legal": "Legal",
+    "signOut": "Sign out",
+    "signedIn": "Signed in",
+    "themeDark": "Dark theme",
+    "themeLight": "Light theme",
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme",
+    "editAccount": "Edit {name}",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "topbar": {
+    "editingLocale": "Editing locale",
+    "editLocale": "Edit {code}",
+    "commandPalette": "Open command palette",
+    "undo": "Undo last change",
+    "undoLabel": "Undo: {label}",
+    "nothingToUndo": "Nothing to undo",
+    "undone": "Change undone",
+    "undoFailed": "Undo failed",
+    "live": "Your portfolio is live",
+    "draft": "Your portfolio is a draft — publish it",
+    "openPortfolio": "Open your portfolio",
+    "openUrl": "Open {url}",
+    "apiUp": "The portfolio API is responding",
+    "apiDown": "The portfolio API is not responding",
+    "apiChecking": "Checking the portfolio API"
+  },
+  "palette": {
+    "aria": "Command palette",
+    "placeholder": "Search…",
+    "search": "Search",
+    "screens": "Screens",
+    "entries": "Entries",
+    "empty": "Nothing matches that",
+    "scopeScreen": "screen",
+    "scopeEntry": "entry"
+  },
+  "loading": {
+    "screen": "Loading screen",
+    "collection": "Loading {label}",
+    "locales": "Loading site locales"
+  },
+  "errors": {
+    "insights": "Your insights could not be read",
+    "singleton": "{heading} could not be read",
+    "collection": "{label} could not be read",
+    "locales": "Your site locales could not be read",
+    "overview": "The platform overview could not be read",
+    "traffic": "Platform traffic could not be read",
+    "account": "This account could not be read",
+    "audit": "The audit log could not be read",
+    "portfolios": "The account list could not be read",
+    "health": "Platform health could not be read",
+    "config": "The platform config could not be read",
+    "erasure": "The erasure queue could not be read"
+  },
+  "views": {
+    "collection": {
+      "unknownTitle": "Unknown collection",
+      "unknownDesc": "The sidebar lists every editable screen.",
+      "filterAria": "Filter {label}",
+      "missingAria": "Filter by missing translation",
+      "allTranslations": "All translations",
+      "missing": "Missing {code}",
+      "emptyTitle": "No {label} yet",
+      "emptyDesc": "Everything the portfolio renders in this section comes from here.",
+      "createFirst": "Create the first one",
+      "noMatchTitle": "Nothing matches this filter",
+      "noMatchDesc": "Clear the search box or the translation filter.",
+      "hasAttachments": "Has attachments",
+      "shown": "{shown} of {total} shown · drag a row to reorder",
+      "deleteTitle": "Delete this {singular}?",
+      "reorderFailed": "Reorder failed",
+      "duplicated": "Duplicated",
+      "duplicateFailed": "Duplicate failed",
+      "deleted": "Deleted",
+      "deleteFailed": "Delete failed"
+    },
+    "locales": {
+      "title": "Site locales",
+      "blurb": "Every locale here costs one translation per entry — drag a row to reorder.",
+      "add": "Add locale",
+      "emptyTitle": "No locales yet",
+      "emptyDesc": "The portfolio needs at least one to render.",
+      "addFirst": "Add the first",
+      "shareTitle": "Share of sessions in the selected analytics period",
+      "deleteAria": "Delete {code}",
+      "deleteTitle": "Delete this locale?",
+      "deleted": "{label} deleted",
+      "deleteFailed": "Delete failed",
+      "reorderFailed": "Reorder failed",
+      "workQueue": "Work queue",
+      "deleteMessage": "and every translation written in it disappear from your portfolio.",
+      "translated": "translated",
+      "traffic": "{pct}% traffic",
+      "toggleFailed": "Could not change that locale",
+      "toggleAria": "Enable or disable {code}"
+    },
+    "singleton": {
+      "editorView": "Editor view",
+      "tabFields": "Fields",
+      "tabPreview": "Live preview",
+      "files": "Files",
+      "filesHint": "stored as keys, served from the bucket",
+      "translations": "Translations",
+      "translationsHint": "{count} locales",
+      "previewHint": "as {lang} reads it",
+      "previewViewport": "Preview viewport",
+      "notLoadedTitle": "The {heading} document has not loaded",
+      "notLoadedDesc": "It arrives with the rest of the content.",
+      "needsAttention": "Some fields need attention",
+      "nothingChanged": "Nothing changed",
+      "saved": "{heading} saved",
+      "saveFailed": "Save failed"
+    },
+    "entity": {
+      "filesHint": "stored as keys, served from the bucket",
+      "complete": "{done}/{total} languages complete",
+      "gone": "This {singular} no longer exists",
+      "goneDesc": "It may have been deleted in another tab.",
+      "newEntry": "New {singular}",
+      "created": "{singular} created",
+      "saved": "{singular} saved",
+      "deleteTitle": "Delete this {singular}?",
+      "unknownTitle": "Unknown collection",
+      "unknownDesc": "The sidebar lists every editable screen.",
+      "goneDesc2": "It may have been deleted in another tab.",
+      "backToList": "Back to the list"
+    },
+    "login": {
+      "title": "Folvyn Console",
+      "missingConfig": "Sign-in is not configured"
+    },
+    "callback": {
+      "failed": "Sign-in did not complete",
+      "working": "Completing sign-in…"
+    },
+    "notFound": {
+      "title": "There is nothing at this address",
+      "cta": "Go to insights",
+      "desc": "The console has a small, fixed set of screens — the sidebar lists all of them."
+    },
+    "onboarding": {
+      "welcome": "Welcome",
+      "welcomeNamed": "Welcome, {name}",
+      "blurb": "Your portfolio already has an address. Pick the language you want to write in first and it is yours to fill in.",
+      "addressLabel": "your address",
+      "addressNote": "Taken from your name. You can change it later on the Portfolio screen, and any link you have already shared will stop working when you do.",
+      "labelHint": "Shown on the language switcher",
+      "create": "Create my portfolio",
+      "ready": "Your portfolio is ready",
+      "readyDetail": "Start with who you are.",
+      "failed": "That language could not be saved"
+    },
+    "media": {
+      "title": "Media",
+      "summary": "{files} files · {orphans} unreferenced · {missing} referenced but absent",
+      "filterAria": "Filter files",
+      "kindAria": "Filter by kind",
+      "all": "All files",
+      "images": "Images",
+      "documents": "Documents",
+      "unreferenced": "Unreferenced",
+      "unreferencedTag": "unreferenced",
+      "notLive": "Your files could not be listed",
+      "missingBucket": "missing from the bucket",
+      "missingRepo": "your portfolio does not serve",
+      "repoTitle": "Served from your portfolio's repo",
+      "repoDesc": "No asset bucket is configured, so these are the files your portfolio serves from its own public folder — they are read-only from here.",
+      "repoWritableDesc": "No asset bucket is configured, so uploads and deletes write straight into your portfolio's local public folder.",
+      "repoReadOnly": "Read-only — this file lives in the repo",
+      "emptyRepoTitle": "No files referenced yet",
+      "emptyRepoDesc": "Point an asset field at a filename and it will show up here.",
+      "upload": "Upload",
+      "open": "Open",
+      "copyKey": "Copy key",
+      "stillReferenced": "Still referenced",
+      "emptyTitle": "No files here",
+      "emptyDesc": "Drop files anywhere in this panel, or use the upload button.",
+      "deleteTitle": "Delete this file?",
+      "uploaded": "Uploaded {name}",
+      "uploadFailed": "Upload failed for {name}",
+      "keyCopied": "Key copied",
+      "noClipboard": "The clipboard is not available",
+      "deleted": "File deleted",
+      "deleteFailed": "Delete failed"
+    },
+    "history": {
+      "title": "History",
+      "blurb": "Atlas M0 has no backups, so the export below is the backup.",
+      "export": "Export",
+      "undoStack": "Undo stack",
+      "snapshots": "Local snapshots",
+      "snapshotsHint": "kept 7 days",
+      "exported": "Export downloaded",
+      "exportJson": "Export JSON",
+      "undo": "Undo",
+      "emptyUndo": "Nothing to undo yet. The stack lives in this tab only.",
+      "download": "Download",
+      "clearSnapshots": "Clear all",
+      "clearTitle": "Clear every local snapshot?",
+      "clearMessage": "Snapshots live in this browser only, and a new one is written on your next save.",
+      "snapshotsCleared": "Local snapshots cleared"
+    },
+    "queue": {
+      "back": "Site locales",
+      "blurb": "Work top to bottom — nothing below the foundation renders until those two exist."
+    },
+    "portfolio": {
+      "title": "Portfolio",
+      "errorTitle": "Your account could not be read",
+      "errorDesc": "The API did not return an owner record.",
+      "address": "Address",
+      "change": "Change",
+      "viewLive": "View live",
+      "newAddress": "New address",
+      "checking": "checking…",
+      "renameWarning": "Every link to the old address stops working the moment this changes, including anything already on a CV. Nobody else can take the address you leave behind while your account exists, but nothing forwards either.",
+      "commitRename": "Change the address",
+      "publishing": "Publishing",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "notReady": "Not ready to publish yet",
+      "firstPublished": "first published {date}",
+      "suspended": "The platform took this offline. Get in touch to have it reviewed.",
+      "liveState": "Anyone with the address can read it, and search engines can index it.",
+      "draftState": "Only you can see it. Publishing makes the address public.",
+      "measurement": "Visitor measurement",
+      "dangerZone": "Danger zone",
+      "exportBlurb": "Take a copy of everything you have written, as JSON.",
+      "export": "Export",
+      "deleteBlurb": "Delete your account. Your content, your files, your visitor numbers and your sign-in are all removed. There is no undo and no support ticket that brings it back.",
+      "deleteCta": "Delete my account",
+      "deleteTitle": "Delete your account?",
+      "deleteMessage": "and everything in it disappears — your content, your uploaded files, your visitor numbers and your sign-in. This cannot be undone.",
+      "deleteConfirm": "Delete for good",
+      "addressChanged": "Address changed",
+      "failed": "That did not work",
+      "live": "Your portfolio is live",
+      "notReadyToast": "Not ready to publish",
+      "notReadyDetail": "Finish the items listed on this screen.",
+      "publishFailed": "Publishing failed",
+      "draftAgain": "Your portfolio is a draft again",
+      "draftAgainDetail": "The public address now returns nothing.",
+      "measurementUpdated": "Measurement updated",
+      "exportFailed": "Export failed",
+      "deletionFailed": "Deletion failed",
+      "missing": {
+        "person": "Fill in who you are",
+        "profile": "Write your hero and story",
+        "locale": "Enable at least one language",
+        "section": "Add at least one section — experience, a project, a degree, a certification, skills, volunteering or an award"
+      },
+      "consent": {
+        "measurementLabel": "Measurement only — no banner",
+        "measurementDesc": "Counts sessions, sections and clicks without anything that survives the tab. No cookie, no consent banner, and visitor numbers are approximate by design.",
+        "enhancedLabel": "Enhanced — needs a consent banner",
+        "enhancedDesc": "Adds returning visitors and true unique counts per document, which needs an identifier that lasts. Your visitors get a banner they can refuse, and the legal exposure is yours."
+      },
+      "blurb": "Your address, whether it is live, and everything that only you can decide."
+    },
+    "insights": {
+      "title": "Insights",
+      "blurb": "No cookies, no stored identifier, no cross-day tracking — counts are indicative.",
+      "period": "Reporting period",
+      "noneTitle": "No analytics yet",
+      "noneDesc": "The collector ships in Phase 4. Until then this screen has nothing to read.",
+      "sessions": "Sessions",
+      "visitors": "Visitors",
+      "dwell": "Avg dwell",
+      "documentsOpened": "Documents opened",
+      "days": "{days} days",
+      "vsPrevious": "vs previous {days} days",
+      "perDay": "sessions a day, {days} days",
+      "visitorsPanel": "Visitors",
+      "referrers": "Where they came from",
+      "funnel": "How far they get",
+      "cards": "Which project earns attention",
+      "scroll": "How far down they read",
+      "when": "When they came",
+      "devices": "What they read on",
+      "countries": "Where they are",
+      "browsers": "Which browser",
+      "documents": "Which document is worth showing",
+      "contact": "Are they reaching out",
+      "outbound": "Where they went next",
+      "terminal": "Terminal",
+      "loadSpeed": "How fast it loads",
+      "languages": "Languages",
+      "hintSections": "share of sessions reaching each section",
+      "hintScroll": "share of sessions reaching each depth",
+      "hintCountries": "top countries",
+      "hintDocuments": "opens over the period",
+      "hintOutbound": "outbound links",
+      "hintVitals": "what visitors wait for",
+      "hintShell": "{rate}% of visitors",
+      "hintContact": "{rate}% of sessions",
+      "cardsHintEmpty": "needs a few visits",
+      "cardsHint": "opened, out of the times it was seen",
+      "bestProject": "is opened by {rate}% of the people who see it. Put it first.",
+      "emptyBrowsers": "No browser data yet",
+      "emptyCountries": "No country data yet",
+      "emptyDevices": "No device data yet",
+      "emptyDocuments": "No document has been opened yet",
+      "emptyLanguages": "No language data yet",
+      "emptyOutbound": "No outbound clicks yet",
+      "emptyCards": "No project has been on screen long enough to count yet",
+      "emptyReferrers": "No referrers recorded yet",
+      "emptyTerminal": "Nobody has found the terminal yet",
+      "emptyContact": "Nobody has made contact yet",
+      "notMeasured": "not measured yet",
+      "toMainContent": "{seconds} to the main content",
+      "verdictPending": "pending",
+      "verdictGood": "good",
+      "verdictNeedsWork": "needs work",
+      "advicePending": "Needs a few visits before there is anything to read.",
+      "adviceGood": "Visitors see your hero almost immediately. Nothing to do.",
+      "adviceSlow": "Over 2.5 seconds. On a portfolio this is nearly always a heavy photo — the images you upload are the part you control.",
+      "reviewImages": "Review your images",
+      "neverOpened": "Never opened:",
+      "weigh": "Weigh this against the backlog"
+    },
+    "legal": {
+      "documents": "Legal documents",
+      "back": "Back",
+      "questionsTo": "Questions to"
+    }
+  },
+  "groups": {
+    "Identity": "Identity",
+    "Hero": "Hero",
+    "About": "About",
+    "Career": "Career",
+    "Education": "Education",
+    "Details": "Details",
+    "Contact": "Contact",
+    "Location": "Location",
+    "Files": "Files"
+  },
+  "fields": {
+    "translated": "Translated into {code}",
+    "untranslated": "Not translated into {code} yet"
+  },
+  "collections": {
+    "person": {
+      "label": "Person",
+      "singular": "Person",
+      "blurb": "Who you are: the identity, the about paragraphs and the contact blurb."
+    },
+    "profile": {
+      "label": "Hero",
+      "singular": "Hero",
+      "blurb": "The opening screen: the subtitles that type themselves, the tagline and the chips."
+    },
+    "locale": {
+      "label": "Site locales",
+      "singular": "Site locale"
+    },
+    "experience": {
+      "label": "Experiences",
+      "singular": "Experience"
+    },
+    "project": {
+      "label": "Projects",
+      "singular": "Project"
+    },
+    "skillCategory": {
+      "label": "Skill categories",
+      "singular": "Skill category"
+    },
+    "degree": {
+      "label": "Degrees",
+      "singular": "Degree"
+    },
+    "certification": {
+      "label": "Certifications",
+      "singular": "Certification"
+    },
+    "spokenLanguage": {
+      "label": "Spoken languages",
+      "singular": "Spoken language"
+    },
+    "volunteering": {
+      "label": "Volunteering",
+      "singular": "Volunteering entry"
+    },
+    "award": {
+      "label": "Awards",
+      "singular": "Award"
+    }
+  },
+  "navGroups": {
+    "Identity": "Identity",
+    "Career": "Career",
+    "Education": "Education",
+    "Achievements": "Achievements",
+    "Workshop": "Workshop",
+    "Platform": "Platform"
+  },
+  "screens": {
+    "insights": "Insights",
+    "portfolio": "Portfolio",
+    "media": "Media",
+    "history": "History",
+    "overview": "Overview",
+    "accounts": "Accounts",
+    "portfolios": "Portfolios",
+    "erasureQueue": "Erasure queue",
+    "observability": "Observability",
+    "traffic": "Traffic",
+    "health": "Health",
+    "governance": "Governance",
+    "audit": "Audit",
+    "platformConfig": "Platform config",
+    "account": "Account",
+    "localeQueue": "Locale work queue",
+    "notFound": "Not found",
+    "legal": "Legal",
+    "locales": "Site locales"
+  },
+  "fieldLabels": {
+    "givenName": "Given name",
+    "familyName": "Family name",
+    "headline": "Headline",
+    "affiliation": "Affiliation",
+    "city": "City",
+    "country": "Country",
+    "email": "Email",
+    "phone": "Phone",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "photo": "Photo",
+    "resumes": "Résumés",
+    "aboutParagraphs": "About paragraphs",
+    "subtitles": "Subtitles",
+    "tagline": "Tagline",
+    "accentTags": "Highlighted tags",
+    "code": "Language",
+    "label": "Short label",
+    "flagCode": "Country",
+    "enabled": "Enabled",
+    "company": "Company",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "tags": "Tags",
+    "doc": "Document",
+    "link": "Link",
+    "role": "Role",
+    "bullets": "Bullets",
+    "title": "Title",
+    "badge": "Badge",
+    "desc": "Description",
+    "icon": "Icon",
+    "school": "School",
+    "issuer": "Issuer",
+    "date": "Date",
+    "name": "Name",
+    "level": "Level",
+    "pct": "Proficiency",
+    "org": "Organisation",
+    "place": "Place",
+    "images": "Images",
+    "order": "Order",
+    "honors": "Honors"
+  },
+  "status": {
+    "published": "Published",
+    "draft": "Draft",
+    "suspended": "Suspended"
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy",
+      "summary": "What this platform stores, why, for how long, and how to get it back or have it deleted.",
+      "sections": [
+        {
+          "heading": "Who holds the data",
+          "paragraphs": [
+            "The platform is operated by the account reachable at {email}. Write to that address for anything on this page, including a request to export or erase your data."
+          ]
+        },
+        {
+          "heading": "What is stored about you as an owner",
+          "bullets": [
+            "A Cognito user record, created the first time you sign in with Google. It holds your email, your name and your profile picture URL, and Google is the only place your password ever exists — this platform never sees it.",
+            "An owner record: the Cognito subject identifier, your public address, whether the portfolio is published, and your measurement choice. Your email is stored on this record only as a convenience for support, and never joined to anything else.",
+            "The portfolio content you type in, and the files you upload."
+          ]
+        },
+        {
+          "heading": "What is stored about people who visit a portfolio",
+          "paragraphs": [
+            "Visitor measurement is on by default and is deliberately built so that it cannot follow anyone. There is no cookie, nothing is written that survives the browser tab, and nothing is shared with another site or another company."
+          ],
+          "bullets": [
+            "A session identifier that lives in sessionStorage and dies with the tab.",
+            "A daily hash of the browser language, user agent and country, salted with a value that is held in memory and never written down. It cannot be linked to the same person on a different day, which is exactly the point.",
+            "Which sections were seen, which documents were opened, which links were followed, the page load speed, and any JavaScript error.",
+            "No IP address is stored. Country is derived at the edge and kept only as a two-letter code."
+          ]
+        },
+        {
+          "heading": "Why there is no cookie banner",
+          "paragraphs": [
+            "Storing or reading anything on a visitor’s device normally needs consent. The exemption for audience measurement applies only when the measurement is first-party, limited to audience measurement, not shared, not cross-site, aggregated, and uses no identifier that persists across days. The default measurement satisfies all of those, so there is nothing to consent to.",
+            "A portfolio owner can turn on enhanced measurement, which does use an identifier that lasts. When they do, their visitors get a banner they can refuse in one click and withdraw later. That choice belongs to the owner of that portfolio, and the banner appears only there."
+          ]
+        },
+        {
+          "heading": "How long it is kept",
+          "bullets": [
+            "Raw visitor events: 30 days, then deleted automatically by the database.",
+            "Daily aggregates: at most 25 months.",
+            "Your portfolio content and files: until you delete them or close your account.",
+            "Operator audit entries: kept, because they are the record of who did what to an account."
+          ]
+        },
+        {
+          "heading": "Who else processes it",
+          "bullets": [
+            "Amazon Web Services, in the eu-west-3 (Paris) region — hosting, file storage and the sign-in service.",
+            "MongoDB Atlas — the database.",
+            "Google — sign-in only. Google tells the platform who you are; the platform tells Google nothing about what you do here."
+          ]
+        },
+        {
+          "heading": "Your rights",
+          "bullets": [
+            "Export everything, as JSON, from the Portfolio screen at any time.",
+            "Delete your account from the same screen. That removes your content, your uploaded files, your visitor numbers and your sign-in — there is no copy kept and no undo.",
+            "Correct anything by editing it, since you hold the only copy that matters.",
+            "Complain, or ask for any of the above by writing to {email}."
+          ]
+        },
+        {
+          "heading": "What an operator can see",
+          "paragraphs": [
+            "The person who runs the platform can see that an account exists, its address, whether it is published, how many documents and files it holds, and how much traffic it gets. They cannot read an unpublished portfolio: no endpoint returns another owner’s content. Anything published is public anyway, and they read it at its public address like anyone else.",
+            "Suspending, exporting or erasing an account requires a written reason and is recorded in an append-only log."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms",
+      "summary": "What the platform does, what it asks of you, and what neither side promises.",
+      "sections": [
+        {
+          "heading": "What you get",
+          "paragraphs": [
+            "One portfolio, free, at its own address. Sign-in is through Google. The first sign-in creates the account, so there is no separate sign-up."
+          ]
+        },
+        {
+          "heading": "Your address is yours to change",
+          "paragraphs": [
+            "It is derived from your name the first time you sign in, and you can change it on the Portfolio screen whenever you like. Changing it is not free: the old address stops resolving immediately and there is no redirect, so every link you have already shared — a CV, a message, a search result — breaks. The old address also returns to the pool and someone else may take it."
+          ]
+        },
+        {
+          "heading": "What you are responsible for",
+          "bullets": [
+            "That the content is yours to publish, including every image and document you upload.",
+            "That it is lawful, and that it is not someone else’s work presented as yours.",
+            "Keeping access to your Google account, since that is the only way in."
+          ]
+        },
+        {
+          "heading": "What the operator may do",
+          "bullets": [
+            "Suspend a portfolio that breaks these terms. Suspension takes it offline; it never opens a draft, and it is reversible.",
+            "Erase an account that is used for spam or abuse, with the reason recorded.",
+            "Change these terms. Anything that materially reduces what you get will be announced before it takes effect."
+          ]
+        },
+        {
+          "heading": "What is not promised",
+          "paragraphs": [
+            "The platform runs on free service tiers and is offered as-is, with no guaranteed uptime and no support commitment. Keep your own copy of anything you would be sorry to lose — the export on the Portfolio screen exists for exactly that."
+          ]
+        },
+        {
+          "heading": "Ending it",
+          "paragraphs": [
+            "Delete your account whenever you like, from the Portfolio screen. It takes effect immediately and cannot be undone."
+          ]
+        }
+      ]
+    }
+  },
+  "measurement": {
+    "title": "Your measurement choice",
+    "accepted": "You agreed to be counted across visits, so one identifier is stored on this device for up to thirteen months. Withdrawing deletes it immediately and you will be asked again on your next visit.",
+    "refused": "You declined to be counted across visits, so nothing that identifies you is stored. Withdrawing that answer lets you be asked again, in case you change your mind.",
+    "none": "You have not been asked yet, or you already cleared your answer. Nothing that could identify you across days is stored on this device.",
+    "withdraw": "Withdraw my choice",
+    "nothingStored": "nothing stored on this device",
+    "differentOrigin": "In local development the console and the portfolios run on different ports, so this control only clears storage for this origin. In production they share one host and it clears the real choice.",
+    "cleared": "Your measurement choice was cleared"
+  },
+  "assets": {
+    "chooseDocument": "Choose a document",
+    "chooseImage": "Choose an image",
+    "noMatchTitle": "No matching files",
+    "noMatchDesc": "Upload one, or clear the filter.",
+    "uploaded": "File uploaded",
+    "uploadFailed": "Upload failed",
+    "openFile": "Open the file",
+    "clear": "Clear",
+    "clearFile": "Clear the file",
+    "choose": "Choose…",
+    "chooseFile": "Choose a file",
+    "fileKey": "File key",
+    "upload": "Upload",
+    "loading": "Loading files…",
+    "unreachable": "Your files could not be listed",
+    "unreachableDesc": "{error} — you can still type a filename below. The database stores the key, so the value works either way.",
+    "repoNote": "These are the files your portfolio serves from its own public folder. Uploading needs an asset bucket, which is not configured yet — you can still type a key below.",
+    "repoWritableNote": "These are the files your portfolio serves locally. Uploading writes into its public folder on this machine only.",
+    "useKey": "Use key"
+  },
+  "list": {
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "remove": "Remove entry",
+    "add": "Add entry"
+  },
+  "platform": {
+    "common": {
+      "reportingPeriod": "Reporting period",
+      "sessions": "Sessions",
+      "visitors": "Visitors",
+      "documentsOpened": "Documents opened",
+      "bounced": "Bounced",
+      "devices": "Devices",
+      "browsers": "Browsers",
+      "noReferrer": "No referrer recorded yet",
+      "noDevice": "No device data yet",
+      "noCountry": "No country data yet",
+      "noBrowser": "No browser data yet",
+      "noLanguage": "No language data yet",
+      "referrers": "Where they came from",
+      "funnel": "How far they get",
+      "readOn": "What they read on",
+      "whereThey": "Where they are",
+      "whichBrowser": "Which browser",
+      "whichLanguage": "Which language",
+      "traffic": "Traffic",
+      "open": "Open →"
+    },
+    "overview": {
+      "title": "Overview",
+      "nothing": "Nothing to report yet",
+      "accounts": "Accounts",
+      "live": "Live portfolios",
+      "states": "Portfolio states",
+      "noAccount": "No account yet",
+      "busiest": "Busiest portfolios",
+      "attention": "Needs attention",
+      "signups": "Sign-ups",
+      "whereFrom": "Where visitors come from",
+      "busy": "When the platform is busy",
+      "noVisit": "No portfolio has received a visit yet."
+    },
+    "portfolios": {
+      "title": "Portfolios",
+      "search": "Search accounts",
+      "searchPlaceholder": "Address or email…",
+      "segments": "Account segments",
+      "reason": "Reason",
+      "reasonPlaceholder": "Reason, recorded in the audit log",
+      "export": "Export",
+      "suspend": "Suspend",
+      "restore": "Restore",
+      "queueErasure": "Queue erasure"
+    },
+    "account": {
+      "notFound": "Account not found",
+      "blurb": "Metadata only. Draft content is never readable here — open the public page like anyone else.",
+      "lifecycle": "Lifecycle",
+      "written": "What they have written",
+      "nothingWritten": "Nothing written yet",
+      "documents": "Documents",
+      "status": "Status",
+      "measurement": "Measurement",
+      "noOperator": "No operator has ever touched this account."
+    },
+    "trafficScreen": {
+      "blurb": "Every portfolio's audience, added together. The shape of the whole product.",
+      "none": "No traffic yet",
+      "comeBack": "Do people come back",
+      "noReturn": "Nobody has returned yet — this fills once an owner enables enhanced measurement and a visitor accepts"
+    },
+    "health": {
+      "blurb": "Is the platform serving, is the pipeline writing, and is retention actually enforced.",
+      "database": "Database",
+      "storage": "Storage used",
+      "image": "Deployed image",
+      "errorRate": "Error rate",
+      "atlasTier": "Atlas free tier",
+      "errorsPerSession": "JavaScript errors per session",
+      "ttl": "TTL indexes and the rollup clock",
+      "dataIndexes": "Data and indexes",
+      "rollupLag": "Rollup lag",
+      "beacons": "Beacons refused",
+      "noContent": "No content stored yet",
+      "nothingWritten": "The collector has written nothing",
+      "noErrors": "No portfolio reported a JavaScript error."
+    },
+    "audit": {
+      "title": "Audit",
+      "none": "Nothing has happened yet"
+    },
+    "config": {
+      "title": "Platform config",
+      "blurb": "What this environment actually enforces at runtime. Read-only — every value is code, not a setting.",
+      "unavailable": "Config is unavailable",
+      "runtime": "Runtime",
+      "environment": "Environment",
+      "image": "Deployed image",
+      "addressRules": "Address rules",
+      "reserved": "Reserved addresses",
+      "privacy": "Privacy posture",
+      "erasureDeadline": "Erasure deadline",
+      "refuses": "What the collector refuses"
+    },
+    "erasure": {
+      "title": "Erasure queue",
+      "blurb": "Every request, its thirty-day clock, and what the cascade actually removed.",
+      "waiting": "Waiting",
+      "dueWeek": "Due within a week",
+      "completed": "Completed",
+      "failed": "Failed",
+      "requests": "Requests",
+      "none": "No erasure is waiting.",
+      "runNow": "Run now"
+    },
+    "accountAudited": "Opening this page is itself recorded, so the next visit will show one entry.",
+    "auditBlurb": "Every platform action, append-only. Nothing here can be edited or removed.",
+    "queueUnavailable": "The queue is unavailable",
+    "healthTitle": "Health",
+    "healthUnavailable": "Health is unavailable",
+    "waitedFor": "What visitors actually waited for",
+    "storageCeiling": "Storage against the ceiling",
+    "errorsWhose": "Errors, and whose visitors saw them",
+    "rawEvents": "Raw events written",
+    "retention": "Retention is enforced, not intended",
+    "reasonRequired": "A reason is required",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "reasonRequiredDetail": "It is written to the audit log."
+  },
+  "ui": {
+    "typicalRead": "Typical read",
+    "funnelEmpty": "Not enough data yet — the funnel needs section events.",
+    "addImage": "Add image",
+    "localeFirst": "Add a locale first — this map is keyed by language code.",
+    "chooseCountry": "Choose a country…",
+    "chooseOne": "Choose one…",
+    "chooseLanguage": "Choose a language…",
+    "dismiss": "Dismiss",
+    "livePreview": "Live preview",
+    "typeWord": "Type",
+    "backToSignIn": "Back to sign in",
+    "loadingScreen": "Loading screen",
+    "month": "Month",
+    "year": "Year"
+  },
+  "blurbs": {
+    "history": "Every save writes the previous document here before it leaves the browser.",
+    "locales": "Every locale here costs one translation per entry — drag a row to reorder.",
+    "login": "Your first sign-in creates your portfolio.",
+    "loginMisconfigured": "This build has no Cognito client id. Set"
+  },
+  "vocabularies": {
+    "honors": {
+      "pass": "Pass",
+      "satisfactory": "Satisfactory",
+      "good": "Good",
+      "very-good": "Very good",
+      "excellent": "Excellent"
+    },
+    "levels": {
+      "a1": "A1 · Beginner",
+      "a2": "A2 · Elementary",
+      "b1": "B1 · Intermediate",
+      "b2": "B2 · Fluent",
+      "c1": "C1 · Advanced",
+      "c2": "C2 · Proficient"
+    }
+  },
+  "placeholders": {
+    "givenName": "First name : Jane",
+    "familyName": "Last name : DOE",
+    "affiliation": "Employer, university or Freelance : Acme Corp",
+    "email": "Contact address : name{'@'}example.com",
+    "phone": "No spaces, with country code : +33612345678",
+    "linkedin": "Your profile : https://www.linkedin.com/in/jane-doe/",
+    "github": "Your profile : https://github.com/janedoe",
+    "city": "City : Berlin",
+    "headline": "What you do or study : Backend Engineer {'|'} CS Student",
+    "aboutParagraphs": "One paragraph per entry : I build backend services at **Acme**.",
+    "subtitles": "One role per entry : Backend Engineer",
+    "tagline": "One sentence, **bold** what matters : I build **resilient** services.",
+    "company": "Employer : Acme Corp",
+    "tags": "One per chip : Go, Postgres, Docker",
+    "link": "Their page : https://www.linkedin.com/company/acme",
+    "role": "Title as it appeared : Backend Engineer",
+    "bullets": "One outcome per entry : Built a **billing service**, errors down 30%.",
+    "title": "Project name : PhotoSort",
+    "badge": "One or two words : Computer Vision",
+    "desc": "What it does and why : A CLI that groups photos by place.",
+    "accentTags": "The one to highlight : Postgres",
+    "school": "School – University : Institute – TU Berlin",
+    "issuer": "Issuer, platform in brackets : Acme (Coursera)",
+    "org": "Organisation : Robotics Club"
+  }
+}

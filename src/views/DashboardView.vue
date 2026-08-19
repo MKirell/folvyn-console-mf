@@ -2,16 +2,18 @@
   <div class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Insights</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+          {{ t('views.insights.title') }}
+        </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
-          No cookies, no stored identifier, no cross-day tracking — counts are indicative.
+          {{ t('views.insights.blurb') }}
         </p>
       </div>
 
       <div
         class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
         role="group"
-        aria-label="Reporting period"
+        aria-:label="t('views.insights.period')"
       >
         <button
           v-for="days in PERIODS"
@@ -31,186 +33,210 @@
       </div>
     </header>
 
-    <div v-if="analytics.loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonGrid
+      v-if="analytics.loading"
+      :panels="[8, 4, 12, 6, 6, 12, 3, 6, 3, 8, 4, 6, 6, 8, 4]"
+      :label="t('views.insights.title')"
+    />
+
+    <EmptyState
+      v-else-if="analytics.error"
+      icon="Shield"
+      :title="t('errors.insights')"
+      :description="analytics.error"
+    >
+      <AppButton variant="primary" @click="analytics.load(analytics.period)">{{
+        t('common.retry')
+      }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="!summary"
       icon="Gauge"
-      title="No analytics yet"
-      :description="
-        analytics.error ??
-        'The collector ships in Phase 4. Until then this screen has nothing to read.'
-      "
+      :title="t('views.insights.noneTitle')"
+      :description="t('views.insights.noneDesc')"
     />
 
     <div v-else class="grid grid-cols-12 gap-3 max-1000:grid-cols-6 max-600:grid-cols-2">
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Visitors"
+        :label="t('views.insights.visitors')"
         :value="summary.totals.visitors.toLocaleString()"
         :delta="summary.deltas.visitors"
-        :hint="`vs previous ${summary.days} days`"
+        :hint="t('views.insights.vsPrevious', { days: summary.days })"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Sessions"
+        :label="t('views.insights.sessions')"
         :value="summary.totals.sessions.toLocaleString()"
         :delta="summary.deltas.sessions"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Avg dwell"
+        :label="t('views.insights.dwell')"
         :value="dwell"
         :delta="summary.deltas.dwellMs"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Documents opened"
+        :label="t('views.insights.documentsOpened')"
         :value="summary.totals.docs.toLocaleString()"
         :delta="summary.deltas.docs"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Visitors"
-        :hint="`${summary.days} days`"
+        :title="t('views.insights.visitorsPanel')"
+        :hint="t('views.insights.days', { days: summary.days })"
       >
-        <SparkLine :points="trend" unit="visitors" label="Visitors" />
+        <SparkLine :points="trend" unit="visitors" :label="t('views.insights.visitors')" />
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Where they came from"
+        :title="t('views.insights.referrers')"
       >
         <BarRows
           :rows="referrers"
           :slots="ROW_BUDGET.referrers"
           show-share
-          empty="No referrers recorded yet"
+          :empty="t('views.insights.emptyReferrers')"
         />
       </PanelCard>
 
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
-        title="How far they get"
-        hint="share of sessions reaching each section"
+        :title="t('views.insights.funnel')"
+        :hint="t('views.insights.hintSections')"
       >
         <FunnelColumns :rows="summary.sections" :sessions="summary.totals.sessions" />
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Which project earns attention"
+        :title="t('views.insights.cards')"
         :hint="cardsHint"
       >
         <CardRows
           :rows="projectCards"
           :slots="ROW_BUDGET.cards"
-          empty="No project has been on screen long enough to count yet"
+          :empty="t('views.insights.emptyCards')"
         />
         <p v-if="bestProject" class="mt-3 text-[0.78rem] text-muted">
-          <strong class="font-medium text-ink">{{ bestProject.label }}</strong> is opened by
-          {{ bestProject.rate }}% of the people who see it. Put it first.
+          <strong class="font-medium text-ink">{{ bestProject.label }}</strong>
+          {{ t('views.insights.bestProject', { rate: bestProject.rate }) }}
         </p>
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="How far down they read"
-        hint="share of sessions reaching each depth"
+        :title="t('views.insights.scroll')"
+        :hint="t('views.insights.hintScroll')"
       >
         <DepthGauge :quartiles="summary.scrollQuartiles" :sessions="summary.totals.sessions" />
       </PanelCard>
 
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
-        title="When they came"
-        :hint="`sessions a day, ${summary.days} days`"
+        :title="t('views.insights.when')"
+        :hint="t('views.insights.perDay', { days: summary.days })"
       >
         <HeatCalendar :points="daily" />
       </PanelCard>
 
       <PanelCard
         class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
-        title="What they read on"
+        :title="t('views.insights.devices')"
       >
-        <DonutChart :rows="summary.devices" label="Devices" empty="No device data yet" />
+        <DonutChart
+          :rows="summary.devices"
+          :label="t('views.insights.devices')"
+          :empty="t('views.insights.emptyDevices')"
+        />
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Where they are"
-        hint="top countries"
+        :title="t('views.insights.countries')"
+        :hint="t('views.insights.hintCountries')"
       >
         <BarRows
           :rows="countries"
           :slots="ROW_BUDGET.countries"
           show-share
-          empty="No country data yet"
+          :empty="t('views.insights.emptyCountries')"
         />
       </PanelCard>
 
-      <PanelCard class="col-span-3 max-1000:col-span-3 max-600:col-span-2" title="Which browser">
-        <DonutChart :rows="summary.browsers" label="Browsers" empty="No browser data yet" />
+      <PanelCard
+        class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
+        :title="t('views.insights.browsers')"
+      >
+        <DonutChart
+          :rows="summary.browsers"
+          :label="t('views.insights.browsers')"
+          :empty="t('views.insights.emptyBrowsers')"
+        />
       </PanelCard>
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Which document is worth showing"
-        hint="opens over the period"
+        :title="t('views.insights.documents')"
+        :hint="t('views.insights.hintDocuments')"
       >
         <BarRows
           :rows="documents"
           :slots="ROW_BUDGET.documents"
-          empty="No document has been opened yet"
+          :empty="t('views.insights.emptyDocuments')"
         />
         <p v-if="unopened.length" class="mt-3 text-[0.78rem] text-muted">
-          Never opened: <span class="text-ink">{{ unopened.slice(0, 3).join(', ') }}</span
+          {{ t('views.insights.neverOpened') }}
+          <span class="text-ink">{{ unopened.slice(0, 3).join(', ') }}</span
           ><span v-if="unopened.length > 3"> and {{ unopened.length - 3 }} more</span>
         </p>
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Are they reaching out"
-        :hint="`${summary.contactRate}% of sessions`"
-      >
-        <RankList :rows="contact" :slots="ROW_BUDGET.contact" empty="Nobody has made contact yet" />
-      </PanelCard>
-
-      <PanelCard
-        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Terminal"
-        :hint="`${shellRate}% of visitors`"
+        :title="t('views.insights.contact')"
+        :hint="t('views.insights.hintContact', { rate: summary.contactRate })"
       >
         <RankList
-          :rows="shell"
-          :slots="ROW_BUDGET.shell"
-          empty="Nobody has found the terminal yet"
+          :rows="contact"
+          :slots="ROW_BUDGET.contact"
+          :empty="t('views.insights.emptyContact')"
         />
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Where they went next"
-        hint="outbound links"
+        :title="t('views.insights.terminal')"
+        :hint="t('views.insights.hintShell', { rate: shellRate })"
+      >
+        <RankList
+          :rows="shell"
+          :slots="ROW_BUDGET.shell"
+          :empty="t('views.insights.emptyTerminal')"
+        />
+      </PanelCard>
+
+      <PanelCard
+        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
+        :title="t('views.insights.outbound')"
+        :hint="t('views.insights.hintOutbound')"
       >
         <BarRows
           :rows="outbound"
           :slots="ROW_BUDGET.outbound"
           show-share
-          empty="No outbound clicks yet"
+          :empty="t('views.insights.emptyOutbound')"
         />
       </PanelCard>
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="How fast it loads"
-        hint="what visitors wait for"
+        :title="t('views.insights.loadSpeed')"
+        :hint="t('views.insights.hintVitals')"
       >
         <div class="flex flex-1 flex-col justify-center">
           <div class="flex items-center gap-3">
@@ -230,19 +256,22 @@
             v-if="loadSpeed.actionable"
             to="/media"
             class="mt-2 inline-block text-[0.78rem] text-accent-deep underline"
-            >Review your images</RouterLink
+            >{{ t('views.insights.reviewImages') }}</RouterLink
           >
         </div>
       </PanelCard>
 
-      <PanelCard class="col-span-4 max-1000:col-span-6 max-600:col-span-2" title="Languages">
-        <StackedBar :rows="langs" empty="No language data yet" />
+      <PanelCard
+        class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
+        :title="t('views.insights.languages')"
+      >
+        <StackedBar :rows="langs" :empty="t('views.insights.emptyLanguages')" />
         <RouterLink
           v-if="summary.langs.length"
           to="/locales"
           class="mt-3 inline-flex items-center gap-1 text-[0.74rem] text-accent-deep hover:underline"
         >
-          Weigh this against the backlog
+          {{ t('views.insights.weigh') }}
           <ChevronRight :size="12" :stroke-width="2" aria-hidden="true" />
         </RouterLink>
       </PanelCard>
@@ -254,8 +283,10 @@
 import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { ChevronRight, CircleCheck, TriangleAlert } from '@lucide/vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import BarRows from '@/components/charts/BarRows.vue'
 import CardRows, { type CardRow } from '@/components/charts/CardRows.vue'
 import DepthGauge from '@/components/charts/DepthGauge.vue'
@@ -269,8 +300,13 @@ import StatTile from '@/components/charts/StatTile.vue'
 import { foldOther } from '@/utils/breakdown'
 import type { AnalyticsBreakdown } from '@/types/analytics'
 import { PERIODS, useAnalyticsStore } from '@/stores/analytics'
+import { COLLECTIONS } from '@/registry/collections'
+import { titleOf } from '@/utils/entity'
 import { useContentStore } from '@/stores/content'
+import { useUiStore } from '@/stores/ui'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const LCP_GOOD = 2500
 
 const analytics = useAnalyticsStore()
@@ -286,7 +322,7 @@ const ROW_BUDGET = {
   outbound: 4,
   shell: 4,
   langs: 4,
-  cards: 3,
+  cards: 4,
 } as const
 
 function capped(rows: AnalyticsBreakdown[] | undefined, limit: number): AnalyticsBreakdown[] {
@@ -301,9 +337,17 @@ const outbound = computed(() => capped(summary.value?.outbound, ROW_BUDGET.outbo
 const shell = computed(() => capped(summary.value?.shell, ROW_BUDGET.shell))
 const langs = computed(() => capped(summary.value?.langs, ROW_BUDGET.langs))
 
+const ui = useUiStore()
+
+const activeLang = computed(() => ui.editingLang || content.referenceLang)
+
 const projectTitles = computed(
   () =>
-    new Map(content.list('project').map((project) => [project.id, String(project.title ?? '')])),
+    new Map(
+      content
+        .list('project')
+        .map((project) => [project.id, titleOf(COLLECTIONS.project, project, activeLang.value)]),
+    ),
 )
 
 const projectCards = computed<CardRow[]>(() =>
@@ -319,7 +363,9 @@ const bestProject = computed(() => {
 })
 
 const cardsHint = computed(() =>
-  projectCards.value.length === 0 ? 'needs a few visits' : 'opened, out of the times it was seen',
+  projectCards.value.length === 0
+    ? t('views.insights.cardsHintEmpty')
+    : t('views.insights.cardsHint'),
 )
 
 const unopened = computed(() => {
@@ -359,11 +405,11 @@ const loadSpeed = computed(() => {
 
   if (lcp === null) {
     return {
-      display: 'not measured yet',
-      verdict: 'pending',
+      display: t('views.insights.notMeasured'),
+      verdict: t('views.insights.verdictPending'),
       icon: CircleCheck,
       tone: 'bg-bg-tint text-muted',
-      advice: 'Needs a few visits before there is anything to read.',
+      advice: t('views.insights.advicePending'),
       actionable: false,
     }
   }
@@ -372,22 +418,21 @@ const loadSpeed = computed(() => {
 
   if (lcp <= LCP_GOOD) {
     return {
-      display: `${seconds} to the main content`,
-      verdict: 'good',
+      display: t('views.insights.toMainContent', { seconds }),
+      verdict: t('views.insights.verdictGood'),
       icon: CircleCheck,
       tone: 'bg-sage/14 text-sage',
-      advice: 'Visitors see your hero almost immediately. Nothing to do.',
+      advice: t('views.insights.adviceGood'),
       actionable: false,
     }
   }
 
   return {
-    display: `${seconds} to the main content`,
-    verdict: 'needs work',
+    display: t('views.insights.toMainContent', { seconds }),
+    verdict: t('views.insights.verdictNeedsWork'),
     icon: TriangleAlert,
     tone: 'bg-gold/14 text-gold',
-    advice:
-      'Over 2.5 seconds. On a portfolio this is nearly always a heavy photo — the images you upload are the part you control.',
+    advice: t('views.insights.adviceSlow'),
     actionable: true,
   }
 })

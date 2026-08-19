@@ -5,7 +5,7 @@
     <button
       type="button"
       class="hidden max-1000:grid h-8 w-8 shrink-0 place-items-center rounded-[8px] text-ink-soft transition-colors hover:bg-bg-tint hover:text-ink"
-      aria-label="Open navigation"
+      :aria-label="t('nav.open')"
       @click="ui.mobileNavOpen = true"
     >
       <Menu :size="18" :stroke-width="2" />
@@ -28,7 +28,7 @@
         v-if="locales.length > 1"
         class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
         role="group"
-        aria-label="Editing locale"
+        :aria-label="t('topbar.editingLocale')"
       >
         <button
           v-for="locale in locales"
@@ -41,7 +41,7 @@
               : 'text-muted hover:text-ink'
           "
           :aria-pressed="locale.code === editingLang"
-          :aria-label="`Edit ${locale.code}`"
+          :aria-label="t('topbar.editLocale', { code: locale.code })"
           @click="ui.setEditingLang(locale.code)"
         >
           {{ locale.code }}
@@ -51,20 +51,33 @@
       <button
         type="button"
         class="ms-2.5 flex items-center gap-2 rounded-[9px] border border-line/8 bg-surface px-2.5 py-[6px] text-[0.74rem] text-muted transition-colors hover:border-accent/35 hover:text-ink max-900:hidden"
-        aria-label="Open command palette"
+        :aria-label="t('topbar.commandPalette')"
         @click="ui.paletteOpen = true"
       >
         <Search :size="14" :stroke-width="1.9" aria-hidden="true" />
-        <span>Search</span>
+        <span>{{ t('common.search') }}</span>
         <kbd class="font-mono text-[0.62rem] text-muted">{{ metaKey }} K</kbd>
+      </button>
+
+      <button
+        type="button"
+        class="hidden max-900:grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
+        :aria-label="t('topbar.commandPalette')"
+        @click="ui.paletteOpen = true"
+      >
+        <Search :size="16" :stroke-width="1.9" />
       </button>
 
       <button
         type="button"
         class="grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent"
         :disabled="!history.canUndo"
-        :title="history.canUndo ? `Undo: ${history.nextLabel}` : 'Nothing to undo'"
-        aria-label="Undo last change"
+        :title="
+          history.canUndo
+            ? t('topbar.undoLabel', { label: history.nextLabel })
+            : t('topbar.nothingToUndo')
+        "
+        :aria-label="t('topbar.undo')"
         @click="undo"
       >
         <Undo2 :size="16" :stroke-width="1.9" />
@@ -79,11 +92,9 @@
             ? 'bg-sage/14 text-sage hover:bg-sage/22'
             : 'bg-gold/14 text-gold hover:bg-gold/22'
         "
-        :title="
-          owner.published ? 'Your portfolio is live' : 'Your portfolio is a draft — publish it'
-        "
+        :title="owner.published ? t('topbar.live') : t('topbar.draft')"
       >
-        {{ owner.status }}
+        {{ statusLabel(owner.status) }}
       </RouterLink>
 
       <a
@@ -92,8 +103,8 @@
         target="_blank"
         rel="noreferrer"
         class="grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-        :title="`Open ${owner.publicUrl}`"
-        aria-label="Open your portfolio"
+        :title="t('topbar.openUrl', { url: owner.publicUrl })"
+        :aria-label="t('topbar.openPortfolio')"
       >
         <ExternalLink :size="16" :stroke-width="1.9" />
       </a>
@@ -120,7 +131,10 @@ import { useContentStore } from '@/stores/content'
 import { useHistoryStore } from '@/stores/history'
 import { useUiStore } from '@/stores/ui'
 import { useHealth } from '@/composables/useHealth'
+import { useI18n } from 'vue-i18n'
+import { collectionLabel, screenLabel, statusLabel } from '@/i18n/labels'
 
+const { t } = useI18n()
 const route = useRoute()
 const auth = useAuthStore()
 const owner = useOwnerStore()
@@ -138,8 +152,16 @@ const metaKey = computed(() =>
 
 const title = computed(() => {
   const key = route.params.collection
-  if (typeof key === 'string' && COLLECTIONS[key]) return COLLECTIONS[key].label
-  return (route.meta.title as string | undefined) ?? 'Console'
+  if (typeof key === 'string' && COLLECTIONS[key]) return collectionLabel(COLLECTIONS[key])
+
+  const singleton = route.meta.collection
+  if (typeof singleton === 'string' && COLLECTIONS[singleton]) {
+    return collectionLabel(COLLECTIONS[singleton])
+  }
+
+  const fallback = (route.meta.title as string | undefined) ?? t('app.name')
+  const titleKey = route.meta.titleKey as string | undefined
+  return titleKey ? screenLabel(titleKey, fallback) : fallback
 })
 
 const healthDot = computed(() => {
@@ -149,17 +171,17 @@ const healthDot = computed(() => {
 })
 
 const healthTitle = computed(() => {
-  if (state.value === 'up') return 'The portfolio API is responding'
-  if (state.value === 'down') return 'The portfolio API is not responding'
-  return 'Checking the portfolio API'
+  if (state.value === 'up') return t('topbar.apiUp')
+  if (state.value === 'down') return t('topbar.apiDown')
+  return t('topbar.apiChecking')
 })
 
 async function undo(): Promise<void> {
   try {
     const label = await history.undo()
-    if (label) ui.notify('good', 'Change undone', label)
+    if (label) ui.notify('good', t('topbar.undone'), label)
   } catch (error) {
-    ui.notify('bad', 'Undo failed', error instanceof Error ? error.message : undefined)
+    ui.notify('bad', t('topbar.undoFailed'), error instanceof Error ? error.message : undefined)
   }
 }
 </script>

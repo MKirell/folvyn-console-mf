@@ -30,9 +30,9 @@ const OnboardingView = (await import('@/views/OnboardingView.vue')).default
 
 const OWNER: OwnerRecord = {
   id: 'o1',
-  slug: 'mohamed-khalil-zrelly',
+  slug: 'ada-lovelace',
   email: 'someone@example.com',
-  displayName: 'Mohamed Khalil ZRELLY',
+  displayName: 'Ada Lovelace',
   status: 'draft',
   consentMode: 'measurement',
   plan: 'free',
@@ -56,9 +56,9 @@ describe('portfolio screen', () => {
     const wrapper = mount(PortfolioView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('/mohamed-khalil-zrelly')
+    expect(wrapper.text()).toContain('/ada-lovelace')
     expect(wrapper.find('a[target="_blank"]').attributes('href')).toBe(
-      'http://localhost:5173/fol/mohamed-khalil-zrelly',
+      'http://localhost:5173/fol/ada-lovelace',
     )
   })
 
@@ -237,7 +237,7 @@ describe('portfolio screen', () => {
     expect(confirm?.attributes('disabled')).toBeDefined()
     expect(erase).not.toHaveBeenCalled()
 
-    await wrapper.find('input[type="text"]').setValue('mohamed-khalil-zrelly')
+    await wrapper.find('input[type="text"]').setValue('ada-lovelace')
     await wrapper
       .findAll('button')
       .find((b) => b.text().includes('Delete for good'))
@@ -258,7 +258,7 @@ describe('portfolio screen', () => {
       .findAll('button')
       .find((b) => b.text().includes('Delete my account'))
       ?.trigger('click')
-    await wrapper.find('input[type="text"]').setValue('mohamed-khalil-zrelly')
+    await wrapper.find('input[type="text"]').setValue('ada-lovelace')
     await wrapper
       .findAll('button')
       .find((b) => b.text().includes('Delete for good'))
@@ -297,7 +297,7 @@ describe('onboarding screen', () => {
     const wrapper = mount(OnboardingView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('/mohamed-khalil-zrelly')
+    expect(wrapper.text()).toContain('/ada-lovelace')
     expect(wrapper.text()).toContain('You can change it later')
     expect(wrapper.find('input[name="slug"]').exists()).toBe(false)
   })
@@ -326,20 +326,22 @@ describe('onboarding screen', () => {
 
     expect(create).toHaveBeenCalledWith(
       'admin/locales',
-      expect.objectContaining({ code: 'fr', label: 'FR', flagCode: 'fr', enabled: true }),
+      expect.objectContaining({ code: 'fr', flagCode: 'fr', enabled: true }),
     )
     expect(content.locales).toHaveLength(1)
     expect(useUiStore().editingLang).toBe('fr')
     expect(replace).toHaveBeenCalledWith('/person')
   })
 
-  it('fills the label and flag from the chosen language', async () => {
+  it('fills the flag from the chosen language', async () => {
     seedOwner()
     const wrapper = mount(OnboardingView)
     await flushPromises()
 
     await wrapper.find('select').setValue('fr')
-    expect((wrapper.find('input[type="text"]').element as HTMLInputElement).value).toBe('FR')
+    await flushPromises()
+
+    expect(wrapper.findAll('select')[1].element.value).toBe('fr')
   })
 
   it('keeps the person on the screen and says why when the locale cannot be saved', async () => {
@@ -368,7 +370,7 @@ describe('owner store', () => {
     await owner.load()
 
     expect(fetch).toHaveBeenCalledTimes(1)
-    expect(owner.slug).toBe('mohamed-khalil-zrelly')
+    expect(owner.slug).toBe('ada-lovelace')
   })
 
   it('reports a failure instead of leaving the screen blank', async () => {

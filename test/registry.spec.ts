@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import FieldRenderer from '@/components/fields/FieldRenderer.vue'
-import { COLLECTIONS, LIST_COLLECTIONS, fieldLabel } from '@/registry/collections'
+import { COLLECTIONS, LIST_COLLECTIONS } from '@/registry/collections'
+import { fieldLabel } from '@/i18n/labels'
 import { blankDocument, payloadFrom, validateDraft } from '@/utils/entity'
 import { changedFields } from '@/utils/diff'
 import { certifications } from './setup'
@@ -87,21 +88,12 @@ describe('field registry', () => {
     expect(malformed).toEqual([])
   })
 
-  it('shows no hint under a field that already carries a placeholder', () => {
+  it('shows the placeholder and nothing else under the field', () => {
     const phone = COLLECTIONS.person.fields.find((field) => field.name === 'phone')!
-    expect(phone.patternHint).toBeTruthy()
 
     const wrapper = mount(FieldRenderer, { props: { field: phone, modelValue: '' } })
-    expect(wrapper.text()).not.toContain(phone.patternHint)
     expect(wrapper.find('input').attributes('placeholder')).toBe(phone.placeholder)
-    wrapper.unmount()
-  })
-
-  it('still shows the hint when a field has no placeholder', () => {
-    const field = { name: 'code', type: 'text' as const, patternHint: 'Two letters' }
-
-    const wrapper = mount(FieldRenderer, { props: { field, modelValue: '' } })
-    expect(wrapper.text()).toContain('Two letters')
+    expect(wrapper.findAll('p')).toHaveLength(0)
     wrapper.unmount()
   })
 
@@ -112,7 +104,7 @@ describe('field registry', () => {
 
     for (const collection of Object.values(COLLECTIONS)) {
       for (const field of [...collection.fields, ...collection.translated]) {
-        const text = `${field.placeholder ?? ''} ${field.patternHint ?? ''}`
+        const text = field.placeholder ?? ''
         if (REAL_VALUES.test(text)) offenders.push(`${collection.key}.${field.name}`)
       }
     }
@@ -216,7 +208,7 @@ describe('field registry', () => {
       icon: 'Zap',
       title: 'AI-900',
       issuer: 'Microsoft',
-      translations: { en: { date: 'June 2024' }, fr: { date: 'Juin 2024' } },
+      date: '2024-06',
     }
 
     expect(validateDraft(collection, draft, LANGS).ok).toBe(true)
@@ -244,7 +236,7 @@ describe('field registry', () => {
       rogue: 'should not be sent',
     })
 
-    expect(Object.keys(payload).sort()).toEqual(['doc', 'icon', 'issuer', 'title', 'translations'])
+    expect(Object.keys(payload).sort()).toEqual(['date', 'doc', 'icon', 'issuer', 'title'])
   })
 
   it('builds a PATCH payload containing only changed keys', () => {

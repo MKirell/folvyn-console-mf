@@ -60,6 +60,14 @@ export async function listSnapshots(): Promise<Snapshot[]> {
   }
 }
 
+export async function clearSnapshots(): Promise<void> {
+  try {
+    await run('readwrite', (store) => store.clear() as IDBRequest<undefined>)
+  } catch {
+    void 0
+  }
+}
+
 export async function purgeExpiredSnapshots(): Promise<void> {
   try {
     const cutoff = Date.now() - RETENTION_MS

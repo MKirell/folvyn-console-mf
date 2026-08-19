@@ -17,20 +17,20 @@
       :id="id"
       :value="modelValue"
       type="text"
-      class="min-w-0 flex-1 basis-[12ch] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50"
+      class="min-w-0 flex-1 basis-[12ch] h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50"
       :placeholder="accept === 'pdf' ? 'document.pdf' : 'image.jpg'"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
 
-    <AppButton size="sm" @click="pickerOpen = true">Choose…</AppButton>
+    <AppButton size="sm" @click="pickerOpen = true">{{ t('assets.choose') }}</AppButton>
     <a
       v-if="modelValue"
       :href="assetUrl(modelValue)"
       target="_blank"
       rel="noreferrer"
       class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-      title="Open the file"
-      aria-label="Open the file"
+      :title="t('assets.openFile')"
+      :aria-label="t('assets.openFile')"
     >
       <ExternalLink :size="14" :stroke-width="1.9" />
     </a>
@@ -38,8 +38,8 @@
       v-if="modelValue"
       type="button"
       class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-      title="Clear"
-      aria-label="Clear the file"
+      :title="t('assets.clear')"
+      :aria-label="t('assets.clearFile')"
       @click="emit('update:modelValue', '')"
     >
       <X :size="14" :stroke-width="2" />
@@ -62,12 +62,14 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AssetPicker from '@/components/fields/AssetPicker.vue'
 import { assetUrl, isImageKey } from '@/utils/assets'
 import type { AssetKind } from '@/registry/collections'
+import { useI18n } from 'vue-i18n'
 
 withDefaults(defineProps<{ modelValue: string; accept?: AssetKind; id?: string }>(), {
   accept: undefined,
   id: undefined,
 })
 
+const { t } = useI18n()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
 const pickerOpen = ref(false)

@@ -18,7 +18,7 @@
     </div>
 
     <p v-if="!langs.length" class="text-[0.78rem] text-muted">
-      Add a locale first — this map is keyed by language code.
+      {{ t('ui.localeFirst') }}
     </p>
   </div>
 </template>
@@ -28,7 +28,9 @@ import { computed } from 'vue'
 import AssetField from '@/components/fields/AssetField.vue'
 import { useContentStore } from '@/stores/content'
 import type { AssetKind } from '@/registry/collections'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = withDefaults(
   defineProps<{ modelValue: Record<string, string>; accept?: AssetKind }>(),
   { accept: undefined },

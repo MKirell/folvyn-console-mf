@@ -6,7 +6,7 @@
     class="group relative flex items-center gap-2.5 rounded-[9px] px-2.5 py-[7px] text-[0.82rem] transition-[background-color,color] motion-reduce:transition-none"
     :class="[
       active ? 'bg-accent/10 text-ink' : 'text-ink-soft hover:bg-bg-tint hover:text-ink',
-      tight ? 'justify-center px-0' : '',
+      tight ? 'justify-center' : '',
     ]"
     @click="ui.mobileNavOpen = false"
   >

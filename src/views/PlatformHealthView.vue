@@ -1,55 +1,55 @@
 <template>
   <div class="mx-auto w-full max-w-[1180px]">
     <PlatformHeader
-      title="Health"
-      description="Is the platform serving, is the pipeline writing, and is retention actually enforced."
+      :title="t('platform.healthTitle')"
+      :description="t('platform.health.blurb')"
       :periods="PERIODS"
       :period="period"
       @select="load"
     />
 
-    <div v-if="loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonGrid v-if="loading" :panels="[8, 4, 12, 8, 4]" :label="t('platform.healthTitle')" />
+
+    <EmptyState v-else-if="error" icon="Shield" :title="t('errors.health')" :description="error">
+      <AppButton variant="primary" @click="load(period)">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="!health"
       icon="Activity"
-      title="Health is unavailable"
-      :description="error ?? 'The API did not answer.'"
+      :title="t('platform.healthUnavailable')"
+      :description="t('common.unreachableDesc')"
     />
 
     <div v-else class="grid grid-cols-12 gap-3 max-1000:grid-cols-6 max-600:grid-cols-2">
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Database"
+        :label="t('platform.health.database')"
         :value="health.database"
         :hint="health.database === 'up' ? 'accepting queries' : 'the API is degraded'"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Error rate"
+        :label="t('platform.health.errorRate')"
         :value="`${health.errorRate}%`"
-        hint="JavaScript errors per session"
+        :hint="t('platform.health.errorsPerSession')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Storage used"
+        :label="t('platform.health.storage')"
         :value="`${used} MB`"
         :hint="`${health.storage.share}% of the ${health.storage.ceilingMb} MB tier`"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Deployed image"
+        :label="t('platform.health.image')"
         :value="imageTag"
         hint="what is actually running"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="What visitors actually waited for"
+        :title="t('platform.waitedFor')"
         hint="p75 across every portfolio"
       >
         <ul class="flex min-h-0 flex-1 flex-col justify-center gap-2" role="list">
@@ -74,13 +74,15 @@
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Storage against the ceiling"
-        hint="Atlas free tier"
+        :title="t('platform.storageCeiling')"
+        :hint="t('platform.health.atlasTier')"
       >
         <div class="flex min-h-0 flex-1 flex-col justify-center gap-3">
           <div>
             <div class="mb-1 flex items-baseline gap-2">
-              <span class="min-w-0 flex-1 text-[0.78rem]">Data and indexes</span>
+              <span class="min-w-0 flex-1 text-[0.78rem]">{{
+                t('platform.health.dataIndexes')
+              }}</span>
               <span class="shrink-0 font-mono text-[0.72rem] tabular-nums text-ink-soft"
                 >{{ used }} / {{ health.storage.ceilingMb }} MB</span
               >
@@ -93,13 +95,13 @@
               ></span>
             </span>
           </div>
-          <BarRows :rows="collections" :slots="4" empty="No content stored yet" />
+          <BarRows :rows="collections" :slots="4" :empty="t('platform.health.noContent')" />
         </div>
       </PanelCard>
 
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
-        title="Errors, and whose visitors saw them"
+        :title="t('platform.errorsWhose')"
         hint="grouped by message"
       >
         <ul
@@ -129,7 +131,7 @@
         </ul>
         <div v-else class="grid flex-1 place-items-center py-6 text-center">
           <div>
-            <p class="text-[0.86rem] text-ink">No portfolio reported a JavaScript error.</p>
+            <p class="text-[0.86rem] text-ink">{{ t('platform.health.noErrors') }}</p>
             <p class="mt-1 max-w-[52ch] text-[0.78rem] text-muted">
               Errors are collected from every portfolio and grouped by message, so one broken deploy
               shows up here as many accounts rather than many rows.
@@ -140,16 +142,20 @@
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Raw events written"
+        :title="t('platform.rawEvents')"
         :hint="`a day, last ${period} days`"
       >
-        <VolumeColumns :points="volume" unit="events" empty="The collector has written nothing" />
+        <VolumeColumns
+          :points="volume"
+          unit="events"
+          :empty="t('platform.health.nothingWritten')"
+        />
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Retention is enforced, not intended"
-        hint="TTL indexes and the rollup clock"
+        :title="t('platform.retention')"
+        :hint="t('platform.health.ttl')"
       >
         <ul class="flex min-h-0 flex-1 flex-col justify-center gap-2" role="list">
           <li
@@ -172,12 +178,16 @@
           </li>
 
           <li class="flex items-center gap-3 rounded-[9px] border border-line/8 bg-bg px-3 py-2">
-            <span class="min-w-0 flex-1 truncate text-[0.76rem]">Rollup lag</span>
+            <span class="min-w-0 flex-1 truncate text-[0.76rem]">{{
+              t('platform.health.rollupLag')
+            }}</span>
             <span class="shrink-0 font-mono text-[0.72rem] text-muted">{{ lag }}</span>
           </li>
 
           <li class="flex items-center gap-3 rounded-[9px] border border-line/8 bg-bg px-3 py-2">
-            <span class="min-w-0 flex-1 truncate text-[0.76rem]">Beacons refused</span>
+            <span class="min-w-0 flex-1 truncate text-[0.76rem]">{{
+              t('platform.health.beacons')
+            }}</span>
             <span class="shrink-0 font-mono text-[0.72rem] tabular-nums text-muted">{{
               (ingest?.totals.rejected ?? 0).toLocaleString()
             }}</span>
@@ -191,8 +201,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { CircleCheck, TriangleAlert } from '@lucide/vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import PlatformHeader from '@/components/layout/PlatformHeader.vue'
 import BarRows from '@/components/charts/BarRows.vue'
 import VolumeColumns from '@/components/charts/VolumeColumns.vue'
@@ -200,7 +212,9 @@ import StatTile from '@/components/charts/StatTile.vue'
 import { foldOther } from '@/utils/breakdown'
 import { fetchIngestReport, fetchPlatformHealth } from '@/services/admin.api'
 import type { IngestReport, PlatformHealth } from '@/types/analytics'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const PERIODS = [7, 30, 90]
 
 const VITALS = [

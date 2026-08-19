@@ -90,7 +90,7 @@ test.describe('navigation', () => {
     await signedIn.goto('/insights')
 
     await signedIn.keyboard.press('Control+k')
-    await signedIn.getByPlaceholder(/jump to a screen/i).fill('DP-900')
+    await signedIn.getByRole('dialog').getByRole('textbox').fill('DP-900')
     await signedIn.keyboard.press('Enter')
 
     await expect(signedIn).toHaveURL(/\/c\/certification\/c2/)
@@ -99,10 +99,10 @@ test.describe('navigation', () => {
 
 test.describe('collection workbench', () => {
   test('lists rows with their translation state', async ({ signedIn }) => {
-    await signedIn.goto('/c/certification')
+    await signedIn.goto('/c/experience')
 
-    await expect(main(signedIn).getByText('AI-900')).toBeVisible()
-    await expect(main(signedIn).getByText('DP-900')).toBeVisible()
+    await expect(main(signedIn).getByText('Backend Engineer')).toBeVisible()
+    await expect(main(signedIn).getByText('Data Engineer')).toBeVisible()
     await expect(signedIn.getByTitle('2 of 2 translations complete')).toBeVisible()
     await expect(signedIn.getByTitle('1 of 2 translations complete')).toBeVisible()
   })
@@ -117,12 +117,12 @@ test.describe('collection workbench', () => {
   })
 
   test('filters by missing translation', async ({ signedIn }) => {
-    await signedIn.goto('/c/certification')
+    await signedIn.goto('/c/experience')
 
     await signedIn.getByLabel('Filter by missing translation').selectOption('fr')
 
-    await expect(main(signedIn).getByText('DP-900')).toBeVisible()
-    await expect(main(signedIn).getByText('AI-900')).toHaveCount(0)
+    await expect(main(signedIn).getByText('Data Engineer')).toBeVisible()
+    await expect(main(signedIn).getByText('Backend Engineer')).toHaveCount(0)
   })
 
   test('asks for a typed confirmation before deleting', async ({ signedIn, recorder }) => {
@@ -146,15 +146,17 @@ test.describe('collection workbench', () => {
 
 test.describe('entity editor', () => {
   test('edits one locale at a time, switched from the topbar', async ({ signedIn }) => {
-    await signedIn.goto('/c/certification/c1')
+    await signedIn.goto('/c/experience/e1')
 
-    await expect(main(signedIn).getByText('Shared fields')).toBeVisible()
+    await expect(main(signedIn).getByRole('heading', { name: 'Details' })).toBeVisible()
+    await expect(main(signedIn).getByText('Shared fields')).toHaveCount(0)
 
     await pickLocale(signedIn, 'en')
-    await expect(main(signedIn).getByLabel('Date')).toHaveValue('June 2024')
+    await expect(main(signedIn).locator('input[value="Backend Engineer"]')).toHaveCount(1)
 
     await pickLocale(signedIn, 'fr')
-    await expect(main(signedIn).getByLabel('Date')).toHaveValue('Juin 2024')
+    await expect(main(signedIn).locator('input[value="Ingénieur backend"]')).toHaveCount(1)
+    await expect(main(signedIn).locator('input[value="Backend Engineer"]')).toHaveCount(0)
   })
 
   test('renders the real portfolio section inside the preview frame', async ({ signedIn }) => {
@@ -275,7 +277,8 @@ test.describe('locales and media', () => {
 
     await expect(main(signedIn).getByRole('heading', { name: 'Foundation' })).toBeVisible()
     await expect(main(signedIn).getByText('Hero', { exact: true })).toBeVisible()
-    await expect(main(signedIn).getByRole('heading', { name: 'Certifications' })).toBeVisible()
+    await expect(main(signedIn).getByRole('heading', { name: 'Experiences' })).toBeVisible()
+    await expect(main(signedIn).getByRole('heading', { name: 'Certifications' })).toHaveCount(0)
   })
 
   test('reports the locale that has no hero narrative yet', async ({ signedIn }) => {

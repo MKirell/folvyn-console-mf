@@ -9,11 +9,11 @@ import { useHistoryStore } from '@/stores/history'
 import { useMediaStore } from '@/stores/media'
 import { useUiStore } from '@/stores/ui'
 import { useTheme } from '@/composables/useTheme'
-import TagsInput from '@/components/fields/TagsInput.vue'
 import * as api from '@/services/admin.api'
+import * as local from '@/services/local-assets'
 import { listSnapshots, purgeExpiredSnapshots, putSnapshot } from '@/services/snapshots'
 import type { AnalyticsSummary } from '@/types/analytics'
-import { certifications, experiences, locales, person, profile } from './setup'
+import { certifications, experiences, locales, owner, person, profile } from './setup'
 
 const route = reactive<{
   params: Record<string, string>
@@ -69,7 +69,7 @@ const SUMMARY: AnalyticsSummary = {
     { key: '68a1f0c2e4b0a1c2d3e4f5b7', impressions: 380, clicks: 19, rate: 5 },
   ],
   scrollQuartiles: [1700, 1100, 620, 240],
-  docsOpened: [{ key: 'resume_en_mkzrelly.pdf', count: 37 }],
+  docsOpened: [{ key: 'resume_en_ada-lovelace.pdf', count: 37 }],
   outbound: [{ key: 'github.com', count: 28 }],
   contact: [{ key: 'email', count: 9 }],
   contactRate: 5,
@@ -326,6 +326,7 @@ describe('history screen', () => {
     const createObjectURL = vi.fn(() => 'blob:x')
     const revokeObjectURL = vi.fn()
     vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL })
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
 
     const wrapper = mount(HistoryView)
     await flushPromises()
@@ -453,6 +454,7 @@ describe('person screen', () => {
   it('reports when the person document has not loaded', () => {
     const content = useContentStore()
     content.singletons = { person: null }
+    content.loaded = true
 
     expect(mount(SingletonView).text()).toContain('has not loaded')
   })
@@ -487,6 +489,107 @@ describe('media screen', () => {
     expect(wrapper.text()).toContain('certificate-azure-ai900.pdf')
   })
 
+  it('lists what the portfolio repo serves when no bucket is configured', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockResolvedValueOnce({ ...owner, assetPrefix: '' })
+    vi.mocked(api.listAssets).mockClear()
+    vi.spyOn(local, 'localAssetsEnabled').mockReturnValue(false)
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      headers: new Headers({
+        'content-length': '2048',
+        'last-modified': 'Wed, 01 Jul 2026 00:00:00 GMT',
+      }),
+    } as Response)
+
+    const media = useMediaStore()
+    await media.load(true)
+
+    const wrapper = mount(MediaView)
+    await flushPromises()
+
+    expect(media.source).toBe('repo')
+    expect(api.listAssets).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain("Served from your portfolio's repo")
+    expect(wrapper.text()).toContain('certificate-azure-ai900.pdf')
+    expect(wrapper.text()).toContain('2 kB')
+  })
+
+  it('leaves a repo-backed file undeletable once the app is built', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockResolvedValueOnce({ ...owner, assetPrefix: '' })
+    vi.spyOn(local, 'localAssetsEnabled').mockReturnValue(false)
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      headers: new Headers({ 'content-length': '1' }),
+    } as Response)
+
+    const media = useMediaStore()
+    await media.load(true)
+
+    const wrapper = mount(MediaView)
+    await flushPromises()
+
+    const remove = wrapper.find('button[aria-label="Delete"]')
+    expect(remove.attributes('disabled')).toBeDefined()
+  })
+
+  it('drops a referenced key the repo does not actually serve', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockResolvedValueOnce({ ...owner, assetPrefix: '' })
+    vi.spyOn(local, 'localAssetsEnabled').mockReturnValue(false)
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      headers: new Headers(),
+    } as Response)
+
+    const media = useMediaStore()
+    await media.load(true)
+
+    expect(media.assets).toEqual([])
+    expect(media.missing.length).toBeGreaterThan(0)
+  })
+
+  it('writes an upload straight into the repo when running locally', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockResolvedValueOnce({ ...owner, assetPrefix: '' })
+    vi.spyOn(local, 'localAssetsEnabled').mockReturnValue(true)
+    vi.spyOn(local, 'listLocalAssets').mockResolvedValue([])
+    const put = vi
+      .spyOn(local, 'putLocalAsset')
+      .mockResolvedValue({ key: 'new-file.pdf', size: 12, lastModified: '2026-08-19' })
+
+    const media = useMediaStore()
+    await media.load(true)
+
+    expect(media.writable).toBe(true)
+
+    const key = await media.upload(new File(['x'], 'New File.pdf', { type: 'application/pdf' }))
+
+    expect(key).toBe('new-file.pdf')
+    expect(put).toHaveBeenCalled()
+    expect(api.presignUpload).not.toHaveBeenCalled()
+    expect(media.assets.map((asset) => asset.key)).toContain('new-file.pdf')
+  })
+
+  it('deletes through the repo endpoint when running locally', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockResolvedValueOnce({ ...owner, assetPrefix: '' })
+    vi.spyOn(local, 'localAssetsEnabled').mockReturnValue(true)
+    vi.spyOn(local, 'listLocalAssets').mockResolvedValue([
+      { key: 'unused.pdf', size: 1, lastModified: '2026-08-19' },
+    ])
+    const remove = vi.spyOn(local, 'deleteLocalAsset').mockResolvedValue()
+
+    const media = useMediaStore()
+    await media.load(true)
+    await media.remove('unused.pdf')
+
+    expect(remove).toHaveBeenCalledWith('unused.pdf')
+    expect(api.deleteAsset).not.toHaveBeenCalled()
+    expect(media.assets).toEqual([])
+  })
+
   it('copies a key to the clipboard', async () => {
     seed()
     const writeText = vi.fn(() => Promise.resolve())
@@ -505,46 +608,6 @@ describe('media screen', () => {
 })
 
 describe('hero & story screen', () => {
-  it('edits the narrative that belongs to the person', async () => {
-    seed()
-    route.meta = { collection: 'profile' }
-    vi.mocked(api.updateSingleton).mockClear()
-    vi.mocked(api.updateSingleton).mockResolvedValue({
-      ...profile,
-      highlightFocus: ['Python', 'Airflow'],
-    } as never)
-
-    const wrapper = mount(SingletonView)
-    const focusInput = wrapper.findAllComponents(TagsInput)[1].find('input')
-
-    await focusInput?.setValue('Airflow')
-    await focusInput?.trigger('keydown.enter')
-    await wrapper.find('form').trigger('submit')
-
-    await vi.waitFor(() =>
-      expect(api.updateSingleton).toHaveBeenCalledWith('admin/profile', {
-        highlightFocus: ['Python', 'Airflow'],
-      }),
-    )
-  })
-
-  it('accepts more than one highlight, not just a single focus', async () => {
-    seed()
-    route.meta = { collection: 'profile' }
-
-    const wrapper = mount(SingletonView)
-    const focusInput = wrapper.findAllComponents(TagsInput)[1].find('input')
-
-    expect(focusInput.exists()).toBe(true)
-    await focusInput?.setValue('Airflow')
-    await focusInput?.trigger('keydown.enter')
-    await focusInput?.setValue('dbt')
-    await focusInput?.trigger('keydown.enter')
-
-    expect(wrapper.text()).toContain('Airflow')
-    expect(wrapper.text()).toContain('dbt')
-  })
-
   it('carries no generic interface copy', () => {
     seed()
     route.meta = { collection: 'profile' }

@@ -19,13 +19,14 @@
 
         <label v-if="confirmWord" class="mt-4 block">
           <span class="text-[0.78rem] text-ink-soft">
-            Type <span class="font-mono text-ink">“{{ confirmWord }}”</span> to confirm
+            {{ t('ui.typeWord') }} <span class="font-mono text-ink">“{{ confirmWord }}”</span> to
+            confirm
           </span>
           <input
             ref="inputRef"
             v-model="typed"
             type="text"
-            class="mt-1.5 w-full rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.82rem] outline-none focus:border-accent/50"
+            class="mt-1.5 w-full h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.82rem] outline-none focus:border-accent/50"
             @keydown.enter="ready && emit('confirm')"
             @keydown.esc="emit('cancel')"
           />
@@ -36,9 +37,9 @@
         </div>
 
         <div class="mt-5 flex justify-end gap-2">
-          <AppButton size="sm" @click="emit('cancel')">Cancel</AppButton>
+          <AppButton size="sm" @click="emit('cancel')">{{ t('common.cancel') }}</AppButton>
           <AppButton size="sm" variant="danger" :disabled="!ready" @click="emit('confirm')">
-            {{ confirmLabel }}
+            {{ confirmLabel || t('common.delete') }}
           </AppButton>
         </div>
       </div>
@@ -49,6 +50,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import { useI18n } from 'vue-i18n'
 
 const props = withDefaults(
   defineProps<{
@@ -59,8 +61,10 @@ const props = withDefaults(
     confirmLabel?: string
     confirmWord?: string
   }>(),
-  { subject: '', confirmLabel: 'Delete', confirmWord: '' },
+  { subject: '', confirmLabel: '', confirmWord: '' },
 )
+
+const { t } = useI18n()
 
 const emit = defineEmits<{ confirm: []; cancel: [] }>()
 

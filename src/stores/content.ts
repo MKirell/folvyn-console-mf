@@ -18,7 +18,7 @@ import {
 import { useHistoryStore } from '@/stores/history'
 import { useUiStore } from '@/stores/ui'
 import { clone } from '@/utils/diff'
-import { payloadFrom } from '@/utils/entity'
+import { payloadFrom, titleOf } from '@/utils/entity'
 import type { AdminDocument, AdminLocale, AdminPerson, AdminProfile } from '@/types/admin'
 
 export const useContentStore = defineStore('content', () => {
@@ -27,6 +27,8 @@ export const useContentStore = defineStore('content', () => {
   const loading = ref(false)
   const loaded = ref(false)
   const error = ref<string | null>(null)
+
+  const failed = computed(() => error.value !== null && !loaded.value)
 
   const locales = computed(() => (documents.value.locale ?? []) as AdminLocale[])
   const enabledLocales = computed(() => locales.value.filter((locale) => locale.enabled !== false))
@@ -43,6 +45,11 @@ export const useContentStore = defineStore('content', () => {
 
   function find(key: string, id: string): AdminDocument | undefined {
     return list(key).find((doc) => doc.id === id)
+  }
+
+  function labelFor(collection: CollectionDef, document: AdminDocument): string {
+    const title = titleOf(collection, document, referenceLang.value)
+    return title && title !== document.id ? title : collection.singular
   }
 
   function sorted(entries: AdminDocument[]): AdminDocument[] {
@@ -133,7 +140,12 @@ export const useContentStore = defineStore('content', () => {
   ): Promise<AdminDocument> {
     const before = find(collection.key, id)
     if (before) {
-      await useHistoryStore().snapshot(collection.key, id, collection.singular, clone(before))
+      await useHistoryStore().snapshot(
+        collection.key,
+        id,
+        labelFor(collection, before),
+        clone(before),
+      )
     }
 
     const updated = await updateDocument(collection.path, id, changes)
@@ -144,7 +156,9 @@ export const useContentStore = defineStore('content', () => {
 
     if (before) {
       const inverse: Record<string, unknown> = {}
-      for (const key of Object.keys(changes)) inverse[key] = clone(before[key])
+      for (const key of Object.keys(changes)) {
+        inverse[key] = before[key] === undefined ? null : clone(before[key])
+      }
 
       useHistoryStore().record(`Edit ${collection.singular.toLowerCase()}`, async () => {
         const restored = await updateDocument(collection.path, id, inverse)
@@ -163,7 +177,12 @@ export const useContentStore = defineStore('content', () => {
     const previous = list(collection.key)
 
     if (before) {
-      await useHistoryStore().snapshot(collection.key, id, collection.singular, clone(before))
+      await useHistoryStore().snapshot(
+        collection.key,
+        id,
+        labelFor(collection, before),
+        clone(before),
+      )
     }
 
     put(
@@ -221,7 +240,7 @@ export const useContentStore = defineStore('content', () => {
       await useHistoryStore().snapshot(
         collection.key,
         before.id,
-        collection.singular,
+        labelFor(collection, before),
         clone(before),
       )
     }
@@ -231,7 +250,9 @@ export const useContentStore = defineStore('content', () => {
 
     if (before) {
       const inverse: Record<string, unknown> = {}
-      for (const key of Object.keys(changes)) inverse[key] = clone(before[key])
+      for (const key of Object.keys(changes)) {
+        inverse[key] = before[key] === undefined ? null : clone(before[key])
+      }
 
       useHistoryStore().record(`Edit ${collection.singular.toLowerCase()}`, async () => {
         const reverted = await updateSingleton(collection.path, inverse)
@@ -274,6 +295,7 @@ export const useContentStore = defineStore('content', () => {
     loading,
     loaded,
     error,
+    failed,
     locales,
     enabledLocales,
     langs,

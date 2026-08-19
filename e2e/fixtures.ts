@@ -14,14 +14,44 @@ export function accessToken(groups: string[] = ['admin']): string {
   return `header.${base64Url({
     sub: 'e2e-user',
     exp: Math.floor(Date.now() / 1000) + 900,
-    username: 'mkirell',
+    username: 'ada-lovelace',
     'cognito:groups': groups,
   })}.signature`
 }
 
 export const locales = [
-  { id: 'l1', order: 0, code: 'en', label: 'English', flagCode: 'gb', enabled: true },
-  { id: 'l2', order: 1, code: 'fr', label: 'Français', flagCode: 'fr', enabled: true },
+  { id: 'l1', order: 0, code: 'en', flagCode: 'gb', enabled: true },
+  { id: 'l2', order: 1, code: 'fr', flagCode: 'fr', enabled: true },
+]
+
+export const experiences = [
+  {
+    id: 'e1',
+    order: 0,
+    company: 'Acme Corp',
+    startDate: '2025-09',
+    endDate: null,
+    country: 'FR',
+    tags: ['LangGraph'],
+    doc: null,
+    link: null,
+    translations: {
+      en: { role: 'Backend Engineer', bullets: ['Built agents'] },
+      fr: { role: 'Ingénieur backend', bullets: ['Développé des agents'] },
+    },
+  },
+  {
+    id: 'e2',
+    order: 1,
+    company: 'Globex',
+    startDate: '2024-01',
+    endDate: '2025-06',
+    country: 'FR',
+    tags: [],
+    doc: null,
+    link: null,
+    translations: { en: { role: 'Data Engineer', bullets: ['Shipped pipelines'] } },
+  },
 ]
 
 export const certifications = [
@@ -32,7 +62,7 @@ export const certifications = [
     title: 'AI-900',
     issuer: 'Microsoft',
     doc: 'certificate-azure-ai900.pdf',
-    translations: { en: { date: 'June 2024' }, fr: { date: 'Juin 2024' } },
+    date: '2024-06',
   },
   {
     id: 'c2',
@@ -41,30 +71,30 @@ export const certifications = [
     title: 'DP-900',
     issuer: 'Microsoft',
     doc: null,
-    translations: { en: { date: 'May 2024' } },
+    date: '2024-05',
   },
 ]
 
 export const person = {
   id: 'p1',
-  givenName: 'Mohamed Khalil',
-  familyName: 'ZRELLY',
-  email: 'hello@mkirell.com',
-  phone: '+21612345678',
-  linkedin: 'https://www.linkedin.com/in/mkirell',
-  github: 'https://github.com/MKirell',
+  givenName: 'Ada',
+  familyName: 'Lovelace',
+  email: 'ada.lovelace@example.com',
+  phone: '+33612345678',
+  linkedin: 'https://www.linkedin.com/in/ada-lovelace',
+  github: 'https://github.com/adalovelace',
   worksFor: 'Freelance',
-  addressCountry: 'TN',
+  addressCountry: 'GB',
   photo: 'off-image.jpeg',
   logoLightTheme: 'folvyn-logo-dark.png',
   logoDarkTheme: 'folvyn-logo-light.png',
-  resumes: { en: 'resume_en_mkzrelly.pdf' },
+  resumes: { en: 'resume_en_ada-lovelace.pdf' },
   translations: {
     en: {
       jobTitle: 'Data engineer',
       description: 'Builds data platforms.',
-      addressLocality: 'Tunis',
-      addressRegion: 'Tunis',
+      addressLocality: 'London',
+      addressRegion: 'London',
     },
   },
 }
@@ -125,6 +155,7 @@ export async function stubApi(
       return json(route, method === 'PATCH' ? { ...profile, ...request.postDataJSON() } : profile)
     }
     if (path === '/admin/locales') return json(route, locales)
+    if (path === '/admin/experiences') return json(route, experiences)
     if (path === '/admin/uploads') return json(route, [])
     if (path.startsWith('/admin/analytics')) return json(route, { statusCode: 404 }, 404)
 
@@ -133,6 +164,13 @@ export async function stubApi(
         return json(route, { id: 'c9', order: 2, ...request.postDataJSON() }, 201)
       }
       return json(route, certifications)
+    }
+
+    if (path.startsWith('/admin/experiences/')) {
+      const id = path.split('/').pop() as string
+      if (method === 'DELETE') return route.fulfill({ status: 204, body: '' })
+      const existing = experiences.find((entry) => entry.id === id) ?? experiences[0]
+      return json(route, { ...existing, ...request.postDataJSON() })
     }
 
     if (path.startsWith('/admin/certifications/')) {

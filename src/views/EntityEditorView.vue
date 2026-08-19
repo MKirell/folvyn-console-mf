@@ -1,15 +1,20 @@
 <template>
   <div v-if="!collection">
-    <EmptyState title="Unknown collection" description="The sidebar lists every editable screen." />
+    <EmptyState
+      :title="t('views.entity.unknownTitle')"
+      :description="t('views.entity.unknownDesc')"
+    />
   </div>
 
   <div v-else-if="!draft">
     <EmptyState
       icon="Search"
-      :title="`This ${collection.singular.toLowerCase()} no longer exists`"
-      description="It may have been deleted in another tab."
+      :title="t('views.entity.gone', { singular: singular.toLowerCase() })"
+      :description="t('views.entity.goneDesc2')"
     >
-      <AppButton variant="primary" @click="router.push(listRoute)"> Back to the list </AppButton>
+      <AppButton variant="primary" @click="router.push(listRoute)">
+        {{ t('views.entity.backToList') }}
+      </AppButton>
     </EmptyState>
   </div>
 
@@ -17,14 +22,13 @@
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <AppButton size="sm" variant="quiet" class="max-900:order-1" @click="router.push(listRoute)">
         <ArrowLeft :size="14" :stroke-width="2" aria-hidden="true" />
-        {{ collection.label }}
+        {{ label }}
       </AppButton>
 
       <div class="min-w-0 flex-1 max-900:order-first max-900:basis-full">
         <h2 class="truncate font-disp text-[1.2rem] font-semibold tracking-tight">
-          {{ isNew ? `New ${collection.singular.toLowerCase()}` : heading }}
+          {{ isNew ? t('views.entity.newEntry', { singular: singular.toLowerCase() }) : heading }}
         </h2>
-        <p v-if="!isNew" class="truncate font-mono text-[0.64rem] text-muted">{{ draft.id }}</p>
       </div>
 
       <AppButton
@@ -35,7 +39,7 @@
         @click="confirming = true"
       >
         <Trash2 :size="13" :stroke-width="1.9" aria-hidden="true" />
-        Delete
+        {{ t('common.delete') }}
       </AppButton>
       <AppButton
         variant="primary"
@@ -44,7 +48,7 @@
         :busy="saving"
         :disabled="!dirty && !isNew"
       >
-        Save
+        {{ t('common.save') }}
         <kbd class="font-mono text-[0.62rem] opacity-70">{{ metaKey }} S</kbd>
       </AppButton>
     </header>
@@ -60,7 +64,7 @@
       v-if="previewable"
       class="mb-4 flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
       role="tablist"
-      aria-label="Editor view"
+      :aria-label="t('views.singleton.editorView')"
     >
       <button
         v-for="option in TABS"
@@ -77,50 +81,70 @@
     </div>
 
     <div v-show="!previewable || tab === 'fields'" class="space-y-4">
-      <PanelCard title="Shared fields" hint="same in every language">
-        <div class="grid grid-cols-2 gap-x-4 gap-y-3.5 max-700:grid-cols-1">
+      <p v-if="errors.fields.translations" class="text-[0.76rem] text-rust">
+        {{ errors.fields.translations }}
+      </p>
+
+      <PanelCard
+        v-for="group in groups"
+        :key="group.title"
+        :title="groupTitle(group.title)"
+        :hint="
+          group.assets
+            ? t('views.entity.filesHint')
+            : collection.i18n && group.entries.some((entry) => entry.translated)
+              ? t('views.entity.complete', { done: completeCount, total: langs.length })
+              : ''
+        "
+      >
+        <div
+          :class="
+            group.assets
+              ? 'grid grid-cols-1 gap-x-4 gap-y-3.5'
+              : 'grid grid-cols-2 gap-x-4 gap-y-3.5 max-700:grid-cols-1'
+          "
+        >
           <FieldRenderer
-            v-for="field in collection.fields"
-            :key="field.name"
-            :field="field"
-            :model-value="draft[field.name]"
-            :error="errors.fields[field.name]"
-            @update:model-value="setField(field.name, $event)"
+            v-for="entry in group.entries"
+            :key="`${entry.translated ? editingLang : 'shared'}:${entry.field.name}`"
+            :field="entry.field"
+            :full="entry.full"
+            :locale="entry.translated ? editingLang : ''"
+            :translated="
+              entry.translated && hasValue(translationValue(editingLang, entry.field.name))
+            "
+            :model-value="
+              entry.translated
+                ? translationValue(editingLang, entry.field.name)
+                : draft[entry.field.name]
+            "
+            :error="
+              entry.translated
+                ? errors.translations[editingLang]?.[entry.field.name]
+                : errors.fields[entry.field.name]
+            "
+            @update:model-value="
+              entry.translated
+                ? setTranslation(editingLang, entry.field.name, $event)
+                : setField(entry.field.name, $event)
+            "
           />
         </div>
       </PanelCard>
 
-      <PanelCard
-        v-if="collection.i18n"
-        :key="`translations:${editingLang}`"
-        title="Translations"
-        :hint="`${completeCount}/${langs.length} complete`"
-      >
-        <p v-if="errors.fields.translations" class="mb-3 text-[0.76rem] text-rust">
-          {{ errors.fields.translations }}
-        </p>
-
-        <div class="space-y-3">
-          <FieldRenderer
-            v-for="field in collection.translated"
-            :key="`${editingLang}:${field.name}`"
-            :field="field"
-            :model-value="translationValue(editingLang, field.name)"
-            :error="errors.translations[editingLang]?.[field.name]"
-            @update:model-value="setTranslation(editingLang, field.name, $event)"
-          />
-        </div>
+      <PanelCard v-if="isLocale && localeCode" :title="t('views.locales.workQueue')">
+        <LocaleWorkQueue :code="localeCode" />
       </PanelCard>
     </div>
 
     <div v-if="previewable && tab === 'preview'">
-      <PanelCard title="Live preview" :hint="`as ${editingLang} reads it`">
+      <PanelCard :title="t('views.singleton.tabPreview')" :hint="`as ${editingLang} reads it`">
         <template #actions>
           <div
             v-if="offeredViewports.length > 1"
             class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-bg p-[3px]"
             role="group"
-            aria-label="Preview viewport"
+            :aria-label="t('views.singleton.previewViewport')"
           >
             <button
               v-for="option in offeredViewports"
@@ -151,7 +175,7 @@
 
     <ConfirmDialog
       :open="confirming"
-      :title="`Delete this ${collection.singular.toLowerCase()}?`"
+      :title="t('views.entity.deleteTitle', { singular: singular.toLowerCase() })"
       :subject="heading"
       message="will disappear from your portfolio as soon as you confirm."
       confirm-word="delete"
@@ -169,14 +193,18 @@ import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import LocaleWorkQueue from '@/components/locale/LocaleWorkQueue.vue'
 import FieldRenderer from '@/components/fields/FieldRenderer.vue'
 import PreviewFrame from '@/components/preview/PreviewFrame.vue'
 import { buildPreviewPayload, hasPreview } from '@/utils/preview-payload'
 import { getCollection, type CollectionDef } from '@/registry/collections'
+import { useI18n } from 'vue-i18n'
+import { fieldGroups, hasValue } from '@/utils/field-groups'
+import { collectionLabel, collectionSingular } from '@/i18n/labels'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import { ApiError } from '@/services/admin.api'
-import { changedFields, clone, deepEqual } from '@/utils/diff'
+import { changedFields, clone, deepEqual, writableKeys } from '@/utils/diff'
 import {
   blankDocument,
   blankTranslation,
@@ -190,6 +218,7 @@ import {
 import { incompleteLocaleReason } from '@/utils/locale-queue'
 import type { AdminDocument, TranslationEntry } from '@/types/admin'
 
+const { t, te } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const content = useContentStore()
@@ -202,10 +231,10 @@ const serverError = ref('')
 const saving = ref(false)
 const confirming = ref(false)
 
-const TABS = [
-  { key: 'fields' as const, label: 'Fields' },
-  { key: 'preview' as const, label: 'Live preview' },
-]
+const TABS = computed(() => [
+  { key: 'fields' as const, label: t('views.singleton.tabFields') },
+  { key: 'preview' as const, label: t('views.singleton.tabPreview') },
+])
 
 const tab = ref<'fields' | 'preview'>('fields')
 const previewable = computed(() => hasPreview(collection.value?.key ?? ''))
@@ -247,8 +276,20 @@ const previewPayload = computed(() =>
 )
 
 const collection = computed(() => getCollection(String(route.params.collection)))
+const isLocale = computed(() => collection.value?.key === 'locale')
+const localeCode = computed(() =>
+  isLocale.value && typeof draft.value?.code === 'string' ? draft.value.code : '',
+)
 const isNew = computed(() => route.params.id === 'new')
 const langs = computed(() => content.langs)
+
+const groups = computed(() => (collection.value ? fieldGroups(collection.value) : []))
+const label = computed(() => (collection.value ? collectionLabel(collection.value) : ''))
+const singular = computed(() => (collection.value ? collectionSingular(collection.value) : ''))
+
+function groupTitle(title: string): string {
+  return te(`groups.${title}`) ? t(`groups.${title}`) : title
+}
 
 const metaKey = computed(() =>
   typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl',
@@ -336,7 +377,7 @@ async function save(): Promise<void> {
   }
 
   if (!errors.value.ok) {
-    ui.notify('warn', 'Some fields need attention')
+    ui.notify('warn', t('views.singleton.needsAttention'))
     return
   }
 
@@ -346,17 +387,17 @@ async function save(): Promise<void> {
     if (isNew.value) {
       const created = await content.create(def, draft.value)
       ui.dirty = false
-      ui.notify('good', `${def.singular} created`)
+      ui.notify('good', t('views.entity.created', { singular: collectionSingular(def) }))
       await router.replace(`/c/${def.key}/${created.id}`)
       return
     }
 
     const payload = payloadFrom(def, draft.value)
     const previous = original.value ? payloadFrom(def, original.value) : null
-    const changes = changedFields(previous, payload, Object.keys(payload))
+    const changes = changedFields(previous, payload, writableKeys(previous, payload))
 
     if (Object.keys(changes).length === 0) {
-      ui.notify('info', 'Nothing changed')
+      ui.notify('info', t('views.singleton.nothingChanged'))
       return
     }
 
@@ -364,7 +405,7 @@ async function save(): Promise<void> {
     draft.value = clone(updated)
     original.value = clone(updated)
     ui.dirty = false
-    ui.notify('good', `${def.singular} saved`)
+    ui.notify('good', t('views.entity.saved', { singular: collectionSingular(def) }))
   } catch (error) {
     if (error instanceof ApiError) {
       errors.value = { ...errors.value, fields: mapServerErrors(def, error.messages) }
@@ -372,7 +413,7 @@ async function save(): Promise<void> {
     } else {
       serverError.value = error instanceof Error ? error.message : 'The save failed'
     }
-    ui.notify('bad', 'Save failed')
+    ui.notify('bad', t('views.singleton.saveFailed'))
   } finally {
     saving.value = false
   }
@@ -389,7 +430,11 @@ async function remove(): Promise<void> {
     ui.notify('good', `${def.singular} deleted`, 'Undo from the top bar')
     await router.push(`/c/${def.key}`)
   } catch (error) {
-    ui.notify('bad', 'Delete failed', error instanceof Error ? error.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.collection.deleteFailed'),
+      error instanceof Error ? error.message : undefined,
+    )
   }
 }
 

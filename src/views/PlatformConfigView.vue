@@ -1,52 +1,49 @@
 <template>
   <div class="mx-auto w-full max-w-[1180px]">
-    <PlatformHeader
-      title="Platform config"
-      description="What this environment actually enforces at runtime. Read-only — every value is code, not a setting."
-    />
+    <PlatformHeader :title="t('platform.config.title')" :description="t('platform.config.blurb')" />
 
-    <div v-if="loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonGrid v-if="loading" :panels="[8, 4, 6, 6]" :label="t('platform.config.title')" />
+
+    <EmptyState v-else-if="error" icon="Shield" :title="t('errors.config')" :description="error">
+      <AppButton variant="primary" @click="load">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="!config"
       icon="Settings"
-      title="Config is unavailable"
-      :description="error ?? 'The API did not answer.'"
+      :title="t('platform.config.unavailable')"
+      :description="t('common.unreachableDesc')"
     />
 
     <div v-else class="grid grid-cols-12 gap-3 max-1000:grid-cols-6 max-600:grid-cols-2">
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Environment"
-        :value="config.environment.nodeEnv"
+        :label="t('platform.config.environment')"
+        :value="config.environment.name ?? config.environment.nodeEnv"
         :hint="config.environment.database"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Deployed image"
+        :label="t('platform.health.image')"
         :value="image"
         hint="what is serving requests"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Reserved addresses"
+        :label="t('platform.config.reserved')"
         :value="String(config.reservedSlugs.length)"
         hint="refused as a portfolio address"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Erasure deadline"
+        :label="t('platform.config.erasureDeadline')"
         :value="`${config.limits.erasureDeadlineDays}d`"
         hint="clock on every request"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Runtime"
+        :title="t('platform.config.runtime')"
         hint="what this process is actually running"
       >
         <ConfigRows :rows="config.runtime" />
@@ -54,7 +51,7 @@
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Address rules"
+        :title="t('platform.config.addressRules')"
         hint="enforced on every write"
       >
         <ConfigRows :rows="addressRules" />
@@ -62,7 +59,7 @@
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="What the collector refuses"
+        :title="t('platform.config.refuses')"
         hint="ingest rules, by construction"
       >
         <ConfigRows :rows="config.ingest" />
@@ -70,7 +67,7 @@
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Privacy posture"
+        :title="t('platform.config.privacy')"
         hint="what is kept, and for how long"
       >
         <ConfigRows :rows="config.privacy" />
@@ -81,14 +78,18 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import PlatformHeader from '@/components/layout/PlatformHeader.vue'
 import ConfigRows from '@/components/platform/ConfigRows.vue'
 import StatTile from '@/components/charts/StatTile.vue'
 import { fetchPlatformConfig } from '@/services/admin.api'
 import type { PlatformConfig } from '@/types/analytics'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const config = ref<PlatformConfig | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -118,13 +119,19 @@ const addressRules = computed(() => {
   ]
 })
 
-onMounted(async () => {
+async function load(): Promise<void> {
+  loading.value = true
+  error.value = null
+
   try {
     config.value = await fetchPlatformConfig()
   } catch (e) {
+    config.value = null
     error.value = e instanceof Error ? e.message : 'Config is not available'
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(() => void load())
 </script>

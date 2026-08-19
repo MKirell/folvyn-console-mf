@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { lazyView } from '@/router/lazy'
 import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
@@ -33,72 +34,72 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/platform',
     name: 'platform',
-    component: () => import('@/views/PlatformView.vue'),
-    meta: { title: 'Overview', platform: true },
+    component: lazyView(() => import('@/views/PlatformView.vue')),
+    meta: { title: 'Overview', titleKey: 'overview', platform: true },
   },
   {
     path: '/platform/portfolios',
     name: 'platform-portfolios',
-    component: () => import('@/views/PlatformPortfoliosView.vue'),
-    meta: { title: 'Portfolios', platform: true },
+    component: lazyView(() => import('@/views/PlatformPortfoliosView.vue')),
+    meta: { title: 'Portfolios', titleKey: 'portfolios', platform: true },
   },
   {
     path: '/platform/portfolios/:id',
     name: 'platform-account',
-    component: () => import('@/views/PlatformAccountView.vue'),
-    meta: { title: 'Account', platform: true },
+    component: lazyView(() => import('@/views/PlatformAccountView.vue')),
+    meta: { title: 'Account', titleKey: 'account', platform: true },
   },
   {
     path: '/platform/traffic',
     name: 'platform-traffic',
-    component: () => import('@/views/PlatformTrafficView.vue'),
-    meta: { title: 'Traffic', platform: true },
+    component: lazyView(() => import('@/views/PlatformTrafficView.vue')),
+    meta: { title: 'Traffic', titleKey: 'traffic', platform: true },
   },
   {
     path: '/platform/erasures',
     name: 'platform-erasures',
-    component: () => import('@/views/PlatformErasureView.vue'),
-    meta: { title: 'Erasure queue', platform: true },
+    component: lazyView(() => import('@/views/PlatformErasureView.vue')),
+    meta: { title: 'Erasure queue', titleKey: 'erasureQueue', platform: true },
   },
   {
     path: '/platform/config',
     name: 'platform-config',
-    component: () => import('@/views/PlatformConfigView.vue'),
-    meta: { title: 'Platform config', platform: true },
+    component: lazyView(() => import('@/views/PlatformConfigView.vue')),
+    meta: { title: 'Platform config', titleKey: 'platformConfig', platform: true },
   },
   {
     path: '/platform/audit',
     name: 'platform-audit',
-    component: () => import('@/views/PlatformAuditView.vue'),
-    meta: { title: 'Audit', platform: true },
+    component: lazyView(() => import('@/views/PlatformAuditView.vue')),
+    meta: { title: 'Audit', titleKey: 'audit', platform: true },
   },
   {
     path: '/platform/health',
     name: 'platform-health',
-    component: () => import('@/views/PlatformHealthView.vue'),
-    meta: { title: 'Health', platform: true },
+    component: lazyView(() => import('@/views/PlatformHealthView.vue')),
+    meta: { title: 'Health', titleKey: 'health', platform: true },
   },
   {
     path: '/insights',
     name: 'insights',
-    component: () => import('@/views/DashboardView.vue'),
-    meta: { title: 'Insights' },
+    component: lazyView(() => import('@/views/DashboardView.vue')),
+    meta: { title: 'Insights', titleKey: 'insights' },
   },
   { path: '/c/locale', redirect: '/locales' },
   {
     path: '/c/:collection',
     name: 'collection',
-    component: () => import('@/views/CollectionView.vue'),
+    component: lazyView(() => import('@/views/CollectionView.vue')),
   },
   {
     path: '/c/:collection/:id',
     name: 'entity',
-    component: () => import('@/views/EntityEditorView.vue'),
+    component: lazyView(() => import('@/views/EntityEditorView.vue')),
   },
   {
     path: '/person',
     name: 'person',
-    component: () => import('@/views/SingletonView.vue'),
+    component: lazyView(() => import('@/views/SingletonView.vue')),
     meta: {
       title: 'Person',
       collection: 'person',
@@ -108,7 +109,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/profile',
     name: 'profile',
-    component: () => import('@/views/SingletonView.vue'),
+    component: lazyView(() => import('@/views/SingletonView.vue')),
     meta: {
       title: 'Hero',
       collection: 'profile',
@@ -118,38 +119,38 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/portfolio',
     name: 'portfolio',
-    component: () => import('@/views/PortfolioView.vue'),
-    meta: { title: 'Portfolio' },
+    component: lazyView(() => import('@/views/PortfolioView.vue')),
+    meta: { title: 'Portfolio', titleKey: 'portfolio' },
   },
   {
     path: '/locales',
     name: 'locales',
-    component: () => import('@/views/LocalesView.vue'),
-    meta: { title: 'Locales' },
+    component: lazyView(() => import('@/views/LocalesView.vue')),
+    meta: { title: 'Locales', titleKey: 'locales' },
   },
   {
     path: '/locales/queue/:code',
     name: 'locale-queue',
-    component: () => import('@/views/LocaleQueueView.vue'),
-    meta: { title: 'Locale work queue' },
+    component: lazyView(() => import('@/views/LocaleQueueView.vue')),
+    meta: { title: 'Locale work queue', titleKey: 'localeQueue' },
   },
   {
     path: '/media',
     name: 'media',
-    component: () => import('@/views/MediaView.vue'),
-    meta: { title: 'Media' },
+    component: lazyView(() => import('@/views/MediaView.vue')),
+    meta: { title: 'Media', titleKey: 'media' },
   },
   {
     path: '/history',
     name: 'history',
-    component: () => import('@/views/HistoryView.vue'),
-    meta: { title: 'History' },
+    component: lazyView(() => import('@/views/HistoryView.vue')),
+    meta: { title: 'History', titleKey: 'history' },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: () => import('@/views/NotFoundView.vue'),
-    meta: { title: 'Not found' },
+    component: lazyView(() => import('@/views/NotFoundView.vue')),
+    meta: { title: 'Not found', titleKey: 'notFound' },
   },
 ]
 
@@ -175,7 +176,7 @@ router.beforeEach(async (to) => {
     if (to.meta.platform === true) return { name: 'insights' }
 
     const content = useContentStore()
-    await content.loadAll()
+    void content.loadAll()
 
     if (content.loaded) {
       const fresh = content.locales.length === 0
@@ -185,9 +186,7 @@ router.beforeEach(async (to) => {
   }
 
   const ui = useUiStore()
-  if (ui.dirty && !window.confirm('Leave this screen? Unsaved changes will be lost.')) {
-    return false
-  }
+  if (!(await ui.confirmLeave())) return false
   ui.dirty = false
 
   return true

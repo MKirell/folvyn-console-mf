@@ -17,7 +17,15 @@ export function deepEqual(a: unknown, b: unknown): boolean {
 }
 
 export function clone<T>(value: T): T {
+  if (value === undefined) return undefined as T
   return JSON.parse(JSON.stringify(value)) as T
+}
+
+export function writableKeys(
+  original: Record<string, unknown> | null,
+  draft: Record<string, unknown>,
+): string[] {
+  return [...new Set([...Object.keys(draft), ...Object.keys(original ?? {})])]
 }
 
 export function changedFields<T extends Record<string, unknown>>(
@@ -28,9 +36,9 @@ export function changedFields<T extends Record<string, unknown>>(
   const payload: Record<string, unknown> = {}
 
   for (const key of allowed) {
-    const next = draft[key]
+    const next = key in draft ? draft[key] : null
     if (next === undefined) continue
-    if (original && deepEqual(original[key], next)) continue
+    if (original ? deepEqual(original[key], next) : next === null) continue
     payload[key] = next
   }
 

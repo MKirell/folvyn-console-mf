@@ -3,12 +3,13 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { localAssets } from './vite/local-assets'
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'local' || mode === 'development' ? '/' : '/app/console/',
-  plugins: [vue(), tailwindcss()],
+  base: mode === 'development' ? '/' : '/app/console/',
+  plugins: [vue(), tailwindcss(), localAssets()],
   resolve: {
     alias: { '@': resolve(rootDir, 'src') },
   },

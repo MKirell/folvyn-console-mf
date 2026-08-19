@@ -13,7 +13,7 @@ function token(claims: object): string {
 const ADMIN_TOKEN = token({
   sub: 'u1',
   exp: 9,
-  username: 'mkirell',
+  username: 'ada-lovelace',
   'cognito:groups': ['folvyn-platform'],
 })
 const SCOPED_TOKEN = token({
@@ -60,7 +60,7 @@ describe('auth store', () => {
     expect(await auth.completeLogin('code-1', state)).toBe('/insights')
     expect(auth.isAuthenticated).toBe(true)
     expect(auth.isPlatform).toBe(true)
-    expect(auth.username).toBe('mkirell')
+    expect(auth.username).toBe('ada-lovelace')
   })
 
   it('refuses the platform role to a token that only carries a scope', async () => {

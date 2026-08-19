@@ -1,38 +1,42 @@
 <template>
-  <div class="mx-auto w-full max-w-[820px] space-y-4">
+  <div class="mx-auto w-full max-w-[1180px] space-y-4">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Portfolio</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+          {{ t('views.portfolio.title') }}
+        </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
-          Your address, whether it is live, and everything that only you can decide.
+          {{ t('views.portfolio.blurb') }}
         </p>
       </div>
     </header>
 
-    <div v-if="owner.loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonGrid
+      v-if="owner.loading"
+      :tiles="0"
+      :panels="[12, 12, 12, 12]"
+      :rows="2"
+      :label="t('views.portfolio.title')"
+    />
 
     <EmptyState
       v-else-if="!owner.record"
       icon="Shield"
-      title="Your account could not be read"
-      :description="owner.error ?? 'The API did not return an owner record.'"
+      :title="t('views.portfolio.errorTitle')"
+      :description="owner.error ?? t('views.portfolio.errorDesc')"
     >
-      <AppButton variant="primary" @click="owner.load(true)">Try again</AppButton>
+      <AppButton variant="primary" @click="owner.load(true)">{{ t('common.retry') }}</AppButton>
     </EmptyState>
 
     <template v-else>
-      <PanelCard title="Address">
+      <PanelCard :title="t('views.portfolio.address')">
         <div v-if="!renaming" class="flex flex-wrap items-center gap-3">
           <p class="min-w-0 flex-1 break-all font-mono text-[0.9rem] max-600:basis-full">
             {{ displayUrl }}
           </p>
           <AppButton @click="startRename">
             <Pencil :size="14" :stroke-width="1.9" aria-hidden="true" />
-            Change
+            {{ t('views.portfolio.change') }}
           </AppButton>
           <a
             :href="owner.publicUrl"
@@ -41,13 +45,15 @@
             class="inline-flex shrink-0 items-center gap-1.5 rounded-[9px] border border-line/10 bg-surface px-3.5 py-[7px] text-[0.82rem] text-ink-soft transition-colors hover:border-accent/35 hover:text-ink"
           >
             <ExternalLink :size="14" :stroke-width="1.9" aria-hidden="true" />
-            View live
+            {{ t('views.portfolio.viewLive') }}
           </a>
         </div>
 
         <div v-else>
           <label class="block">
-            <span class="text-[0.76rem] font-medium text-ink-soft">New address</span>
+            <span class="text-[0.76rem] font-medium text-ink-soft">{{
+              t('views.portfolio.newAddress')
+            }}</span>
             <span
               class="mt-1.5 flex items-center gap-0 rounded-[9px] border bg-bg px-3 py-2 font-mono text-[0.84rem]"
               :class="check?.available === false ? 'border-rust/50' : 'border-line/10'"
@@ -70,7 +76,7 @@
             v-if="checking"
             class="mt-1.5 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-muted"
           >
-            checking…
+            {{ t('views.portfolio.checking') }}
           </p>
           <p v-else-if="check && !check.available" class="mt-1.5 text-[0.78rem] text-rust">
             {{ check.reason }}
@@ -80,9 +86,7 @@
           </p>
 
           <p class="mt-2.5 text-[0.78rem] text-muted">
-            Every link to the old address stops working the moment this changes, including anything
-            already on a CV. Nobody else can take the address you leave behind while your account
-            exists, but nothing forwards either.
+            {{ t('views.portfolio.renameWarning') }}
           </p>
 
           <div class="mt-3 flex items-center gap-2">
@@ -91,9 +95,11 @@
               :busy="owner.busy"
               :disabled="!changed || checking || check?.available !== true"
               @click="commitRename"
-              >Change the address</AppButton
+              >{{ t('views.portfolio.commitRename') }}</AppButton
             >
-            <AppButton variant="quiet" @click="renaming = false">Cancel</AppButton>
+            <AppButton variant="quiet" @click="renaming = false">{{
+              t('common.cancel')
+            }}</AppButton>
           </div>
         </div>
 
@@ -103,12 +109,12 @@
         </p>
       </PanelCard>
 
-      <PanelCard title="Publishing">
+      <PanelCard :title="t('views.portfolio.publishing')">
         <div class="flex flex-wrap items-center gap-3">
           <span
             class="shrink-0 rounded-[6px] px-2 py-[2px] font-mono text-[0.66rem] uppercase tracking-[0.1em]"
             :class="STATE_CLASS[owner.status]"
-            >{{ owner.status }}</span
+            >{{ statusLabel(owner.status) }}</span
           >
           <p class="min-w-0 flex-1 text-[0.82rem] text-ink-soft max-600:basis-full">
             {{ stateExplanation }}
@@ -122,31 +128,33 @@
             @click="publish"
           >
             <Rocket :size="14" :stroke-width="2" aria-hidden="true" />
-            Publish
+            {{ t('views.portfolio.publish') }}
           </AppButton>
-          <AppButton v-else :busy="owner.busy" @click="unpublish">Unpublish</AppButton>
+          <AppButton v-else :busy="owner.busy" @click="unpublish">{{
+            t('views.portfolio.unpublish')
+          }}</AppButton>
         </div>
 
         <div
           v-if="owner.missing.length > 0"
           class="mt-3 rounded-[10px] border border-gold/30 bg-gold/8 px-3.5 py-3"
         >
-          <p class="text-[0.82rem] font-medium text-gold">Not ready to publish yet</p>
+          <p class="text-[0.82rem] font-medium text-gold">{{ t('views.portfolio.notReady') }}</p>
           <ul class="mt-1.5 space-y-1" role="list">
             <li v-for="item in owner.missing" :key="item" class="text-[0.78rem] text-ink-soft">
               <RouterLink :to="MISSING_ROUTE[item] ?? '/insights'" class="underline">{{
-                MISSING_LABEL[item] ?? item
+                missingLabel(item)
               }}</RouterLink>
             </li>
           </ul>
         </div>
 
         <p v-if="owner.record.publishedAt" class="mt-3 font-mono text-[0.7rem] text-muted">
-          first published {{ publishedOn }}
+          {{ t('views.portfolio.firstPublished', { date: publishedOn }) }}
         </p>
       </PanelCard>
 
-      <PanelCard title="Visitor measurement">
+      <PanelCard :title="t('views.portfolio.measurement')">
         <div class="space-y-2">
           <label
             v-for="mode in CONSENT_MODES"
@@ -175,14 +183,14 @@
         </div>
       </PanelCard>
 
-      <PanelCard title="Danger zone">
+      <PanelCard :title="t('views.portfolio.dangerZone')">
         <div class="flex flex-wrap items-center gap-3">
           <p class="min-w-0 flex-1 text-[0.82rem] text-ink-soft max-600:basis-full">
-            Take a copy of everything you have written, as JSON.
+            {{ t('views.portfolio.exportBlurb') }}
           </p>
           <AppButton @click="exportEverything">
             <Download :size="14" :stroke-width="1.9" aria-hidden="true" />
-            Export
+            {{ t('views.portfolio.export') }}
           </AppButton>
         </div>
 
@@ -190,11 +198,10 @@
 
         <div class="flex flex-wrap items-center gap-3">
           <p class="min-w-0 flex-1 text-[0.82rem] text-ink-soft max-600:basis-full">
-            Delete your account. Your content, your files, your visitor numbers and your sign-in are
-            all removed. There is no undo and no support ticket that brings it back.
+            {{ t('views.portfolio.deleteBlurb') }}
           </p>
           <AppButton variant="danger" :busy="owner.busy" @click="confirming = true">
-            Delete my account
+            {{ t('views.portfolio.deleteCta') }}
           </AppButton>
         </div>
       </PanelCard>
@@ -202,10 +209,10 @@
 
     <ConfirmDialog
       :open="confirming"
-      title="Delete your account?"
+      :title="t('views.portfolio.deleteTitle')"
       :subject="owner.slug"
-      message="and everything in it disappears — your content, your uploaded files, your visitor numbers and your sign-in. This cannot be undone."
-      confirm-label="Delete for good"
+      :message="t('views.portfolio.deleteMessage')"
+      :confirm-label="t('views.portfolio.deleteConfirm')"
       :confirm-word="owner.slug"
       @cancel="confirming = false"
       @confirm="erase"
@@ -221,23 +228,18 @@ import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useOwnerStore } from '@/stores/owner'
 import { useUiStore } from '@/stores/ui'
 import type { ConsentMode, OwnerStatus, SlugAvailability } from '@/types/admin'
+import { useI18n } from 'vue-i18n'
+import { statusLabel } from '@/i18n/labels'
 
 const STATE_CLASS: Record<OwnerStatus, string> = {
   published: 'bg-sage/15 text-sage',
   draft: 'bg-gold/15 text-gold',
   suspended: 'bg-rust/15 text-rust',
-}
-
-const MISSING_LABEL: Record<string, string> = {
-  person: 'Fill in who you are',
-  profile: 'Write your hero and story',
-  locale: 'Enable at least one language',
-  section:
-    'Add at least one section — experience, a project, a degree, a certification, skills, volunteering or an award',
 }
 
 const MISSING_ROUTE: Record<string, string> = {
@@ -247,20 +249,19 @@ const MISSING_ROUTE: Record<string, string> = {
   section: '/c/experience',
 }
 
-const CONSENT_MODES: { value: ConsentMode; label: string; description: string }[] = [
+const { t, te } = useI18n()
+const CONSENT_MODES = computed<{ value: ConsentMode; label: string; description: string }[]>(() => [
   {
     value: 'measurement',
-    label: 'Measurement only — no banner',
-    description:
-      'Counts sessions, sections and clicks without anything that survives the tab. No cookie, no consent banner, and visitor numbers are approximate by design.',
+    label: t('views.portfolio.consent.measurementLabel'),
+    description: t('views.portfolio.consent.measurementDesc'),
   },
   {
     value: 'enhanced',
-    label: 'Enhanced — needs a consent banner',
-    description:
-      'Adds returning visitors and true unique counts per document, which needs an identifier that lasts. Your visitors get a banner they can refuse, and the legal exposure is yours.',
+    label: t('views.portfolio.consent.enhancedLabel'),
+    description: t('views.portfolio.consent.enhancedDesc'),
   },
-]
+])
 
 const auth = useAuthStore()
 const owner = useOwnerStore()
@@ -315,9 +316,13 @@ async function commitRename(): Promise<void> {
   try {
     await owner.setSlug(wanted.value.trim())
     renaming.value = false
-    ui.notify('good', 'Address changed', owner.publicUrl)
+    ui.notify('good', t('views.portfolio.addressChanged'), owner.publicUrl)
   } catch (cause) {
-    ui.notify('bad', 'That did not work', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.failed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
@@ -330,31 +335,42 @@ const publishedOn = computed(() => {
 })
 
 const stateExplanation = computed(() => {
-  if (owner.suspended) return 'The platform took this offline. Get in touch to have it reviewed.'
-  if (owner.published)
-    return 'Anyone with the address can read it, and search engines can index it.'
-  return 'Only you can see it. Publishing makes the address public.'
+  if (owner.suspended) return t('views.portfolio.suspended')
+  if (owner.published) return t('views.portfolio.liveState')
+  return t('views.portfolio.draftState')
 })
+
+function missingLabel(item: string): string {
+  return te(`views.portfolio.missing.${item}`) ? t(`views.portfolio.missing.${item}`) : item
+}
 
 async function publish(): Promise<void> {
   try {
     await owner.publish()
-    ui.notify('good', 'Your portfolio is live', owner.publicUrl)
+    ui.notify('good', t('views.portfolio.live'), owner.publicUrl)
   } catch (cause) {
     if (owner.missing.length > 0) {
-      ui.notify('warn', 'Not ready to publish', 'Finish the items listed on this screen.')
+      ui.notify('warn', t('views.portfolio.notReadyToast'), t('views.portfolio.notReadyDetail'))
       return
     }
-    ui.notify('bad', 'Publishing failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.publishFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
 async function unpublish(): Promise<void> {
   try {
     await owner.unpublish()
-    ui.notify('good', 'Your portfolio is a draft again', 'The public address now returns nothing.')
+    ui.notify('good', t('views.portfolio.draftAgain'), t('views.portfolio.draftAgainDetail'))
   } catch (cause) {
-    ui.notify('bad', 'That did not work', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.failed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
@@ -363,9 +379,13 @@ async function chooseConsent(mode: ConsentMode): Promise<void> {
 
   try {
     await owner.setConsentMode(mode)
-    ui.notify('good', 'Measurement updated')
+    ui.notify('good', t('views.portfolio.measurementUpdated'))
   } catch (cause) {
-    ui.notify('bad', 'That did not work', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.failed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
@@ -381,7 +401,11 @@ async function exportEverything(): Promise<void> {
     link.click()
     URL.revokeObjectURL(url)
   } catch (cause) {
-    ui.notify('bad', 'Export failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.exportFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 
@@ -392,7 +416,11 @@ async function erase(): Promise<void> {
     await owner.erase()
     auth.logout()
   } catch (cause) {
-    ui.notify('bad', 'Deletion failed', cause instanceof Error ? cause.message : undefined)
+    ui.notify(
+      'bad',
+      t('views.portfolio.deletionFailed'),
+      cause instanceof Error ? cause.message : undefined,
+    )
   }
 }
 

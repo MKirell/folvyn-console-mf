@@ -11,26 +11,23 @@
       ui.railCollapsed ? 'w-rail-tight' : 'w-rail',
       ui.mobileNavOpen ? 'max-1000:translate-x-0' : 'max-1000:-translate-x-full',
     ]"
-    aria-label="Console navigation"
+    :aria-label="t('nav.aria')"
   >
-    <div class="flex h-topbar shrink-0 items-center gap-2.5 border-b border-line/8 px-3.5">
+    <div
+      class="flex h-topbar shrink-0 items-center gap-2.5 border-b border-line/8 px-2.5"
+      :class="tight ? 'justify-center' : ''"
+    >
+      <img :src="logoMark" alt="" aria-hidden="true" class="h-8 w-8 shrink-0 rounded-[9px]" />
       <span
-        class="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] bg-accent/12 text-accent-deep"
+        v-if="!tight"
+        class="min-w-0 flex-1 truncate font-disp text-[0.98rem] font-semibold tracking-tight"
+        >{{ t('app.brand') }}<span class="mx-1.5 text-muted">·</span>{{ t('app.name') }}</span
       >
-        <Terminal :size="17" :stroke-width="2" aria-hidden="true" />
-      </span>
-      <span v-if="!tight" class="min-w-0 flex-1 leading-tight">
-        <span class="block truncate font-disp text-[0.98rem] font-semibold tracking-tight"
-          >Console</span
-        >
-        <span class="block truncate font-mono text-[0.62rem] uppercase tracking-[0.16em] text-muted"
-          >folvyn</span
-        >
-      </span>
+
       <button
         type="button"
         class="hidden max-1000:grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-        aria-label="Close navigation"
+        :aria-label="t('nav.close')"
         @click="ui.mobileNavOpen = false"
       >
         <X :size="16" :stroke-width="2" />
@@ -90,7 +87,7 @@
             v-if="!tight"
             class="px-2.5 pb-1.5 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-muted"
           >
-            Workshop
+            {{ navGroupLabel('Workshop') }}
           </p>
           <span
             v-else
@@ -110,19 +107,19 @@
         :to="auth.isPlatform ? undefined : { name: 'person' }"
         class="mb-2 flex items-center gap-2 rounded-[9px] px-2 py-1"
         :class="auth.isPlatform ? '' : 'transition-colors hover:bg-bg-tint'"
-        :title="auth.isPlatform ? undefined : `Edit ${accountName}`"
+        :title="auth.isPlatform ? undefined : t('nav.editAccount', { name: accountName })"
       >
         <img
           v-if="auth.avatar && !avatarBroken"
           :src="auth.avatar"
           :alt="accountName"
           referrerpolicy="no-referrer"
-          class="h-7 w-7 shrink-0 rounded-full object-cover"
+          class="h-8 w-8 shrink-0 rounded-full object-cover"
           @error="avatarBroken = true"
         />
         <span
           v-else
-          class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-bg-tint font-mono text-[0.66rem] text-ink-soft"
+          class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-bg-tint font-mono text-[0.68rem] text-ink-soft"
           >{{ initials }}</span
         >
         <span class="min-w-0 flex-1">
@@ -143,27 +140,12 @@
         </span>
       </component>
 
-      <nav
-        v-if="!tight"
-        class="mb-2 flex items-center justify-center gap-2 px-2"
-        aria-label="Legal"
-      >
-        <template v-for="(entry, index) in LEGAL_DOCUMENTS" :key="entry.slug">
-          <span v-if="index > 0" class="text-[0.58rem] text-muted" aria-hidden="true">·</span>
-          <RouterLink
-            :to="`/legal/${entry.slug}`"
-            class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-ink"
-            >{{ entry.title }}</RouterLink
-          >
-        </template>
-      </nav>
-
-      <div class="flex items-center gap-1" :class="tight ? 'flex-col' : ''">
+      <div class="flex items-center gap-1" :class="tight ? 'flex-col justify-center' : ''">
         <button
           type="button"
           class="grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-          :aria-label="isLight ? 'Switch to dark theme' : 'Switch to light theme'"
-          :title="isLight ? 'Dark theme' : 'Light theme'"
+          :aria-label="isLight ? t('nav.switchToDark') : t('nav.switchToLight')"
+          :title="isLight ? t('nav.themeDark') : t('nav.themeLight')"
           @click="toggleTheme"
         >
           <component :is="isLight ? Moon : Sun" :size="16" :stroke-width="1.9" />
@@ -171,8 +153,8 @@
         <button
           type="button"
           class="grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-          aria-label="Sign out"
-          title="Sign out"
+          :aria-label="t('nav.signOut')"
+          :title="t('nav.signOut')"
           @click="auth.logout()"
         >
           <LogOut :size="16" :stroke-width="1.9" />
@@ -181,12 +163,26 @@
           type="button"
           class="ms-auto hidden max-1000:!hidden 1000:grid h-8 w-8 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
           :class="tight ? '!ms-0' : ''"
-          :aria-label="tight ? 'Expand navigation' : 'Collapse navigation'"
+          :aria-label="tight ? t('nav.expand') : t('nav.collapse')"
           @click="ui.toggleRail()"
         >
           <component :is="tight ? PanelLeftOpen : PanelLeftClose" :size="16" :stroke-width="1.9" />
         </button>
       </div>
+      <nav
+        v-if="!tight"
+        class="mt-1.5 flex items-center justify-center gap-2 px-2.5"
+        :aria-label="t('nav.legal')"
+      >
+        <template v-for="(slug, index) in LEGAL_SLUGS" :key="slug">
+          <span v-if="index > 0" class="text-[0.58rem] text-muted" aria-hidden="true">·</span>
+          <RouterLink
+            :to="`/legal/${slug}`"
+            class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-muted transition-colors hover:text-ink"
+            >{{ t(`nav.${slug}`) }}</RouterLink
+          >
+        </template>
+      </nav>
     </div>
   </aside>
 </template>
@@ -194,16 +190,20 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, useTemplateRef } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { LogOut, Moon, PanelLeftClose, PanelLeftOpen, Sun, Terminal, X } from '@lucide/vue'
+import { LogOut, Moon, PanelLeftClose, PanelLeftOpen, Sun, X } from '@lucide/vue'
+import logoMark from '@/assets/logo-mark.svg'
 import RailLink from '@/components/layout/RailLink.vue'
 import { COLLECTIONS, NAV_GROUPS } from '@/registry/collections'
-import { LEGAL_DOCUMENTS } from '@/registry/legal'
+import { LEGAL_SLUGS } from '@/registry/legal'
 import type { RailItem } from '@/types/nav'
 import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import { useTheme } from '@/composables/useTheme'
+import { useI18n } from 'vue-i18n'
+import { collectionLabel, navGroupLabel, screenLabel } from '@/i18n/labels'
 
+const { t } = useI18n()
 const route = useRoute()
 const auth = useAuthStore()
 const content = useContentStore()
@@ -229,64 +229,85 @@ const initials = computed(() => {
   return letters.replace(/[^a-zA-Z]/g, '').toUpperCase() || 'MK'
 })
 
-const dashboard: RailItem = { key: 'insights', label: 'Insights', icon: 'Gauge', to: '/insights' }
-const portfolio: RailItem = {
+const dashboard = computed<RailItem>(() => ({
+  key: 'insights',
+  label: screenLabel('insights', 'Insights'),
+  icon: 'Gauge',
+  to: '/insights',
+}))
+const portfolio = computed<RailItem>(() => ({
   key: 'portfolio',
-  label: 'Portfolio',
+  label: screenLabel('portfolio', 'Portfolio'),
   icon: 'Rocket',
   to: '/portfolio',
-}
-const platformOverview: RailItem = {
+}))
+
+const platformOverview = computed<RailItem>(() => ({
   key: 'platform',
-  label: 'Overview',
+  label: screenLabel('overview', 'Overview'),
   icon: 'Gauge',
   to: '/platform',
   exact: true,
-}
+}))
 
-const platformGroups: { label: string; items: RailItem[] }[] = [
+const platformGroups = computed<{ label: string; items: RailItem[] }[]>(() => [
   {
-    label: 'Accounts',
+    label: screenLabel('accounts', 'Accounts'),
     items: [
       {
         key: 'platform-portfolios',
-        label: 'Portfolios',
+        label: screenLabel('portfolios', 'Portfolios'),
         icon: 'Users',
         to: '/platform/portfolios',
       },
       {
         key: 'platform-erasures',
-        label: 'Erasure queue',
+        label: screenLabel('erasureQueue', 'Erasure queue'),
         icon: 'Trash2',
         to: '/platform/erasures',
       },
     ],
   },
   {
-    label: 'Observability',
+    label: screenLabel('observability', 'Observability'),
     items: [
-      { key: 'platform-traffic', label: 'Traffic', icon: 'TrendingUp', to: '/platform/traffic' },
-      { key: 'platform-health', label: 'Health', icon: 'Activity', to: '/platform/health' },
+      {
+        key: 'platform-traffic',
+        label: screenLabel('traffic', 'Traffic'),
+        icon: 'TrendingUp',
+        to: '/platform/traffic',
+      },
+      {
+        key: 'platform-health',
+        label: screenLabel('health', 'Health'),
+        icon: 'Activity',
+        to: '/platform/health',
+      },
     ],
   },
   {
-    label: 'Governance',
+    label: screenLabel('governance', 'Governance'),
     items: [
-      { key: 'platform-audit', label: 'Audit', icon: 'History', to: '/platform/audit' },
+      {
+        key: 'platform-audit',
+        label: screenLabel('audit', 'Audit'),
+        icon: 'History',
+        to: '/platform/audit',
+      },
       {
         key: 'platform-config',
-        label: 'Platform config',
+        label: screenLabel('platformConfig', 'Platform config'),
         icon: 'Settings',
         to: '/platform/config',
       },
     ],
   },
-]
+])
 
-const workshop: RailItem[] = [
-  { key: 'media', label: 'Media', icon: 'Image', to: '/media' },
-  { key: 'history', label: 'History', icon: 'History', to: '/history' },
-]
+const workshop = computed<RailItem[]>(() => [
+  { key: 'media', label: screenLabel('media', 'Media'), icon: 'Image', to: '/media' },
+  { key: 'history', label: screenLabel('history', 'History'), icon: 'History', to: '/history' },
+])
 
 function routeFor(key: string): string {
   if (key === 'person') return '/person'
@@ -297,10 +318,10 @@ function routeFor(key: string): string {
 
 const groups = computed(() =>
   NAV_GROUPS.map((group) => ({
-    label: group.label,
+    label: navGroupLabel(group.label),
     items: group.keys.map<RailItem>((key) => ({
       key,
-      label: COLLECTIONS[key].label,
+      label: collectionLabel(COLLECTIONS[key]),
       icon: COLLECTIONS[key].icon,
       to: routeFor(key),
       count: content.counts[key],

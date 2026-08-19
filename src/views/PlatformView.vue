@@ -2,7 +2,9 @@
   <div class="mx-auto w-full max-w-[1180px]">
     <header class="mb-4 flex flex-wrap items-center gap-2.5">
       <div class="min-w-0 flex-1 max-700:basis-full">
-        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">Overview</h2>
+        <h2 class="font-disp text-[1.3rem] font-semibold tracking-tight">
+          {{ t('platform.overview.title') }}
+        </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
           The whole platform at a glance. Draft content stays private to the person who wrote it.
         </p>
@@ -11,7 +13,7 @@
       <div
         class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
         role="group"
-        aria-label="Reporting period"
+        :aria-label="t('platform.common.reportingPeriod')"
       >
         <button
           v-for="days in PERIODS"
@@ -27,69 +29,73 @@
       </div>
     </header>
 
-    <div v-if="loading" class="grid place-items-center py-20" role="status">
-      <span
-        class="h-7 w-7 animate-spin rounded-full border-2 border-current border-t-transparent opacity-40"
-      ></span>
-    </div>
+    <SkeletonGrid
+      v-if="loading"
+      :panels="[8, 4, 12, 6, 6, 8, 4]"
+      :label="t('platform.overview.title')"
+    />
+
+    <EmptyState v-else-if="error" icon="Shield" :title="t('errors.overview')" :description="error">
+      <AppButton variant="primary" @click="load(period)">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
 
     <EmptyState
       v-else-if="!overview"
       icon="Gauge"
-      title="Nothing to report yet"
-      :description="error ?? 'No account has signed up.'"
+      :title="t('platform.overview.nothing')"
+      description="No account has signed up."
     />
 
     <div v-else class="grid grid-cols-12 gap-3 max-1000:grid-cols-6 max-600:grid-cols-2">
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Accounts"
+        :label="t('platform.overview.accounts')"
         :value="String(overview.owners.total)"
         :hint="`${overview.signups.last7} new this week`"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Live portfolios"
+        :label="t('platform.overview.live')"
         :value="String(overview.owners.published)"
         :hint="`${publishedShare}% of accounts`"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Visitors"
+        :label="t('platform.common.visitors')"
         :value="overview.traffic.totals.visitors.toLocaleString()"
         :delta="overview.traffic.deltas.visitors"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        label="Sessions"
+        :label="t('platform.common.sessions')"
         :value="overview.traffic.totals.sessions.toLocaleString()"
         :delta="overview.traffic.deltas.sessions"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Traffic"
+        :title="t('platform.common.traffic')"
         :hint="`${overview.traffic.from} → ${overview.traffic.to}`"
       >
-        <SparkLine :points="trendPoints" unit="sessions" label="Sessions" />
+        <SparkLine :points="trendPoints" unit="sessions" :label="t('platform.common.sessions')" />
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Where visitors come from"
+        :title="t('platform.overview.whereFrom')"
         hint="top referrers"
       >
         <BarRows
           :rows="referrers"
           :slots="ROW_BUDGET.referrers"
           show-share
-          empty="No referrer recorded yet"
+          :empty="t('platform.common.noReferrer')"
         />
       </PanelCard>
 
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
-        title="When the platform is busy"
+        :title="t('platform.overview.busy')"
         :hint="`sessions a day, ${period} days`"
       >
         <HeatCalendar :points="trendPoints" />
@@ -97,10 +103,14 @@
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Portfolio states"
+        :title="t('platform.overview.states')"
         hint="every account"
       >
-        <DonutChart :rows="states" label="Portfolio states" empty="No account yet" />
+        <DonutChart
+          :rows="states"
+          :label="t('platform.overview.states')"
+          :empty="t('platform.overview.noAccount')"
+        />
         <p v-if="overview.owners.suspended > 0" class="mt-3 text-[0.74rem] text-rust">
           {{ overview.owners.suspended }} suspended — review them under Portfolios.
         </p>
@@ -108,7 +118,7 @@
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        title="Busiest portfolios"
+        :title="t('platform.overview.busiest')"
         :hint="`${overview.portfolios.length} with traffic`"
       >
         <ul
@@ -145,13 +155,13 @@
           </li>
         </ul>
         <p v-else class="grid flex-1 place-items-center text-[0.8rem] text-muted">
-          No portfolio has received a visit yet.
+          {{ t('platform.overview.noVisit') }}
         </p>
       </PanelCard>
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        title="Needs attention"
+        :title="t('platform.overview.attention')"
         :hint="needsWork === 0 ? 'all clear' : `${needsWork} of ${attention.length} need you`"
       >
         <div class="flex min-h-0 flex-1 flex-col justify-center gap-1.5">
@@ -178,7 +188,7 @@
                 v-if="!check.clear"
                 :to="check.to"
                 class="shrink-0 font-mono text-[0.72rem] text-accent-deep hover:underline"
-                >Open →</RouterLink
+                >{{ t('platform.common.open') }}</RouterLink
               >
             </li>
           </ul>
@@ -189,14 +199,14 @@
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        title="Sign-ups"
+        :title="t('platform.overview.signups')"
         hint="new accounts"
       >
         <div class="flex min-h-0 flex-1 flex-col justify-center gap-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
-                Last 7 days
+                {{ t('platform.last7') }}
               </p>
               <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
                 {{ overview.signups.last7 }}
@@ -205,7 +215,7 @@
 
             <div class="border-s border-line/10 ps-4">
               <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
-                Last 30 days
+                {{ t('platform.last30') }}
               </p>
               <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
                 {{ overview.signups.last30 }}
@@ -224,8 +234,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { CheckCircle2, TriangleAlert } from '@lucide/vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import StatTile from '@/components/charts/StatTile.vue'
 import SparkLine from '@/components/charts/SparkLine.vue'
 import BarRows from '@/components/charts/BarRows.vue'
@@ -235,7 +247,9 @@ import { foldOther } from '@/utils/breakdown'
 import { portfolioUrl } from '@/config/env'
 import { fetchPlatformOverview } from '@/services/admin.api'
 import type { PlatformOverview } from '@/types/analytics'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const PERIODS = [7, 30, 90]
 const ROW_BUDGET = { referrers: 6, busiest: 5 } as const
 const LCP_BUDGET_MS = 2500

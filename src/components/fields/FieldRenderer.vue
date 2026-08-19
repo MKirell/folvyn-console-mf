@@ -1,5 +1,12 @@
 <template>
-  <FieldShell :field="field" :error="error" :length="length" :hint="hint">
+  <FieldShell
+    :field="field"
+    :error="error"
+    :length="length"
+    :locale="locale"
+    :translated="translated"
+    :full="full"
+  >
     <template #default="{ id }">
       <textarea
         v-if="field.type === 'textarea'"
@@ -7,7 +14,7 @@
         v-autosize="field.maxLength"
         :value="asText"
         rows="1"
-        :placeholder="field.placeholder"
+        :placeholder="placeholder"
         class="scroll-thin min-h-[38px] w-full resize-none overflow-hidden rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.84rem] leading-[1.55] outline-none placeholder:text-muted/70 focus:border-accent/50"
         @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
@@ -24,9 +31,13 @@
           @change="emit('update:modelValue', ($event.target as HTMLInputElement).checked)"
         />
         <span
-          class="relative h-[22px] w-[38px] shrink-0 rounded-full border border-line/12 bg-bg-tint transition-colors peer-checked:border-accent/45 peer-checked:bg-accent/25 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-accent motion-reduce:transition-none after:absolute after:start-[3px] after:top-[2px] after:h-[15px] after:w-[15px] after:rounded-full after:bg-surface after:shadow-[0_1px_3px_rgba(0,0,0,0.3)] after:transition-transform peer-checked:after:translate-x-[16px] motion-reduce:after:transition-none"
+          class="relative h-[24px] w-[44px] shrink-0 rounded-full border border-line/15 bg-bg-tint transition-colors duration-200 peer-checked:border-accent/60 peer-checked:bg-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent motion-reduce:transition-none after:absolute after:start-[3px] after:top-[2px] after:h-[17px] after:w-[17px] after:rounded-full after:bg-surface after:shadow-[0_1px_4px_rgba(0,0,0,0.35)] after:transition-transform after:duration-200 peer-checked:after:translate-x-[19px] peer-checked:after:bg-white motion-reduce:after:transition-none"
         ></span>
-        <span class="text-[0.8rem] text-ink-soft">{{ modelValue ? 'On' : 'Off' }}</span>
+        <span
+          class="text-[0.8rem] transition-colors"
+          :class="modelValue ? 'font-medium text-ink' : 'text-muted'"
+          >{{ modelValue ? t('common.on') : t('common.off') }}</span
+        >
       </label>
 
       <div v-else-if="field.type === 'number' && bounded" class="flex items-center gap-3">
@@ -56,14 +67,14 @@
         :value="modelValue as number"
         :min="field.min"
         :max="field.max"
-        class="w-[120px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.82rem] tabular-nums outline-none focus:border-accent/50"
+        class="w-[120px] h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.82rem] tabular-nums outline-none focus:border-accent/50"
         @input="onNumber($event)"
       />
 
       <TagsInput
         v-else-if="field.type === 'tags'"
         :id="id"
-        :placeholder="field.placeholder"
+        :placeholder="placeholder"
         :max-items="field.maxItems"
         :model-value="asList"
         @update:model-value="emit('update:modelValue', $event)"
@@ -72,7 +83,7 @@
       <StringListInput
         v-else-if="field.type === 'string-list'"
         :model-value="asList"
-        :placeholder="field.placeholder"
+        :placeholder="placeholder"
         :max-items="field.maxItems"
         :max-length="field.itemMaxLength"
         @update:model-value="emit('update:modelValue', $event)"
@@ -96,6 +107,23 @@
         v-else-if="field.type === 'language'"
         :id="id"
         :model-value="asText"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
+
+      <MonthField
+        v-else-if="field.type === 'month'"
+        :id="id"
+        :model-value="asText"
+        @update:model-value="emit('update:modelValue', $event)"
+      />
+
+      <SelectField
+        v-else-if="field.type === 'select'"
+        :id="id"
+        :model-value="asText"
+        :options="field.options ?? []"
+        :options-key="field.optionsKey"
+        :placeholder="placeholder"
         @update:model-value="emit('update:modelValue', $event)"
       />
 
@@ -131,11 +159,11 @@
       <input
         v-else
         :id="id"
-        :type="field.type === 'email' ? 'email' : field.type === 'url' ? 'url' : 'text'"
+        :type="inputType"
         :value="asText"
         :maxlength="field.maxLength"
-        :placeholder="field.placeholder"
-        class="w-full rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.84rem] outline-none placeholder:text-muted/70 focus:border-accent/50"
+        :placeholder="placeholder"
+        class="w-full h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.84rem] outline-none placeholder:text-muted/70 focus:border-accent/50"
         :class="field.type === 'url' ? 'font-mono text-[0.78rem]' : ''"
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
@@ -149,6 +177,8 @@ import FieldShell from '@/components/ui/FieldShell.vue'
 import TagsInput from '@/components/fields/TagsInput.vue'
 import StringListInput from '@/components/fields/StringListInput.vue'
 import CountryField from '@/components/fields/CountryField.vue'
+import SelectField from '@/components/fields/SelectField.vue'
+import MonthField from '@/components/fields/MonthField.vue'
 import LanguageField from '@/components/fields/LanguageField.vue'
 import IconPicker from '@/components/fields/IconPicker.vue'
 import FlagField from '@/components/fields/FlagField.vue'
@@ -156,10 +186,20 @@ import AssetField from '@/components/fields/AssetField.vue'
 import AssetListField from '@/components/fields/AssetListField.vue'
 import AssetMapField from '@/components/fields/AssetMapField.vue'
 import type { FieldDef } from '@/registry/collections'
+import { useI18n } from 'vue-i18n'
+
+const { t, te } = useI18n()
 
 const props = withDefaults(
-  defineProps<{ field: FieldDef; modelValue: unknown; error?: string }>(),
-  { error: '' },
+  defineProps<{
+    field: FieldDef
+    modelValue: unknown
+    error?: string
+    locale?: string
+    translated?: boolean
+    full?: boolean
+  }>(),
+  { error: '', locale: '', translated: false, full: false },
 )
 
 const emit = defineEmits<{ 'update:modelValue': [unknown] }>()
@@ -177,9 +217,18 @@ const filled = computed(() => {
   return ((asNumber.value - min) / (max - min)) * 100
 })
 
-const hint = computed(() => (props.field.placeholder ? '' : (props.field.patternHint ?? '')))
-
 const asText = computed(() => (typeof props.modelValue === 'string' ? props.modelValue : ''))
+
+const placeholder = computed(() => {
+  const key = `placeholders.${props.field.name}`
+  return te(key) ? t(key) : (props.field.placeholder ?? '')
+})
+
+const inputType = computed(() => {
+  if (props.field.type === 'email') return 'email'
+  if (props.field.type === 'url') return 'url'
+  return 'text'
+})
 const asList = computed(() =>
   Array.isArray(props.modelValue) ? (props.modelValue as string[]) : [],
 )

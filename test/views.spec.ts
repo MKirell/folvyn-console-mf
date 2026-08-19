@@ -94,15 +94,14 @@ describe('collection workbench', () => {
     expect(wrapper.text()).toContain('DP-900')
   })
 
-  it('filters rows by missing translation', async () => {
+  it('offers no translation filter on a collection that has nothing to translate', () => {
     seed()
     route.params = { collection: 'certification' }
 
     const wrapper = mount(CollectionView)
-    await wrapper.find('select').setValue('fr')
 
-    expect(wrapper.text()).toContain('DP-900')
-    expect(wrapper.text()).not.toContain('AI-900')
+    expect(wrapper.find('[aria-label]').exists()).toBe(true)
+    expect(wrapper.findAll('select')).toHaveLength(0)
   })
 
   it('disables dragging while a filter narrows the list', async () => {
@@ -219,10 +218,7 @@ describe('entity editor', () => {
     await nextTick()
     expect(ui.dirty).toBe(false)
 
-    const label = wrapper
-      .findAll('input')
-      .find((field) => (field.element as HTMLInputElement).value === 'English')
-    await label?.setValue('English UK')
+    await wrapper.findAll('select')[1].setValue('fr')
     await nextTick()
 
     expect(ui.dirty).toBe(true)
@@ -241,21 +237,20 @@ describe('entity editor', () => {
 
   it('edits the locale chosen in the topbar, and only that one', async () => {
     seed()
-    route.params = { collection: 'certification', id: 'c1' }
+    route.params = { collection: 'experience', id: 'e1' }
     const ui = useUiStore()
 
     const wrapper = mount(EntityEditorView)
 
-    expect(wrapper.text()).toContain('Shared fields')
-    expect(wrapper.text()).toContain('Translations')
+    expect(wrapper.text()).toContain('Details')
     expect(wrapper.find('[aria-label="Locale to edit"]').exists()).toBe(false)
-    expect(fieldValues(wrapper)).toContain('June 2024')
+    expect(fieldValues(wrapper)).toContain('Backend Engineer')
 
     ui.setEditingLang('fr')
     await nextTick()
 
-    expect(fieldValues(wrapper)).toContain('Juin 2024')
-    expect(fieldValues(wrapper)).not.toContain('June 2024')
+    expect(fieldValues(wrapper)).toContain('Ingénieur backend')
+    expect(fieldValues(wrapper)).not.toContain('Backend Engineer')
   })
 
   it('keeps the save button disabled until something changes', async () => {
@@ -329,14 +324,14 @@ describe('entity editor', () => {
 })
 
 describe('locales', () => {
-  it('shows translation progress per locale', async () => {
+  it('lists every locale with an enable switch', async () => {
     seed()
     const wrapper = mount(LocalesView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('English')
-    expect(wrapper.text()).toContain('Nederlands')
-    expect(wrapper.text()).toContain('Work queue')
+    expect(wrapper.text()).toContain('EN')
+    expect(wrapper.text()).toContain('NL')
+    expect(wrapper.findAll('[role="switch"]').length).toBe(3)
   })
 
   it('renders the ordered work queue for one locale', () => {
@@ -347,7 +342,7 @@ describe('locales', () => {
 
     expect(wrapper.text()).toContain('Foundation')
     expect(wrapper.text()).toContain('Hero')
-    expect(wrapper.text()).toContain('Certifications')
+    expect(wrapper.text()).toContain('Experiences')
   })
 })
 
@@ -369,7 +364,31 @@ describe('bespoke screens', () => {
     const wrapper = mount(SingletonView)
 
     expect(wrapper.text()).toContain('Hero')
-    expect(wrapper.text()).toContain('Translations')
+    expect(wrapper.text()).toContain('Tagline')
+  })
+
+  it('flags a translated field with the locale being edited, beside its own label', () => {
+    seed()
+    route.meta = { collection: 'person' }
+    useUiStore().setEditingLang('fr')
+
+    const wrapper = mount(SingletonView)
+    const badges = wrapper.findAll('[title*="translated"]')
+
+    expect(badges.length).toBeGreaterThan(0)
+    expect(badges.every((badge) => badge.text() === 'fr')).toBe(true)
+  })
+
+  it('keeps a translated field inside its own subject group, not a translations block', () => {
+    seed()
+    route.meta = { collection: 'person' }
+
+    const titles = mount(SingletonView)
+      .findAll('section h2')
+      .map((heading) => heading.text())
+
+    expect(titles).toContain('Identity')
+    expect(titles).not.toContain('Translations')
   })
 
   it('keeps derived person fields out of the form', () => {
@@ -390,7 +409,7 @@ describe('bespoke screens', () => {
     const wrapper = mount(MediaView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('uploads endpoint is not live yet')
+    expect(wrapper.text()).toContain('Your files could not be listed')
   })
 
   it('lists uploaded files with their reference count', async () => {
@@ -415,12 +434,14 @@ describe('bespoke screens', () => {
     expect(wrapper.text()).toContain('Nothing to undo yet')
   })
 
-  it('shows the analytics empty state when the endpoint is absent', async () => {
+  it('offers a retry when the analytics endpoint is absent', async () => {
     seed()
     const wrapper = mount(DashboardView)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('No analytics yet')
+    expect(wrapper.text()).toContain('Your insights could not be read')
+    expect(wrapper.text()).toContain('Try again')
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 })
 
@@ -537,10 +558,10 @@ describe('login', () => {
     expect(wrapper.text().toLowerCase()).not.toContain('password')
   })
 
-  it('invites a first-time visitor to sign up rather than claiming to be admin only', () => {
+  it('tells a first-time visitor an account is created for them, not that it is admin only', () => {
     const text = mount(LoginView).text().toLowerCase()
 
-    expect(text).toContain('sign up')
+    expect(text).toContain('creates your portfolio')
     expect(text).not.toContain('admin only')
   })
 })
@@ -637,30 +658,30 @@ describe('signed-in identity', () => {
     const auth = useAuthStore()
     auth.identity = {
       sub: 'Google_110510927257595594969',
-      email: 'admin@mkirell.com',
-      name: 'Mohamed Khalil ZRELLY',
+      email: 'ada.lovelace@example.com',
+      name: 'Ada Lovelace',
       picture: 'https://lh3.googleusercontent.com/a/photo',
     }
 
     const wrapper = mount(AppRail)
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Mohamed Khalil ZRELLY')
-    expect(wrapper.text()).toContain('admin@mkirell.com')
+    expect(wrapper.text()).toContain('Ada Lovelace')
+    expect(wrapper.text()).toContain('ada.lovelace@example.com')
     expect(wrapper.text()).not.toContain('Google_110510927257595594969')
-    expect(wrapper.find('img').attributes('src')).toContain('googleusercontent')
+    expect(wrapper.find('img[alt="Ada Lovelace"]').attributes('src')).toContain('googleusercontent')
   })
 
   it('falls back to initials when Google sends no picture', async () => {
     seed()
     useUiStore().railCollapsed = false
     const auth = useAuthStore()
-    auth.identity = { sub: 'x', email: 'admin@mkirell.com', name: 'Mohamed Khalil ZRELLY' }
+    auth.identity = { sub: 'x', email: 'ada.lovelace@example.com', name: 'Ada Lovelace' }
 
     const wrapper = mount(AppRail)
     await flushPromises()
 
-    expect(wrapper.find('img').exists()).toBe(false)
-    expect(wrapper.text()).toContain('MK')
+    expect(wrapper.find('img[alt="Ada Lovelace"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('AL')
   })
 })

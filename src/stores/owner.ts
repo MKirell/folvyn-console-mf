@@ -11,6 +11,7 @@ import {
   updateMe,
 } from '@/services/admin.api'
 import { portfolioUrl } from '@/config/env'
+import { setAssetPrefix } from '@/utils/assets'
 import type { ConsentMode, OwnerRecord, SlugAvailability } from '@/types/admin'
 
 export const useOwnerStore = defineStore('owner', () => {
@@ -35,6 +36,7 @@ export const useOwnerStore = defineStore('owner', () => {
 
     try {
       record.value = await fetchMe()
+      setAssetPrefix(record.value.assetPrefix ?? '')
     } catch (cause) {
       error.value = cause instanceof Error ? cause.message : 'Could not read your account'
     } finally {

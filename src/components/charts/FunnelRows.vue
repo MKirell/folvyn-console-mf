@@ -24,14 +24,16 @@
   </ul>
 
   <p v-else class="py-4 text-center text-[0.78rem] text-muted">
-    Not enough data yet — the funnel needs section events.
+    {{ t('ui.funnelEmpty') }}
   </p>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AnalyticsBreakdown } from '@/types/analytics'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = defineProps<{ rows: AnalyticsBreakdown[]; sessions: number }>()
 
 const base = computed(() => Math.max(1, props.sessions || props.rows[0]?.count || 1))
