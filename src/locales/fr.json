@@ -351,9 +351,10 @@
       "verdictNeedsWork": "à améliorer",
       "advicePending": "Quelques visites sont nécessaires avant d’avoir quelque chose à lire.",
       "adviceGood": "Les visiteurs voient votre accroche presque immédiatement. Rien à faire.",
-      "adviceSlow": "Plus de 2,5 secondes. Sur un portfolio, c’est presque toujours une photo lourde — les images que vous envoyez sont la partie que vous maîtrisez.",
+      "adviceSlow": "Plus de 2,5 secondes — presque toujours une photo lourde.",
       "reviewImages": "Revoir vos images",
       "neverOpened": "Jamais ouvert :",
+      "andMore": " et {count} de plus",
       "weigh": "À mettre en balance avec le reste"
     },
     "legal": {

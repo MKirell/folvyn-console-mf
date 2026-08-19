@@ -351,9 +351,10 @@
       "verdictNeedsWork": "needs work",
       "advicePending": "Needs a few visits before there is anything to read.",
       "adviceGood": "Visitors see your hero almost immediately. Nothing to do.",
-      "adviceSlow": "Over 2.5 seconds. On a portfolio this is nearly always a heavy photo — the images you upload are the part you control.",
+      "adviceSlow": "Over 2.5 seconds — nearly always a heavy photo.",
       "reviewImages": "Review your images",
       "neverOpened": "Never opened:",
+      "andMore": " and {count} more",
       "weigh": "Weigh this against the backlog"
     },
     "legal": {

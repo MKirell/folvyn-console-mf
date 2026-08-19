@@ -189,10 +189,16 @@
           :slots="ROW_BUDGET.documents"
           :empty="t('views.insights.emptyDocuments')"
         />
-        <p v-if="unopened.length" class="mt-3 text-[0.78rem] text-muted">
+        <p
+          v-if="unopened.length"
+          class="mt-3 truncate text-[0.78rem] text-muted"
+          :title="unopened.join(', ')"
+        >
           {{ t('views.insights.neverOpened') }}
           <span class="text-ink">{{ unopened.slice(0, 3).join(', ') }}</span
-          ><span v-if="unopened.length > 3"> and {{ unopened.length - 3 }} more</span>
+          ><span v-if="unopened.length > 3">{{
+            t('views.insights.andMore', { count: unopened.length - 3 })
+          }}</span>
         </p>
       </PanelCard>
 
@@ -251,7 +257,9 @@
               loadSpeed.display
             }}</span>
           </div>
-          <p class="mt-2.5 text-[0.78rem] text-muted">{{ loadSpeed.advice }}</p>
+          <p class="mt-2.5 truncate text-[0.78rem] text-muted" :title="loadSpeed.advice">
+            {{ loadSpeed.advice }}
+          </p>
           <RouterLink
             v-if="loadSpeed.actionable"
             to="/media"
@@ -316,7 +324,7 @@ const summary = computed(() => analytics.summary)
 
 const ROW_BUDGET = {
   referrers: 6,
-  countries: 6,
+  countries: 5,
   documents: 4,
   contact: 4,
   outbound: 4,

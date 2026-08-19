@@ -261,7 +261,7 @@ describe('field renderer', () => {
 
   it('leaves the field uncluttered, with no hint line under the input', () => {
     const wrapper = mount(FieldRenderer, {
-      props: { field: { name: 'phone', type: 'text', pattern: '^\+' }, modelValue: '' },
+      props: { field: { name: 'phone', type: 'text', pattern: '^\\+' }, modelValue: '' },
     })
 
     expect(wrapper.findAll('p')).toHaveLength(0)
