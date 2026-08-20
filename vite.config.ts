@@ -18,9 +18,16 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
   },
   build: {
-    assetsInlineLimit: (file: string) => !file.includes('country-flag-icons'),
+    assetsInlineLimit: (file: string) =>
+      !file.includes('country-flag-icons') && !file.endsWith('.mjs'),
     rollupOptions: {
       output: {
+        assetFileNames: (asset) => {
+          const source = asset.names?.[0] ?? ''
+          return source.endsWith('.mjs')
+            ? 'assets/[name]-[hash].js'
+            : 'assets/[name]-[hash][extname]'
+        },
         manualChunks: {
           vue: ['vue', 'vue-router', 'pinia'],
         },
