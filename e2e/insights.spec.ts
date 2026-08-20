@@ -230,7 +230,7 @@ test.describe('insights design', () => {
       .locator('section')
       .filter({ has: signedIn.getByRole('heading', { level: 2, name: 'Where they are' }) })
 
-    await expect(panel.getByRole('listitem')).toHaveCount(6)
+    await expect(panel.getByRole('listitem')).toHaveCount(5)
     await expect(panel.getByText('other', { exact: true })).toBeVisible()
   })
 

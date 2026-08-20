@@ -285,7 +285,7 @@ test.describe('locales and media', () => {
     await signedIn.goto('/locales/queue/fr')
 
     await expect(
-      main(signedIn).getByText(/the hero and about section fall back to nothing/i),
+      main(signedIn).getByText(/nothing below the foundation renders/i),
     ).toBeVisible()
   })
 
