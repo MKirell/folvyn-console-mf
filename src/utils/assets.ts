@@ -66,12 +66,7 @@ export function assetUrl(key: string): string | undefined {
 export function openUrl(key: string): string | undefined {
   const url = assetUrl(key)
   if (!url) return undefined
-  return isPdfKey(key) ? `${url}#view=FitV&toolbar=1` : url
-}
-
-export function pdfPreviewUrl(key: string): string | undefined {
-  const url = docUrl(key)
-  return url ? `${url}#page=1&view=FitH&toolbar=0&navpanes=0&scrollbar=0` : undefined
+  return isPdfKey(key) ? `${url}#view=Fit` : url
 }
 
 export function sanitizeFilename(filename: string): string {

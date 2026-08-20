@@ -94,17 +94,7 @@
                     class="absolute inset-0 h-full w-full object-cover"
                     loading="lazy"
                   />
-                  <iframe
-                    v-else-if="isPdfKey(asset.key)"
-                    v-page-thumb
-                    :src="pdfPreviewUrl(asset.key)"
-                    :title="asset.key"
-                    class="page-thumb pointer-events-none"
-                    scrolling="no"
-                    loading="lazy"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  ></iframe>
+                  <PdfThumb v-else-if="isPdfKey(asset.key)" :src="assetUrl(asset.key)" />
                   <FileText v-else :size="22" :stroke-width="1.5" class="text-muted" />
                 </span>
                 <span class="block truncate px-2 py-1.5 font-mono text-[0.66rem]">{{
@@ -148,13 +138,14 @@
 
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch } from 'vue'
+import PdfThumb from '@/components/ui/PdfThumb.vue'
 import { FileText, Upload } from '@lucide/vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import { useMediaStore } from '@/stores/media'
 import { useUiStore } from '@/stores/ui'
 import { useI18n } from 'vue-i18n'
-import { assetUrl, isImageKey, isPdfKey, matchesKind, pdfPreviewUrl } from '@/utils/assets'
+import { assetUrl, isImageKey, isPdfKey, matchesKind } from '@/utils/assets'
 import type { AssetKind } from '@/registry/collections'
 
 const props = withDefaults(

@@ -164,17 +164,6 @@
   );
 }
 
-@utility page-thumb {
-  position: absolute;
-  inset-inline-start: 0;
-  top: 0;
-  width: 820px;
-  height: 1060px;
-  border: 0;
-  transform-origin: top left;
-  transform: scale(var(--page-thumb-scale, 0.22));
-}
-
 @layer base {
   button:not(:disabled),
   [role='button']:not([aria-disabled='true']),

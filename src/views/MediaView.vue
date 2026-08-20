@@ -146,17 +146,7 @@
               class="absolute inset-0 h-full w-full object-cover"
               loading="lazy"
             />
-            <iframe
-              v-else-if="isPdfKey(asset.key)"
-              v-page-thumb
-              :src="pdfPreviewUrl(asset.key)"
-              :title="asset.key"
-              class="page-thumb pointer-events-none"
-              scrolling="no"
-              loading="lazy"
-              tabindex="-1"
-              aria-hidden="true"
-            ></iframe>
+            <PdfThumb v-else-if="isPdfKey(asset.key)" :src="assetUrl(asset.key)" />
             <FileText v-else :size="22" :stroke-width="1.5" class="text-muted" />
 
             <span
@@ -258,15 +248,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import SkeletonBar from '@/components/ui/SkeletonBar.vue'
 import { useMediaStore, type AssetReference } from '@/stores/media'
 import { useUiStore } from '@/stores/ui'
-import {
-  assetUrl,
-  extensionOf,
-  formatBytes,
-  isImageKey,
-  isPdfKey,
-  openUrl,
-  pdfPreviewUrl,
-} from '@/utils/assets'
+import { assetUrl, extensionOf, formatBytes, isImageKey, isPdfKey, openUrl } from '@/utils/assets'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()

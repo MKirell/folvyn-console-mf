@@ -16,17 +16,7 @@
             class="absolute inset-0 h-full w-full object-cover"
             loading="lazy"
           />
-          <iframe
-            v-else-if="isPdfKey(key)"
-            v-page-thumb
-            :src="pdfPreviewUrl(key)"
-            :title="key"
-            class="page-thumb pointer-events-none"
-            scrolling="no"
-            loading="lazy"
-            tabindex="-1"
-            aria-hidden="true"
-          ></iframe>
+          <PdfThumb v-else-if="isPdfKey(key)" :src="assetUrl(key)" />
           <FileText v-else :size="18" :stroke-width="1.5" class="text-muted" />
         </span>
         <span class="block truncate px-1.5 py-1.5 font-mono text-[0.62rem]">{{ key }}</span>
@@ -62,9 +52,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import PdfThumb from '@/components/ui/PdfThumb.vue'
 import { FileText, Plus, X } from '@lucide/vue'
 import AssetPicker from '@/components/fields/AssetPicker.vue'
-import { assetUrl, isImageKey, isPdfKey, pdfPreviewUrl } from '@/utils/assets'
+import { assetUrl, isImageKey, isPdfKey } from '@/utils/assets'
 import type { AssetKind } from '@/registry/collections'
 import { useI18n } from 'vue-i18n'
 
