@@ -125,6 +125,23 @@ describe('preview payload', () => {
     expect(list.map((entry) => entry.id)).toEqual(certifications.map((entry) => entry.id))
   })
 
+  it("carries the owner's asset folder so the preview can find the pictures", async () => {
+    const { buildPreviewPayload } = await import('@/utils/preview-payload')
+    const { setAssetPrefix } = await import('@/utils/assets')
+
+    setAssetPrefix('owner-folder')
+
+    const payload = buildPreviewPayload(COLLECTIONS.certification, certifications[0], 'en', {
+      locales: locales.map(({ code, flagCode }) => ({ code, flagCode })),
+      person,
+      profile,
+      lists: { certification: certifications },
+    }) as { assetPrefix: string }
+
+    expect(payload.assetPrefix).toBe('owner-folder')
+    setAssetPrefix('')
+  })
+
   it('carries every other collection so derived figures stay truthful', async () => {
     const { buildPreviewPayload } = await import('@/utils/preview-payload')
 

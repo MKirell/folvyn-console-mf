@@ -1,3 +1,4 @@
+import { assetPrefix } from '@/utils/assets'
 import type { CollectionDef } from '@/registry/collections'
 import type { AdminDocument } from '@/types/admin'
 
@@ -54,6 +55,7 @@ export function buildPreviewPayload(
   const achievements: Record<string, unknown[]> = {}
   const payload: Record<string, unknown> = {
     lang,
+    assetPrefix: assetPrefix(),
     availableLangs: context.locales,
     person: context.person ? flatten(context.person, lang) : {},
     profile: context.profile
