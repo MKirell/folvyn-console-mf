@@ -128,8 +128,8 @@
         <div v-else class="grid flex-1 place-items-center py-6 text-center">
           <div>
             <p class="text-[0.86rem] text-ink">{{ t('platform.health.noErrors') }}</p>
-            <p class="mt-1 max-w-[52ch] text-[0.78rem] text-muted">
-              Grouped by message, so one broken deploy is one row across many accounts.
+            <p class="mt-1 text-[0.78rem] text-muted">
+              One broken deploy is one row, not one per account.
             </p>
           </div>
         </div>

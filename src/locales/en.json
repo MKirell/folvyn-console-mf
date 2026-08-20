@@ -110,7 +110,8 @@
       "duplicated": "Duplicated",
       "duplicateFailed": "Duplicate failed",
       "deleted": "Deleted",
-      "deleteFailed": "Delete failed"
+      "deleteFailed": "Delete failed",
+      "reorderHandle": "Drag to reorder"
     },
     "locales": {
       "title": "Site locales",

@@ -110,7 +110,7 @@
     >
       <ul
         v-if="media.loading"
-        class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2.5"
+        class="grid grid-cols-[repeat(auto-fill,minmax(min(180px,100%),1fr))] gap-2.5"
         role="status"
         :aria-label="t('views.media.title')"
       >
@@ -128,7 +128,7 @@
 
       <ul
         v-else-if="visible.length"
-        class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2.5"
+        class="grid grid-cols-[repeat(auto-fill,minmax(min(180px,100%),1fr))] gap-2.5"
         role="list"
       >
         <li
@@ -137,7 +137,7 @@
           class="group relative overflow-hidden rounded-[9px] border border-line/10 bg-surface"
         >
           <span
-            class="relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
+            class="@container relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
           >
             <img
               v-if="isImageKey(asset.key)"
@@ -150,7 +150,7 @@
               v-else-if="isPdfKey(asset.key)"
               :src="pdfPreviewUrl(asset.key)"
               :title="asset.key"
-              class="pointer-events-none absolute left-0 top-0 h-[420px] w-full border-0"
+              class="pointer-events-none absolute left-0 top-0 h-[1060px] w-[820px] origin-top-left border-0 [transform:scale(calc(100cqw/820))]"
               scrolling="no"
               loading="lazy"
               tabindex="-1"

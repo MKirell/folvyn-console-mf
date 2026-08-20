@@ -35,7 +35,7 @@
         v-if="!isNew"
         size="sm"
         variant="danger"
-        class="max-900:order-2 max-900:ms-auto"
+        class="min-w-0 max-900:order-2 max-900:ms-auto"
         @click="confirming = true"
       >
         <Trash2 :size="13" :stroke-width="1.9" aria-hidden="true" />
@@ -44,12 +44,12 @@
       <AppButton
         variant="primary"
         type="submit"
-        class="max-900:order-3"
+        class="min-w-0 max-900:order-3"
         :busy="saving"
         :disabled="!dirty && !isNew"
       >
         {{ t('common.save') }}
-        <kbd class="font-mono text-[0.62rem] opacity-70">{{ metaKey }} S</kbd>
+        <kbd class="font-mono text-[0.62rem] opacity-70 max-900:hidden">{{ metaKey }} S</kbd>
       </AppButton>
     </header>
 

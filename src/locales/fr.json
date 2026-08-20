@@ -110,7 +110,8 @@
       "duplicated": "Dupliqué",
       "duplicateFailed": "Échec de la duplication",
       "deleted": "Supprimé",
-      "deleteFailed": "Échec de la suppression"
+      "deleteFailed": "Échec de la suppression",
+      "reorderHandle": "Glisser pour réordonner"
     },
     "locales": {
       "title": "Langues du site",

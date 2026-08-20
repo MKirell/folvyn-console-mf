@@ -44,6 +44,7 @@
         v-for="(locale, index) in locales"
         :key="locale.id"
         draggable="true"
+        :data-row-index="index"
         class="group flex items-center gap-3 rounded-[11px] border bg-surface px-3.5 py-3 transition-[border-color,opacity] motion-reduce:transition-none max-700:gap-2 max-700:px-3"
         :class="[
           dragIndex === index ? 'opacity-45' : '',
@@ -57,8 +58,10 @@
         @drop.prevent="onDrop"
       >
         <span
-          class="shrink-0 cursor-grab text-muted opacity-0 transition-opacity group-hover:opacity-100 max-700:hidden"
-          aria-hidden="true"
+          class="shrink-0 cursor-grab touch-none text-muted opacity-40 transition-opacity group-hover:opacity-100"
+          :aria-label="t('views.collection.reorderHandle')"
+          role="button"
+          @pointerdown="onHandleDown(index, $event)"
         >
           <GripVertical :size="15" :stroke-width="1.8" />
         </span>
@@ -130,6 +133,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { GripVertical, Plus, Trash2 } from '@lucide/vue'
+import { usePointerReorder } from '@/composables/useRowReorder'
 import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
@@ -156,6 +160,8 @@ const busy = ref('')
 
 const dragIndex = ref(-1)
 const overIndex = ref(-1)
+
+const { onHandleDown } = usePointerReorder(dragIndex, overIndex, () => onDrop())
 
 async function onDrop(): Promise<void> {
   const from = dragIndex.value

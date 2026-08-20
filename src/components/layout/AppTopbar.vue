@@ -56,7 +56,7 @@
       >
         <Search :size="14" :stroke-width="1.9" aria-hidden="true" />
         <span>{{ t('common.search') }}</span>
-        <kbd class="font-mono text-[0.62rem] text-muted">{{ metaKey }} K</kbd>
+        <kbd class="font-mono text-[0.62rem] text-muted max-700:hidden">{{ metaKey }} K</kbd>
       </button>
 
       <button

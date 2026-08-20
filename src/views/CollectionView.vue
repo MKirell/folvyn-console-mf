@@ -82,6 +82,7 @@
         v-for="(row, index) in rows"
         :key="row.id"
         :draggable="reorderable"
+        :data-row-index="index"
         class="group flex items-center gap-3 rounded-[11px] border bg-surface px-3 py-2.5 transition-[border-color,opacity] motion-reduce:transition-none"
         :class="[
           dragIndex === index ? 'opacity-45' : '',
@@ -96,9 +97,11 @@
       >
         <span
           v-if="reorderable"
-          class="shrink-0 cursor-grab text-muted opacity-0 transition-opacity group-hover:opacity-100"
+          class="shrink-0 cursor-grab touch-none text-muted opacity-40 transition-opacity group-hover:opacity-100"
           :class="query || missingLang ? '!opacity-20' : ''"
-          aria-hidden="true"
+          :aria-label="t('views.collection.reorderHandle')"
+          role="button"
+          @pointerdown="onHandleDown(index, $event)"
         >
           <GripVertical :size="15" :stroke-width="1.8" />
         </span>
@@ -193,6 +196,7 @@ import { collectionLabel, collectionSingular } from '@/i18n/labels'
 import { iconComponent } from '@/registry/icons'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
+import { usePointerReorder } from '@/composables/useRowReorder'
 import {
   assetKeysOf,
   copyOf,
@@ -316,6 +320,8 @@ async function onDrop(): Promise<void> {
     )
   }
 }
+
+const { onHandleDown } = usePointerReorder(dragIndex, overIndex, onDrop)
 
 async function duplicate(doc: AdminDocument): Promise<void> {
   const def = collection.value
