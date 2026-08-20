@@ -21,6 +21,8 @@ export const useOwnerStore = defineStore('owner', () => {
   const error = ref<string | null>(null)
   const missing = ref<string[]>([])
 
+  let reading: Promise<void> | null = null
+
   const slug = computed(() => record.value?.slug ?? '')
   const status = computed(() => record.value?.status ?? 'draft')
   const published = computed(() => status.value === 'published')
@@ -29,19 +31,25 @@ export const useOwnerStore = defineStore('owner', () => {
   const publicUrl = computed(() => portfolioUrl(slug.value))
 
   async function load(force = false): Promise<void> {
-    if ((record.value && !force) || loading.value) return
+    if (record.value && !force) return
+    if (reading) return reading
 
     loading.value = true
     error.value = null
 
-    try {
-      record.value = await fetchMe()
-      setAssetPrefix(record.value.assetPrefix ?? '')
-    } catch (cause) {
-      error.value = cause instanceof Error ? cause.message : 'Could not read your account'
-    } finally {
-      loading.value = false
-    }
+    reading = (async () => {
+      try {
+        record.value = await fetchMe()
+        setAssetPrefix(record.value.assetPrefix ?? '')
+      } catch (cause) {
+        error.value = cause instanceof Error ? cause.message : 'Could not read your account'
+      } finally {
+        loading.value = false
+        reading = null
+      }
+    })()
+
+    return reading
   }
 
   async function run(action: () => Promise<OwnerRecord>): Promise<void> {
