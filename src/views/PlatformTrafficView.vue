@@ -155,7 +155,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const PERIODS = [7, 30, 90]
-const ROW_BUDGET = { referrers: 6, countries: 6, langs: 4 } as const
+const ROW_BUDGET = { referrers: 6, countries: 5, langs: 4 } as const
 
 const traffic = ref<AnalyticsSummary | null>(null)
 const loading = ref(true)

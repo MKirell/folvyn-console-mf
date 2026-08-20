@@ -42,9 +42,9 @@
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        :label="t('platform.health.image')"
-        :value="imageTag"
-        hint="what is actually running"
+        :label="t('platform.health.renders')"
+        :value="renderState"
+        :hint="renderHint"
       />
 
       <PanelCard
@@ -236,13 +236,24 @@ const used = computed(
     10,
 )
 
-const imageTag = computed(() => (health.value?.image ?? 'unknown').slice(0, 12))
-
 const collections = computed(() => foldOther(health.value?.storage.collections ?? [], 4))
 
 const volume = computed(() =>
   (ingest.value?.days ?? []).map((row) => ({ date: row.date, value: row.events })),
 )
+
+const renderState = computed(() => {
+  const prerender = health.value?.prerender
+  if (!prerender?.configured) return 'off'
+  return prerender.failing > 0 ? String(prerender.failing) : 'ok'
+})
+
+const renderHint = computed(() => {
+  const prerender = health.value?.prerender
+  if (!prerender?.configured) return 'no renderer in this environment'
+  if (prerender.failing > 0) return 'portfolios whose page is stale'
+  return `${prerender.attempts.length} recent, none failing`
+})
 
 const vitals = computed(() =>
   VITALS.map((vital) => {

@@ -53,15 +53,16 @@
               <span class="min-w-0 flex-1 truncate font-mono text-[0.8rem]">/{{ row.slug }}</span>
 
               <span
-                class="shrink-0 rounded-[5px] bg-line/10 px-1.5 py-[1px] font-mono text-[0.62rem] uppercase"
+                class="shrink-0 rounded-[5px] px-1.5 py-[1px] font-mono text-[0.62rem] uppercase"
+                :class="badge(row)"
                 >{{ row.state }}</span
               >
 
-              <span class="shrink-0 font-mono text-[0.72rem] tabular-nums text-muted">{{
-                clock(row)
-              }}</span>
-
-              <span class="shrink-0 font-mono text-[0.7rem] text-muted">{{ cascade(row) }}</span>
+              <span
+                class="shrink-0 font-mono text-[0.72rem] tabular-nums"
+                :class="row.daysLeft <= 7 && row.state !== 'done' ? 'text-gold' : 'text-muted'"
+                >{{ clock(row) }}</span
+              >
 
               <AppButton
                 v-if="row.state !== 'done'"
@@ -75,10 +76,27 @@
               >
             </div>
 
-            <p class="text-[0.74rem] text-muted">
-              {{ row.reason }}<span v-if="row.requestedBy"> — asked by {{ row.requestedBy }}</span>
-              <span v-if="row.failure" class="text-rust"> · {{ row.failure }}</span>
-            </p>
+            <div
+              class="h-[3px] w-full overflow-hidden rounded-full bg-line/12"
+              role="img"
+              :aria-label="clock(row)"
+            >
+              <div
+                class="h-full rounded-full transition-[width] motion-reduce:transition-none"
+                :class="bar(row)"
+                :style="{ width: `${elapsed(row)}%` }"
+              />
+            </div>
+
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <p class="min-w-0 flex-1 truncate text-[0.74rem] text-muted">
+                {{ row.reason
+                }}<span v-if="row.requestedBy"> — asked by {{ row.requestedBy }}</span>
+              </p>
+              <span class="shrink-0 font-mono text-[0.7rem] text-muted">{{ cascade(row) }}</span>
+            </div>
+
+            <p v-if="row.failure" class="text-[0.74rem] text-rust">{{ row.failure }}</p>
           </li>
         </ul>
 
@@ -130,6 +148,25 @@ function tone(row: ErasureRow): string {
   if (row.state === 'done') return 'border-sage/25 bg-sage/6'
   if (row.daysLeft <= 7) return 'border-gold/25 bg-gold/6'
   return 'border-line/8 bg-bg'
+}
+
+function badge(row: ErasureRow): string {
+  if (row.state === 'failed') return 'bg-rust/15 text-rust'
+  if (row.state === 'done') return 'bg-sage/15 text-sage'
+  if (row.daysLeft <= 7) return 'bg-gold/15 text-gold'
+  return 'bg-line/10 text-muted'
+}
+
+function bar(row: ErasureRow): string {
+  if (row.state === 'failed') return 'bg-rust'
+  if (row.state === 'done') return 'bg-sage'
+  return row.daysLeft <= 7 ? 'bg-gold' : 'bg-accent'
+}
+
+function elapsed(row: ErasureRow): number {
+  if (row.state === 'done') return 100
+  const used = deadlineDays - row.daysLeft
+  return Math.max(2, Math.min(100, Math.round((used / deadlineDays) * 100)))
 }
 
 function clock(row: ErasureRow): string {

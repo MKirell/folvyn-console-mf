@@ -697,7 +697,10 @@
       "signups": "Sign-ups",
       "whereFrom": "Where visitors come from",
       "busy": "When the platform is busy",
-      "noVisit": "No portfolio has received a visit yet."
+      "noVisit": "No portfolio has received a visit yet.",
+      "draft": "Drafts",
+      "suspended": "Suspended",
+      "activation": "From sign-up to an audience"
     },
     "portfolios": {
       "title": "Portfolios",
@@ -709,7 +712,8 @@
       "export": "Export",
       "suspend": "Suspend",
       "restore": "Restore",
-      "queueErasure": "Queue erasure"
+      "queueErasure": "Queue erasure",
+      "sessionsWindow": "Visitors in the last 30 days — one per person per day"
     },
     "account": {
       "notFound": "Account not found",
@@ -742,7 +746,8 @@
       "beacons": "Beacons refused",
       "noContent": "No content stored yet",
       "nothingWritten": "The collector has written nothing",
-      "noErrors": "No portfolio reported a JavaScript error."
+      "noErrors": "No portfolio reported a JavaScript error.",
+      "renders": "Renders"
     },
     "audit": {
       "title": "Audit",

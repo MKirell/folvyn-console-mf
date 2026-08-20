@@ -87,8 +87,10 @@
           >{{ entry.row.status }}</span
         >
 
-        <span class="w-20 shrink-0 text-end font-mono text-[0.72rem] tabular-nums text-muted"
-          >{{ entry.row.sessions.toLocaleString() }} v</span
+        <span
+          class="w-20 shrink-0 text-end font-mono text-[0.72rem] tabular-nums text-muted"
+          :title="t('platform.portfolios.sessionsWindow')"
+          >{{ entry.row.visitors.toLocaleString() }} v</span
         >
 
         <span class="flex shrink-0 items-center gap-1">

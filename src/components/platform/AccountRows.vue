@@ -18,9 +18,9 @@
       <span class="w-24 shrink-0 text-end font-mono text-[0.7rem] tabular-nums text-muted">{{
         when(row)
       }}</span>
-      <span class="w-14 shrink-0 text-end font-mono text-[0.74rem] tabular-nums">{{
-        row.sessions.toLocaleString()
-      }}</span>
+      <span class="w-16 shrink-0 text-end font-mono text-[0.74rem] tabular-nums"
+        >{{ row.visitors.toLocaleString() }} v</span
+      >
     </li>
   </ul>
 

@@ -40,6 +40,7 @@ function account(id: string, slug: string, status: string, publishedAt: string |
     displayName: null,
     createdAt: '2026-07-01T00:00:00.000Z',
     sessions: 12,
+    visitors: 8,
   }
 }
 

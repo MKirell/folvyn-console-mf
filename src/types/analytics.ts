@@ -46,6 +46,7 @@ export interface PortfolioRow {
   createdAt: string | null
   publishedAt: string | null
   sessions: number
+  visitors: number
 }
 
 export interface AuditEntry {
@@ -74,6 +75,19 @@ export interface StorageReport {
   collections: AnalyticsBreakdown[]
 }
 
+export interface PrerenderAttempt {
+  slug: string
+  requestedAt: string
+  succeeded: boolean
+  detail: string | null
+}
+
+export interface PrerenderHealth {
+  configured: boolean
+  attempts: PrerenderAttempt[]
+  failing: number
+}
+
 export interface PlatformHealth {
   database: 'up' | 'down'
   errors: AnalyticsBreakdown[]
@@ -83,6 +97,7 @@ export interface PlatformHealth {
   sessions: number
   errorRate: number
   image: string | null
+  prerender: PrerenderHealth
 }
 
 export interface PlatformOverview {

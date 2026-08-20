@@ -29,11 +29,7 @@
       </div>
     </header>
 
-    <SkeletonGrid
-      v-if="loading"
-      :panels="[8, 4, 12, 6, 6, 8, 4]"
-      :label="t('platform.overview.title')"
-    />
+    <SkeletonGrid v-if="loading" :panels="[8, 4, 12, 6, 6]" :label="t('platform.overview.title')" />
 
     <EmptyState v-else-if="error" icon="Shield" :title="t('errors.overview')" :description="error">
       <AppButton variant="primary" @click="load(period)">{{ t('common.retry') }}</AppButton>
@@ -51,46 +47,89 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.overview.accounts')"
         :value="String(overview.owners.total)"
-        :hint="`${overview.signups.last7} new this week`"
+        :hint="`${publishedShare}% live`"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.overview.live')"
         :value="String(overview.owners.published)"
-        :hint="`${publishedShare}% of accounts`"
+        hint="published"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        :label="t('platform.common.visitors')"
-        :value="overview.traffic.totals.visitors.toLocaleString()"
-        :delta="overview.traffic.deltas.visitors"
+        :label="t('platform.overview.draft')"
+        :value="String(overview.owners.draft)"
+        hint="never published"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
-        :label="t('platform.common.sessions')"
-        :value="overview.traffic.totals.sessions.toLocaleString()"
-        :delta="overview.traffic.deltas.sessions"
+        :label="t('platform.overview.suspended')"
+        :value="String(overview.owners.suspended)"
+        hint="held by an operator"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
-        :title="t('platform.common.traffic')"
-        :hint="`${overview.traffic.from} → ${overview.traffic.to}`"
+        :title="t('platform.overview.activation')"
+        :hint="activationHint"
       >
-        <SparkLine :points="trendPoints" unit="sessions" :label="t('platform.common.sessions')" />
+        <div class="flex min-h-0 flex-1 flex-col justify-center gap-4">
+          <ol class="flex items-stretch gap-2 max-600:flex-col" role="list">
+            <li
+              v-for="step in activation"
+              :key="step.key"
+              class="flex min-w-0 flex-1 flex-col gap-1.5"
+            >
+              <div class="flex items-baseline gap-2">
+                <span class="font-disp text-[1.5rem] font-semibold tabular-nums leading-none">{{
+                  step.count
+                }}</span>
+                <span class="font-mono text-[0.7rem] tabular-nums text-muted"
+                  >{{ step.share }}%</span
+                >
+              </div>
+              <div class="h-1.5 w-full overflow-hidden rounded-full bg-line/12">
+                <div
+                  class="h-full rounded-full bg-accent"
+                  :style="{ width: `${Math.max(step.share, 2)}%` }"
+                />
+              </div>
+              <span class="truncate text-[0.76rem] text-muted">{{ step.label }}</span>
+            </li>
+          </ol>
+
+          <p class="text-[0.78rem] leading-snug text-muted">{{ activationNote }}</p>
+        </div>
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        :title="t('platform.overview.whereFrom')"
-        hint="top referrers"
+        :title="t('platform.overview.signups')"
+        hint="new accounts"
       >
-        <BarRows
-          :rows="referrers"
-          :slots="ROW_BUDGET.referrers"
-          show-share
-          :empty="t('platform.common.noReferrer')"
-        />
+        <div class="flex min-h-0 flex-1 flex-col justify-center gap-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
+                {{ t('platform.last7') }}
+              </p>
+              <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
+                {{ overview.signups.last7 }}
+              </p>
+            </div>
+
+            <div class="border-s border-line/10 ps-4">
+              <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
+                {{ t('platform.last30') }}
+              </p>
+              <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
+                {{ overview.signups.last30 }}
+              </p>
+            </div>
+          </div>
+
+          <p class="text-[0.78rem] leading-snug text-muted">{{ growthLine }}</p>
+        </div>
       </PanelCard>
 
       <PanelCard
@@ -99,21 +138,6 @@
         :hint="`sessions a day, ${period} days`"
       >
         <HeatCalendar :points="trendPoints" />
-      </PanelCard>
-
-      <PanelCard
-        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
-        :title="t('platform.overview.states')"
-        hint="every account"
-      >
-        <DonutChart
-          :rows="states"
-          :label="t('platform.overview.states')"
-          :empty="t('platform.overview.noAccount')"
-        />
-        <p v-if="overview.owners.suspended > 0" class="mt-3 text-[0.74rem] text-rust">
-          {{ overview.owners.suspended }} suspended — review them under Portfolios.
-        </p>
       </PanelCard>
 
       <PanelCard
@@ -149,9 +173,11 @@
               :class="row.status === 'published' ? 'bg-sage/15 text-sage' : 'bg-line/10 text-muted'"
               >{{ row.status }}</span
             >
-            <span class="w-14 shrink-0 text-end font-mono text-[0.74rem] tabular-nums">{{
-              row.sessions.toLocaleString()
-            }}</span>
+            <span
+              class="w-16 shrink-0 text-end font-mono text-[0.74rem] tabular-nums"
+              :title="t('platform.portfolios.sessionsWindow')"
+              >{{ row.visitors.toLocaleString() }} v</span
+            >
           </li>
         </ul>
         <p v-else class="grid flex-1 place-items-center text-[0.8rem] text-muted">
@@ -160,7 +186,7 @@
       </PanelCard>
 
       <PanelCard
-        class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
+        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.overview.attention')"
         :hint="needsWork === 0 ? 'all clear' : `${needsWork} of ${attention.length} need you`"
       >
@@ -196,36 +222,6 @@
           <p class="text-[0.74rem] text-muted">{{ attentionSummary }}</p>
         </div>
       </PanelCard>
-
-      <PanelCard
-        class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
-        :title="t('platform.overview.signups')"
-        hint="new accounts"
-      >
-        <div class="flex min-h-0 flex-1 flex-col justify-center gap-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
-                {{ t('platform.last7') }}
-              </p>
-              <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
-                {{ overview.signups.last7 }}
-              </p>
-            </div>
-
-            <div class="border-s border-line/10 ps-4">
-              <p class="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-muted">
-                {{ t('platform.last30') }}
-              </p>
-              <p class="mt-1.5 font-disp text-[2.2rem] font-semibold leading-none tracking-tight">
-                {{ overview.signups.last30 }}
-              </p>
-            </div>
-          </div>
-
-          <p class="text-[0.78rem] leading-snug text-muted">{{ growthLine }}</p>
-        </div>
-      </PanelCard>
     </div>
   </div>
 </template>
@@ -239,11 +235,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
 import SkeletonGrid from '@/components/ui/SkeletonGrid.vue'
 import StatTile from '@/components/charts/StatTile.vue'
-import SparkLine from '@/components/charts/SparkLine.vue'
-import BarRows from '@/components/charts/BarRows.vue'
-import DonutChart from '@/components/charts/DonutChart.vue'
 import HeatCalendar from '@/components/charts/HeatCalendar.vue'
-import { foldOther } from '@/utils/breakdown'
 import { portfolioUrl } from '@/config/env'
 import { fetchPlatformOverview } from '@/services/admin.api'
 import type { PlatformOverview } from '@/types/analytics'
@@ -251,7 +243,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const PERIODS = [7, 30, 90]
-const ROW_BUDGET = { referrers: 6, busiest: 5 } as const
+const ROW_BUDGET = { busiest: 5 } as const
 const LCP_BUDGET_MS = 2500
 const ATTENTION_ROWS = 2
 
@@ -274,20 +266,53 @@ function share(count: number): number {
 
 const publishedShare = computed(() => share(overview.value?.owners.published ?? 0))
 
-const states = computed(() => {
+const activation = computed(() => {
   const owners = overview.value?.owners
   if (!owners) return []
 
+  const share = (n: number): number =>
+    owners.total === 0 ? 0 : Math.round((n / owners.total) * 100)
+
   return [
-    { key: 'published', count: owners.published },
-    { key: 'draft', count: owners.draft },
-    { key: 'suspended', count: owners.suspended },
-  ].filter((state) => state.count > 0)
+    { key: 'signed-up', label: 'signed up', count: owners.total, share: share(owners.total) },
+    {
+      key: 'published',
+      label: 'published a portfolio',
+      count: owners.published,
+      share: share(owners.published),
+    },
+    {
+      key: 'visited',
+      label: 'received a visit',
+      count: overview.value?.portfolios.length ?? 0,
+      share: share(overview.value?.portfolios.length ?? 0),
+    },
+  ]
 })
 
-const referrers = computed(() =>
-  foldOther(overview.value?.traffic.referrers ?? [], ROW_BUDGET.referrers),
-)
+const activationHint = computed(() => {
+  const owners = overview.value?.owners
+  if (!owners || owners.total === 0) return 'no account yet'
+  const visited = overview.value?.portfolios.length ?? 0
+  return `${Math.round((visited / owners.total) * 100)}% reach an audience`
+})
+
+const activationNote = computed(() => {
+  const owners = overview.value?.owners
+  if (!owners || owners.total === 0) return 'No account has signed up yet.'
+
+  const visited = overview.value?.portfolios.length ?? 0
+  const unpublished = owners.total - owners.published
+  const unseen = owners.published - visited
+
+  if (unpublished > 0 && unseen > 0)
+    return `${unpublished} account${unpublished === 1 ? ' has' : 's have'} not published, and ${unseen} published portfolio${unseen === 1 ? '' : 's'} ${unseen === 1 ? 'has' : 'have'} had no visit yet.`
+  if (unpublished > 0)
+    return `${unpublished} account${unpublished === 1 ? ' has' : 's have'} not published yet — everything published has reached someone.`
+  if (unseen > 0)
+    return `Every account published, but ${unseen} portfolio${unseen === 1 ? '' : 's'} ${unseen === 1 ? 'has' : 'have'} had no visit yet.`
+  return `All ${owners.total} account${owners.total === 1 ? '' : 's'} published a portfolio, and every one of them was seen by at least one visitor in the last ${period.value} days.`
+})
 
 const busiest = computed(() =>
   (overview.value?.portfolios ?? [])
@@ -377,14 +402,15 @@ const attention = computed(() => {
 const needsWork = computed(() => attention.value.filter((check) => !check.clear).length)
 
 const topAttention = computed(() =>
-  attention.value.filter((check) => !check.clear).slice(0, ATTENTION_ROWS),
+  [...attention.value].sort((a, b) => Number(a.clear) - Number(b.clear)).slice(0, ATTENTION_ROWS),
 )
 
 const attentionSummary = computed(() => {
-  const hidden = needsWork.value - topAttention.value.length
-  if (hidden <= 0)
-    return `${attention.value.length - needsWork.value} other check${attention.value.length - needsWork.value === 1 ? '' : 's'} clear.`
-  return `${hidden} more check${hidden === 1 ? '' : 's'} also need you — open Health or Portfolios.`
+  const hidden = needsWork.value - topAttention.value.filter((check) => !check.clear).length
+  if (hidden > 0)
+    return `${hidden} more check${hidden === 1 ? '' : 's'} also need you — open Health or Portfolios.`
+  if (needsWork.value === 0) return `Every check passed against the last ${period.value} days.`
+  return `${attention.value.length - needsWork.value} other check${attention.value.length - needsWork.value === 1 ? '' : 's'} clear.`
 })
 
 async function load(days: number): Promise<void> {

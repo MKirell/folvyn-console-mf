@@ -697,7 +697,10 @@
       "signups": "Inscriptions",
       "whereFrom": "D’où viennent les visiteurs",
       "busy": "Quand la plateforme est chargée",
-      "noVisit": "Aucun portfolio n’a encore reçu de visite."
+      "noVisit": "Aucun portfolio n’a encore reçu de visite.",
+      "draft": "Brouillons",
+      "suspended": "Suspendus",
+      "activation": "De l’inscription à une audience"
     },
     "portfolios": {
       "title": "Portfolios",
@@ -709,7 +712,8 @@
       "export": "Exporter",
       "suspend": "Suspendre",
       "restore": "Rétablir",
-      "queueErasure": "Mettre en file d’effacement"
+      "queueErasure": "Mettre en file d’effacement",
+      "sessionsWindow": "Visiteurs sur les 30 derniers jours — un par personne et par jour"
     },
     "account": {
       "notFound": "Compte introuvable",
@@ -742,7 +746,8 @@
       "beacons": "Balises refusées",
       "noContent": "Aucun contenu stocké",
       "nothingWritten": "Le collecteur n’a rien écrit",
-      "noErrors": "Aucun portfolio n’a signalé d’erreur JavaScript."
+      "noErrors": "Aucun portfolio n’a signalé d’erreur JavaScript.",
+      "renders": "Rendus"
     },
     "audit": {
       "title": "Audit",
