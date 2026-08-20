@@ -67,7 +67,7 @@
 
         <RouterLink :to="`/c/locale/${locale.id}`" class="min-w-0">
           <span class="block truncate font-mono text-[0.82rem] font-medium uppercase">{{
-            locale.code.toUpperCase()
+            (locale.code ?? '').toUpperCase()
           }}</span>
         </RouterLink>
 
@@ -83,7 +83,7 @@
             type="button"
             role="switch"
             :aria-checked="locale.enabled"
-            :aria-label="t('views.locales.toggleAria', { code: locale.code.toUpperCase() })"
+            :aria-label="t('views.locales.toggleAria', { code: (locale.code ?? '').toUpperCase() })"
             :disabled="busy === locale.id"
             class="flex shrink-0 items-center gap-1.5 rounded-[7px] px-2 py-[3px] font-mono text-[0.62rem] uppercase transition-colors disabled:opacity-50"
             :class="
@@ -117,7 +117,7 @@
     <ConfirmDialog
       :open="pending !== null"
       :title="t('views.locales.deleteTitle')"
-      :subject="pending?.code.toUpperCase() ?? ''"
+      :subject="(pending?.code ?? '').toUpperCase()"
       :message="t('views.locales.deleteMessage')"
       confirm-word="delete"
       @cancel="pending = null"
@@ -203,7 +203,7 @@ async function removeLocale(): Promise<void> {
 
   try {
     await content.remove(COLLECTIONS.locale, locale.id)
-    ui.notify('good', t('views.locales.deleted', { label: locale.code.toUpperCase() }))
+    ui.notify('good', t('views.locales.deleted', { label: (locale.code ?? '').toUpperCase() }))
   } catch (cause) {
     ui.notify(
       'bad',

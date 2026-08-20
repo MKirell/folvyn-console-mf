@@ -75,7 +75,9 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 
 function when(value: string): string {
-  return new Date(value).toISOString().slice(0, 16).replace('T', ' ')
+  const at = new Date(value)
+  if (Number.isNaN(at.getTime())) return '—'
+  return at.toISOString().slice(0, 16).replace('T', ' ')
 }
 
 async function load(): Promise<void> {

@@ -23,7 +23,22 @@ vi.mock('vue-router', async () => {
 })
 
 const SUMMARY = {
-  totals: { sessions: 40, visitors: 20, events: 90, docs: 3, outbound: 2 },
+  days: 30,
+  from: '2026-07-22',
+  to: '2026-08-20',
+  totals: {
+    sessions: 40,
+    visitors: 20,
+    events: 90,
+    docs: 3,
+    outbound: 2,
+    dwellMsAverage: 45000,
+  },
+  deltas: { sessions: 10, visitors: 5, dwellMs: -2, docs: 0 },
+  browsers: [{ key: 'firefox', count: 6 }],
+  langs: [{ key: 'en', count: 9 }],
+  docsOpened: [{ key: 'cv.pdf', count: 3 }],
+  shellSessions: 2,
   countries: [{ key: 'FR', count: 12 }],
   referrers: [{ key: 'direct', count: 8 }],
   languages: [{ key: 'en', count: 9 }],
@@ -139,7 +154,7 @@ describe('every operator screen renders what it is given', () => {
         action: 'read-account',
         targetSlug: 'ada-lovelace',
         reason: null,
-        at: '2026-08-01T00:00:00.000Z',
+        createdAt: '2026-08-01T00:00:00.000Z',
       },
     ] as never)
 
