@@ -54,6 +54,15 @@ jobs:
       - name: Install the browser
         run: npx playwright install --with-deps chromium
 
+      - name: Serve the portfolio the preview frame embeds
+        run: |
+          repo=https://github.com/MKirell/folvyn-portfolio-mf.git
+          git clone --depth 1 --branch "${{ github.ref_name }}" "$repo" ../folvyn-portfolio-mf ||
+            git clone --depth 1 "$repo" ../folvyn-portfolio-mf
+          (cd ../folvyn-portfolio-mf && npm ci)
+          (cd ../folvyn-portfolio-mf && npm run dev -- --host 127.0.0.1 --port 5173 --strictPort &)
+          npx wait-on -t 120000 http://127.0.0.1:5173/preview.html
+
       - name: End-to-end tests
         run: npm run test:e2e
 
