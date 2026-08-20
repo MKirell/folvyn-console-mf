@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul class="grid grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-2.5" role="list">
+    <ul class="grid grid-cols-[repeat(auto-fill,minmax(min(132px,100%),1fr))] gap-2.5" role="list">
       <li
         v-for="(key, index) in modelValue"
         :key="`${key}-${index}`"
@@ -18,9 +18,10 @@
           />
           <iframe
             v-else-if="isPdfKey(key)"
+            v-page-thumb
             :src="pdfPreviewUrl(key)"
             :title="key"
-            class="pointer-events-none absolute left-0 top-0 h-[420px] w-full border-0"
+            class="page-thumb pointer-events-none"
             scrolling="no"
             loading="lazy"
             tabindex="-1"
@@ -31,7 +32,7 @@
         <span class="block truncate px-1.5 py-1.5 font-mono text-[0.62rem]">{{ key }}</span>
         <button
           type="button"
-          class="absolute end-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-scrim/60 text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+          class="absolute end-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-scrim/60 text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 max-700:opacity-100"
           :aria-label="`Remove ${key}`"
           @click="removeAt(index)"
         >

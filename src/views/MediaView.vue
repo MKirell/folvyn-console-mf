@@ -137,7 +137,7 @@
           class="group relative overflow-hidden rounded-[9px] border border-line/10 bg-surface"
         >
           <span
-            class="@container relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
+            class="relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
           >
             <img
               v-if="isImageKey(asset.key)"
@@ -148,9 +148,10 @@
             />
             <iframe
               v-else-if="isPdfKey(asset.key)"
+              v-page-thumb
               :src="pdfPreviewUrl(asset.key)"
               :title="asset.key"
-              class="pointer-events-none absolute left-0 top-0 h-[1060px] w-[820px] origin-top-left border-0 [transform:scale(calc(100cqw/820))]"
+              class="page-thumb pointer-events-none"
               scrolling="no"
               loading="lazy"
               tabindex="-1"
@@ -166,6 +167,8 @@
 
             <span
               class="absolute inset-0 flex flex-col justify-between bg-scrim/70 p-1.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 motion-reduce:transition-none"
+              :class="{ 'opacity-100': revealed === asset.key }"
+              @click="reveal(asset.key)"
             >
               <span class="flex items-baseline gap-2 text-[0.6rem] text-white/75">
                 <span class="shrink-0 font-mono">{{ formatBytes(asset.size) }}</span>
@@ -188,7 +191,7 @@
 
               <span class="flex items-center gap-1">
                 <a
-                  :href="assetUrl(asset.key)"
+                  :href="openUrl(asset.key)"
                   target="_blank"
                   rel="noreferrer"
                   class="grid h-6 w-6 place-items-center rounded-[6px] text-white/80 transition-colors hover:bg-white/15 hover:text-white"
@@ -202,7 +205,7 @@
                   class="grid h-6 w-6 place-items-center rounded-[6px] text-white/80 transition-colors hover:bg-white/15 hover:text-white"
                   :aria-label="t('views.media.copyKey')"
                   :title="t('views.media.copyKey')"
-                  @click="copyKey(asset.key)"
+                  @click.stop="copyKey(asset.key)"
                 >
                   <Copy :size="13" :stroke-width="1.9" />
                 </button>
@@ -212,7 +215,7 @@
                   :disabled="readOnly || refsFor(asset.key).length > 0"
                   :title="deleteTitle(asset.key)"
                   :aria-label="t('common.delete')"
-                  @click="pending = asset.key"
+                  @click.stop="pending = asset.key"
                 >
                   <Trash2 :size="13" :stroke-width="1.9" />
                 </button>
@@ -261,6 +264,7 @@ import {
   formatBytes,
   isImageKey,
   isPdfKey,
+  openUrl,
   pdfPreviewUrl,
 } from '@/utils/assets'
 import { useI18n } from 'vue-i18n'
@@ -272,6 +276,13 @@ const ui = useUiStore()
 const fileRef = useTemplateRef<HTMLInputElement>('fileRef')
 const query = ref('')
 const filter = ref<'all' | 'image' | 'pdf' | 'orphan'>('all')
+
+const revealed = ref<string | null>(null)
+
+function reveal(key: string): void {
+  if (window.matchMedia?.('(hover: hover)').matches) return
+  revealed.value = revealed.value === key ? null : key
+}
 const dropping = ref(false)
 const pending = ref<string | null>(null)
 

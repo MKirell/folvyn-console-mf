@@ -85,7 +85,7 @@
                 @click="pick(asset.key)"
               >
                 <span
-                  class="@container relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
+                  class="relative grid aspect-[16/9] w-full place-items-center overflow-hidden bg-bg-tint"
                 >
                   <img
                     v-if="isImageKey(asset.key)"
@@ -96,9 +96,10 @@
                   />
                   <iframe
                     v-else-if="isPdfKey(asset.key)"
+                    v-page-thumb
                     :src="pdfPreviewUrl(asset.key)"
                     :title="asset.key"
-                    class="pointer-events-none absolute left-0 top-0 h-[1060px] w-[820px] origin-top-left border-0 [transform:scale(calc(100cqw/820))]"
+                    class="page-thumb pointer-events-none"
                     scrolling="no"
                     loading="lazy"
                     tabindex="-1"
