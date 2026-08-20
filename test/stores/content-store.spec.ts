@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { COLLECTIONS } from '@/registry/collections'
 import { useContentStore } from '@/stores/content'
 import * as api from '@/services/admin.api'
-import { certifications, locales, person, profile } from './setup'
+import { certifications, locales, person, profile } from '../setup'
 
 const certification = COLLECTIONS.certification
 

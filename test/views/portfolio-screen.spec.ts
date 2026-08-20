@@ -6,7 +6,7 @@ import { useContentStore } from '@/stores/content'
 import { useOwnerStore } from '@/stores/owner'
 import { useUiStore } from '@/stores/ui'
 import * as api from '@/services/admin.api'
-import { locales } from './setup'
+import { locales } from '../setup'
 import type { OwnerRecord } from '@/types/admin'
 
 const route = reactive<{

@@ -18,7 +18,7 @@ import { PORTFOLIO_ICONS } from '@/registry/icons'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import * as api from '@/services/admin.api'
-import { certifications, locales } from './setup'
+import { certifications, locales } from '../setup'
 
 function seedLocales() {
   const content = useContentStore()

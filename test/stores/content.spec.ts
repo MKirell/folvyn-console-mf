@@ -3,7 +3,7 @@ import { COLLECTIONS } from '@/registry/collections'
 import { useContentStore } from '@/stores/content'
 import { useHistoryStore } from '@/stores/history'
 import * as api from '@/services/admin.api'
-import { certifications, experiences, locales, person, profile } from './setup'
+import { certifications, experiences, locales, person, profile } from '../setup'
 
 const collection = COLLECTIONS.certification
 

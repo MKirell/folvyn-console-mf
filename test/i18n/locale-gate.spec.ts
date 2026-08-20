@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { incompleteLocaleReason } from '@/utils/locale-queue'
 import { useContentStore } from '@/stores/content'
-import { certifications, experiences, locales, person, profile } from './setup'
+import { certifications, experiences, locales, person, profile } from '../setup'
 
 function seed(): ReturnType<typeof useContentStore> {
   const content = useContentStore()

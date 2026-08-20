@@ -5,7 +5,7 @@ import { COLLECTIONS, LIST_COLLECTIONS } from '@/registry/collections'
 import { fieldLabel } from '@/i18n/labels'
 import { blankDocument, payloadFrom, validateDraft } from '@/utils/entity'
 import { changedFields } from '@/utils/diff'
-import { certifications } from './setup'
+import { certifications } from '../setup'
 
 const LANGS = ['en', 'fr']
 

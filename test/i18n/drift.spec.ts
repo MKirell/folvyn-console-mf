@@ -11,7 +11,7 @@ import {
   type FieldDef,
 } from '@/registry/collections'
 
-const SERVICE_ROOT = resolve(__dirname, '../../folvyn-portfolio-ms/src/portfolio')
+const SERVICE_ROOT = resolve(__dirname, '../../../folvyn-portfolio-ms/src/portfolio')
 
 const SOURCES: Record<string, { file: string; create: string; translation?: string }> = {
   person: {

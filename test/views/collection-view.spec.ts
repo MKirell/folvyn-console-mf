@@ -4,7 +4,7 @@ import { reactive } from 'vue'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import * as api from '@/services/admin.api'
-import { certifications, locales } from './setup'
+import { certifications, locales } from '../setup'
 
 const route = reactive<{ params: Record<string, string>; query: Record<string, string> }>({
   params: { collection: 'certification' },

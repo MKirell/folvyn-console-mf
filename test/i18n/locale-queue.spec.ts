@@ -3,7 +3,7 @@ import { useContentStore } from '@/stores/content'
 import { localeProgress } from '@/utils/locale-queue'
 import { COLLECTIONS } from '@/registry/collections'
 import { isTranslationComplete, hasTranslation, titleOf } from '@/utils/entity'
-import { certifications, experiences, locales, person, profile } from './setup'
+import { certifications, experiences, locales, person, profile } from '../setup'
 
 function seed() {
   const content = useContentStore()

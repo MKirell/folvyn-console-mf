@@ -7,7 +7,7 @@ import { useMediaStore } from '@/stores/media'
 import { useAuthStore } from '@/stores/auth'
 import * as api from '@/services/admin.api'
 import { AUTH_PROVIDERS } from '@/config/env'
-import { certifications, experiences, locales, person, profile } from './setup'
+import { certifications, experiences, locales, person, profile } from '../setup'
 
 const route = reactive<{
   params: Record<string, string>

@@ -13,7 +13,7 @@ import * as api from '@/services/admin.api'
 import * as local from '@/services/local-assets'
 import { listSnapshots, purgeExpiredSnapshots, putSnapshot } from '@/services/snapshots'
 import type { AnalyticsSummary } from '@/types/analytics'
-import { certifications, experiences, locales, owner, person, profile } from './setup'
+import { certifications, experiences, locales, owner, person, profile } from '../setup'
 
 const route = reactive<{
   params: Record<string, string>

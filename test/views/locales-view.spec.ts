@@ -4,7 +4,7 @@ import LocalesView from '@/views/LocalesView.vue'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import * as api from '@/services/admin.api'
-import { locales } from './setup'
+import { locales } from '../setup'
 
 const push = vi.fn()
 
