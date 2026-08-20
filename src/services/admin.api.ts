@@ -106,15 +106,38 @@ async function send<T>(path: string, options: RequestOptions): Promise<T> {
   }
 }
 
+const WAKING = [502, 503, 504]
+const WAKING_ATTEMPTS = 3
+const WAKING_PAUSE_MS = 1_200
+
+function wakingUp(error: unknown, method: string): boolean {
+  if (method !== 'GET') return false
+  if (!(error instanceof ApiError)) return true
+  return WAKING.includes(error.status)
+}
+
+function pause(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  try {
-    return await send<T>(path, options)
-  } catch (error) {
-    if (!(error instanceof ApiError)) throw error
-    if (error.status === 401 && options.auth !== false && (await handleUnauthorized())) {
-      return send<T>(path, options)
+  const method = options.method ?? 'GET'
+
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await send<T>(path, options)
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401 && options.auth !== false) {
+        if (await handleUnauthorized()) return send<T>(path, options)
+        throw error
+      }
+
+      if (attempt >= WAKING_ATTEMPTS || options.signal?.aborted || !wakingUp(error, method)) {
+        throw error
+      }
+
+      await pause(WAKING_PAUSE_MS * attempt)
     }
-    throw error
   }
 }
 
