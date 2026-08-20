@@ -97,13 +97,11 @@ test.describe('operator overview', () => {
     await page.goto('/platform')
 
     for (const panel of [
-      'Traffic',
-      'Where visitors come from',
+      'From sign-up to an audience',
+      'Sign-ups',
       'When the platform is busy',
-      'Portfolio states',
       'Busiest portfolios',
       'Needs attention',
-      'Sign-ups',
     ]) {
       await expect(page.getByRole('heading', { level: 2, name: panel })).toBeVisible()
     }
@@ -113,7 +111,9 @@ test.describe('operator overview', () => {
     await stubOverview(page)
     await page.setViewportSize({ width: 1440, height: 1400 })
     await page.goto('/platform')
-    await expect(page.getByRole('heading', { level: 2, name: 'Traffic' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'From sign-up to an audience' }),
+    ).toBeVisible()
 
     const rows = await page.evaluate(() => {
       const grid = document.querySelector('main .grid-cols-12')
@@ -134,17 +134,17 @@ test.describe('operator overview', () => {
     for (const slack of rows) expect(slack).toBeLessThan(60)
   })
 
-  test('folds a long referrer list rather than growing the panel', async ({ page }) => {
+  test('shows the whole path from sign-up to an audience', async ({ page }) => {
     await stubOverview(page)
     await page.setViewportSize({ width: 1440, height: 1400 })
     await page.goto('/platform')
 
     const panel = page
       .locator('section')
-      .filter({ has: page.getByRole('heading', { level: 2, name: 'Where visitors come from' }) })
+      .filter({ has: page.getByRole('heading', { level: 2, name: 'From sign-up to an audience' }) })
 
-    await expect(panel.getByRole('listitem')).toHaveCount(6)
-    await expect(panel.getByText('other', { exact: true })).toBeVisible()
+    await expect(panel.getByRole('listitem')).toHaveCount(3)
+    await expect(panel.getByText('published a portfolio')).toBeVisible()
   })
 
   test('never scrolls sideways, at any width', async ({ page }) => {
@@ -153,7 +153,9 @@ test.describe('operator overview', () => {
     for (const width of [1440, 1100, 760, 420]) {
       await page.setViewportSize({ width, height: 1200 })
       await page.goto('/platform')
-      await expect(page.getByRole('heading', { level: 2, name: 'Traffic' })).toBeVisible()
+      await expect(
+        page.getByRole('heading', { level: 2, name: 'When the platform is busy' }),
+      ).toBeVisible()
 
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
