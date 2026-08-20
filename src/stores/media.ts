@@ -41,7 +41,14 @@ export const useMediaStore = defineStore('media', () => {
     error.value = null
 
     try {
-      await useOwnerStore().load()
+      const owner = useOwnerStore()
+      await owner.load()
+
+      if (!owner.record) {
+        available.value = false
+        error.value = owner.error ?? 'Could not read your account'
+        return
+      }
 
       if (assetPrefix()) {
         assets.value = await listAssets()

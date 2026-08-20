@@ -22,6 +22,7 @@ export default [
     rules: {
       'vue/multi-word-component-names': 'off',
       'vue/no-v-html': 'off',
+      'vue/no-undef-components': 'error',
     },
   },
   {

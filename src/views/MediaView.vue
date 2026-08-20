@@ -246,6 +246,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import SkeletonBar from '@/components/ui/SkeletonBar.vue'
+import PdfThumb from '@/components/ui/PdfThumb.vue'
 import { useMediaStore, type AssetReference } from '@/stores/media'
 import { useUiStore } from '@/stores/ui'
 import { assetUrl, extensionOf, formatBytes, isImageKey, isPdfKey, openUrl } from '@/utils/assets'
@@ -271,13 +272,15 @@ const pending = ref<string | null>(null)
 const visible = computed(() => {
   const needle = query.value.trim().toLowerCase()
 
-  return media.assets.filter((asset) => {
-    if (needle && !asset.key.toLowerCase().includes(needle)) return false
-    if (filter.value === 'image') return isImageKey(asset.key)
-    if (filter.value === 'pdf') return extensionOf(asset.key) === 'pdf'
-    if (filter.value === 'orphan') return refsFor(asset.key).length === 0
-    return true
-  })
+  return media.assets
+    .filter((asset) => {
+      if (needle && !asset.key.toLowerCase().includes(needle)) return false
+      if (filter.value === 'image') return isImageKey(asset.key)
+      if (filter.value === 'pdf') return extensionOf(asset.key) === 'pdf'
+      if (filter.value === 'orphan') return refsFor(asset.key).length === 0
+      return true
+    })
+    .sort((a, b) => a.key.localeCompare(b.key, undefined, { numeric: true }))
 })
 
 const readOnly = computed(() => !media.writable)

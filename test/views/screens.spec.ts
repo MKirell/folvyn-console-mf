@@ -476,6 +476,44 @@ describe('media screen', () => {
     expect(wrapper.text()).not.toContain('certificate-azure-ai900.pdf')
   })
 
+  it('renders a thumbnail for every document rather than an unresolved component', async () => {
+    seed()
+    vi.mocked(api.listAssets).mockResolvedValueOnce([
+      { key: 'certificate-azure-ai900.pdf', size: 1, lastModified: '2026-01-01' },
+    ])
+
+    const wrapper = mount(MediaView)
+    await flushPromises()
+
+    expect(wrapper.find('canvas').exists()).toBe(true)
+  })
+
+  it('does not claim the portfolio serves the files when the account cannot be read', async () => {
+    seed()
+    vi.mocked(api.fetchMe).mockRejectedValueOnce(new Error('the API is waking up'))
+    const media = useMediaStore()
+    await media.load(true)
+
+    expect(media.source).not.toBe('repo')
+    expect(media.error).toBe('the API is waking up')
+  })
+
+  it('orders the grid by filename', async () => {
+    seed()
+    vi.mocked(api.listAssets).mockResolvedValueOnce([
+      { key: 'zebra.pdf', size: 1, lastModified: '2026-01-01' },
+      { key: 'alpha.pdf', size: 1, lastModified: '2026-01-01' },
+      { key: 'medium.pdf', size: 1, lastModified: '2026-01-01' },
+    ])
+
+    const wrapper = mount(MediaView)
+    await flushPromises()
+
+    const shown = wrapper.text()
+    expect(shown.indexOf('alpha.pdf')).toBeLessThan(shown.indexOf('medium.pdf'))
+    expect(shown.indexOf('medium.pdf')).toBeLessThan(shown.indexOf('zebra.pdf'))
+  })
+
   it('flags files the content references but the bucket lacks', async () => {
     seed()
     vi.mocked(api.listAssets).mockResolvedValueOnce([])
