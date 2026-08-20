@@ -284,9 +284,7 @@ test.describe('locales and media', () => {
   test('reports the locale that has no hero narrative yet', async ({ signedIn }) => {
     await signedIn.goto('/locales/queue/fr')
 
-    await expect(
-      main(signedIn).getByText(/nothing below the foundation renders/i),
-    ).toBeVisible()
+    await expect(main(signedIn).getByText(/nothing below the foundation renders/i)).toBeVisible()
   })
 
   test('flags referenced files the bucket does not have', async ({ signedIn }) => {
