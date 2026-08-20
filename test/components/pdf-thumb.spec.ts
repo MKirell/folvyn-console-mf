@@ -134,3 +134,36 @@ describe('PdfThumb', () => {
     expect(wrapper.find('svg').exists()).toBe(true)
   })
 })
+
+describe('PdfThumb when the tile has no width yet', () => {
+  beforeEach(() => {
+    document.body.innerHTML = ''
+    vi.clearAllMocks()
+  })
+
+  it('draws once the tile is measured rather than giving up', async () => {
+    const resizes: Array<() => void> = []
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resizes.push(callback)
+        }
+        observe(): void {}
+        disconnect(): void {}
+      },
+    )
+    vi.stubGlobal('IntersectionObserver', undefined)
+
+    const host = tile(0)
+    mount(PdfThumb, { props: { src: '/a.pdf' }, attachTo: host })
+    await settle()
+    expect(getPage).not.toHaveBeenCalled()
+
+    tileWidth = 240
+    resizes.forEach((callback) => callback())
+    await settle()
+
+    expect(getPage).toHaveBeenCalledTimes(1)
+  })
+})

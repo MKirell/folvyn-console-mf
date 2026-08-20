@@ -11,6 +11,17 @@ const props = defineProps<{ src: string | undefined }>()
 
 const REACH_MS = 20_000
 
+const canvasRef = ref<HTMLCanvasElement | null>(null)
+const failed = ref(false)
+
+let drawn = false
+let drawing = false
+let seen = false
+let inView: IntersectionObserver | null = null
+let resized: ResizeObserver | null = null
+let task: { cancel: () => void } | null = null
+let loading: { destroy: () => Promise<void> } | null = null
+
 function withinReach<T>(work: Promise<T>): Promise<T> {
   return Promise.race([
     work,
@@ -20,21 +31,21 @@ function withinReach<T>(work: Promise<T>): Promise<T> {
   ])
 }
 
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const drawn = ref(false)
-const failed = ref(false)
-
-let watcher: IntersectionObserver | null = null
-let task: { cancel: () => void } | null = null
-let loading: { destroy: () => Promise<void> } | null = null
+function stopWatching(): void {
+  inView?.disconnect()
+  resized?.disconnect()
+  inView = null
+  resized = null
+}
 
 async function draw(): Promise<void> {
   const canvas = canvasRef.value
-  if (!canvas || !props.src || drawn.value) return
+  if (!canvas || !props.src || drawn || drawing || !seen) return
 
-  const host = canvas.parentElement
-  const width = host?.clientWidth ?? canvas.clientWidth
+  const width = canvas.parentElement?.clientWidth ?? 0
   if (width <= 0) return
+
+  drawing = true
 
   try {
     const [pdfjs, worker] = await withinReach(
@@ -64,11 +75,15 @@ async function draw(): Promise<void> {
     task = page.render({ canvas, canvasContext: context, viewport })
     await (task as unknown as { promise: Promise<void> }).promise
 
-    drawn.value = true
+    drawn = true
+    stopWatching()
     void request.destroy()
     loading = null
   } catch {
     failed.value = true
+    stopWatching()
+  } finally {
+    drawing = false
   }
 }
 
@@ -76,33 +91,41 @@ onMounted(() => {
   const canvas = canvasRef.value
   if (!canvas) return
 
+  const host = canvas.parentElement
+
+  if (typeof ResizeObserver !== 'undefined' && host) {
+    resized = new ResizeObserver(() => void draw())
+    resized.observe(host)
+  }
+
   if (typeof IntersectionObserver === 'undefined') {
+    seen = true
     void draw()
     return
   }
 
-  watcher = new IntersectionObserver(
+  inView = new IntersectionObserver(
     (entries) => {
       if (!entries.some((entry) => entry.isIntersecting)) return
-      watcher?.disconnect()
+      seen = true
       void draw()
     },
     { rootMargin: '300px' },
   )
-  watcher.observe(canvas)
+  inView.observe(canvas)
 })
 
 watch(
   () => props.src,
   () => {
-    drawn.value = false
+    drawn = false
     failed.value = false
     void draw()
   },
 )
 
 onBeforeUnmount(() => {
-  watcher?.disconnect()
+  stopWatching()
   task?.cancel()
   void loading?.destroy()
 })
