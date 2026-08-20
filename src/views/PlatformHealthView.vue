@@ -129,8 +129,7 @@
           <div>
             <p class="text-[0.86rem] text-ink">{{ t('platform.health.noErrors') }}</p>
             <p class="mt-1 max-w-[52ch] text-[0.78rem] text-muted">
-              Errors are collected from every portfolio and grouped by message, so one broken deploy
-              shows up here as many accounts rather than many rows.
+              Grouped by message, so one broken deploy is one row across many accounts.
             </p>
           </div>
         </div>

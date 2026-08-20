@@ -1,14 +1,9 @@
 <template>
-  <ol
-    v-if="rows.length"
-    class="grid min-h-0 flex-1 gap-1"
-    :style="{ gridTemplateRows: `repeat(${rows.length}, minmax(0, 1fr))` }"
-    role="list"
-  >
+  <ol v-if="rows.length" class="flex min-h-0 flex-1 flex-col gap-2" role="list">
     <li
       v-for="(row, index) in rows"
       :key="row.key"
-      class="flex items-center gap-3 border-b border-line/6 last:border-0"
+      class="flex items-center gap-3 border-b border-line/6 pb-2 last:border-0 last:pb-0"
     >
       <span
         class="grid h-6 w-6 shrink-0 place-items-center rounded-[7px] bg-accent/12 font-mono text-[0.68rem] tabular-nums text-accent-deep"

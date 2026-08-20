@@ -12,3 +12,7 @@ app.use(router)
 app.use(i18n)
 app.directive('autosize', autosize)
 app.mount('#app')
+
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => document.documentElement.classList.remove('booting'))
+})

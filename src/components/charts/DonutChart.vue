@@ -57,13 +57,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AnalyticsBreakdown } from '@/types/analytics'
+import { OTHER_KEY } from '@/utils/breakdown'
 
 const SIZE = 100
 const CENTRE = SIZE / 2
 const THICKNESS = 16
 const RADIUS = CENTRE - THICKNESS / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-const WEIGHTS = [1, 0.72, 0.48, 0.28]
+const WEIGHTS = [1, 0.78, 0.58, 0.4, 0.24]
 const GAP = 2
 
 const props = withDefaults(
@@ -72,12 +73,18 @@ const props = withDefaults(
 )
 
 const ranked = computed(() => {
-  const sorted = [...props.rows].sort((a, b) => b.count - a.count)
-  if (sorted.length <= WEIGHTS.length) return sorted
+  const named = props.rows.filter((row) => row.key !== OTHER_KEY)
+  const folded = props.rows
+    .filter((row) => row.key === OTHER_KEY)
+    .reduce((sum, row) => sum + row.count, 0)
 
-  const head = sorted.slice(0, WEIGHTS.length - 1)
-  const rest = sorted.slice(WEIGHTS.length - 1)
-  return [...head, { key: 'other', count: rest.reduce((sum, row) => sum + row.count, 0) }]
+  const sorted = [...named].sort((a, b) => b.count - a.count)
+  const room = folded > 0 ? WEIGHTS.length - 1 : WEIGHTS.length
+
+  const head = sorted.slice(0, room)
+  const tail = sorted.slice(room).reduce((sum, row) => sum + row.count, 0) + folded
+
+  return tail > 0 ? [...head, { key: OTHER_KEY, count: tail }] : head
 })
 
 const total = computed(() => ranked.value.reduce((sum, row) => sum + row.count, 0))

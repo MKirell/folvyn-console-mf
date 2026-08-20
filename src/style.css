@@ -173,3 +173,11 @@
     cursor: pointer;
   }
 }
+
+.booting,
+.booting *,
+.booting *::before,
+.booting *::after {
+  transition: none !important;
+  animation: none !important;
+}

@@ -7,6 +7,7 @@
     <title>Folvyn Console</title>
     <script>
       ;(function () {
+        document.documentElement.classList.add('booting')
         try {
           var stored = localStorage.getItem('console_theme')
           if (stored === 'light' || stored === 'dark') {
