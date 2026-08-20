@@ -2,7 +2,7 @@
   <ol
     v-if="rows.length"
     class="grid min-h-0 flex-1 gap-1"
-    :style="{ gridTemplateRows: `repeat(${slots}, minmax(0, 1fr))` }"
+    :style="{ gridTemplateRows: `repeat(${rows.length}, minmax(0, 1fr))` }"
     role="list"
   >
     <li
@@ -43,8 +43,6 @@ const props = withDefaults(
     empty: 'Not enough data yet',
   },
 )
-
-const slots = computed(() => Math.max(props.slots, props.rows.length))
 
 const total = computed(() => props.rows.reduce((sum, row) => sum + row.count, 0))
 

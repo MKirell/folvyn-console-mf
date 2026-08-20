@@ -102,15 +102,11 @@
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.errorsWhose')"
-        hint="grouped by message"
+        :hint="errorHint"
       >
-        <ul
-          v-if="health.errorGroups.length"
-          class="flex min-h-0 flex-1 flex-col gap-1.5"
-          role="list"
-        >
+        <ul v-if="topErrorGroups.length" class="flex min-h-0 flex-1 flex-col gap-1.5" role="list">
           <li
-            v-for="group in health.errorGroups"
+            v-for="group in topErrorGroups"
             :key="group.message"
             class="flex flex-wrap items-center gap-3 rounded-[9px] border border-gold/25 bg-gold/6 px-3 py-2"
           >
@@ -241,6 +237,16 @@ const collections = computed(() => foldOther(health.value?.storage.collections ?
 const volume = computed(() =>
   (ingest.value?.days ?? []).map((row) => ({ date: row.date, value: row.events })),
 )
+
+const ERROR_ROWS = 2
+
+const topErrorGroups = computed(() => (health.value?.errorGroups ?? []).slice(0, ERROR_ROWS))
+
+const errorHint = computed(() => {
+  const groups = health.value?.errorGroups ?? []
+  if (groups.length <= ERROR_ROWS) return 'grouped by message'
+  return `${groups.length - ERROR_ROWS} more, grouped by message`
+})
 
 const renderState = computed(() => {
   const prerender = health.value?.prerender
