@@ -11,14 +11,16 @@
     </span>
 
     <ul class="flex flex-wrap gap-x-4 gap-y-1.5" role="list">
-      <li v-for="segment in segments" :key="segment.key" class="flex items-center gap-1.5">
+      <li v-for="segment in segments" :key="segment.key" class="flex items-baseline gap-1.5">
         <span
-          class="block h-2.5 w-2.5 shrink-0 rounded-[3px] bg-accent"
+          class="block h-2.5 w-2.5 shrink-0 self-center rounded-[3px] bg-accent"
           :style="{ opacity: segment.weight }"
           aria-hidden="true"
         ></span>
-        <span class="text-[0.76rem]">{{ segment.key }}</span>
-        <span class="font-mono text-[0.68rem] tabular-nums text-muted">{{ segment.share }}%</span>
+        <span class="text-[0.76rem] leading-none">{{ segment.key }}</span>
+        <span class="font-mono text-[0.68rem] leading-none tabular-nums text-muted"
+          >{{ segment.share }}%</span
+        >
       </li>
     </ul>
   </div>

@@ -793,7 +793,6 @@
     "reasonRequiredDetail": "It is written to the audit log."
   },
   "ui": {
-    "typicalRead": "Typical read",
     "funnelEmpty": "Not enough data yet — the funnel needs section events.",
     "addImage": "Add image",
     "localeFirst": "Add a locale first — this map is keyed by language code.",
@@ -806,12 +805,7 @@
     "backToSignIn": "Back to sign in",
     "loadingScreen": "Loading screen",
     "month": "Month",
-    "year": "Year",
-    "theHero": "the hero",
-    "readAlmostAll": "Half of your visitors reach the very end.",
-    "readPastMiddle": "Half get past the middle of the page.",
-    "readBeforeHalfway": "Half stop before halfway.",
-    "readHeroOnly": "Fewer than half scroll past the hero."
+    "year": "Year"
   },
   "blurbs": {
     "history": "Every save writes the previous document here before it leaves the browser.",

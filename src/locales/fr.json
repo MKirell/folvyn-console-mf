@@ -793,7 +793,6 @@
     "reasonRequiredDetail": "Il est inscrit au journal d’audit."
   },
   "ui": {
-    "typicalRead": "Lecture typique",
     "funnelEmpty": "Pas encore assez de données — l’entonnoir a besoin d’événements de section.",
     "addImage": "Ajouter une image",
     "localeFirst": "Ajoutez d’abord une langue — cette table est indexée par code de langue.",
@@ -806,12 +805,7 @@
     "backToSignIn": "Retour à la connexion",
     "loadingScreen": "Chargement de l’écran",
     "month": "Mois",
-    "year": "Année",
-    "theHero": "l’accroche",
-    "readAlmostAll": "La moitié de vos visiteurs va jusqu’au bout.",
-    "readPastMiddle": "La moitié dépasse le milieu de la page.",
-    "readBeforeHalfway": "La moitié s’arrête avant la moitié.",
-    "readHeroOnly": "Moins de la moitié dépasse l’accroche."
+    "year": "Année"
   },
   "blurbs": {
     "history": "Chaque enregistrement écrit ici le document précédent avant qu’il ne quitte le navigateur.",

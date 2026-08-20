@@ -238,7 +238,7 @@ describe('dashboard with data', () => {
     expect(wrapper.text()).toContain('How far down they read')
     expect(wrapper.text()).toContain('Past the hero')
     expect(wrapper.text()).toContain('To the very end')
-    expect(wrapper.text()).toContain('Typical read')
+    expect(wrapper.text()).toContain('Halfway down')
   })
 
   it('folds a long breakdown into one other row so the panel keeps its height', async () => {
