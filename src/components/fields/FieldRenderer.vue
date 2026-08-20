@@ -131,6 +131,7 @@
         v-else-if="field.type === 'country'"
         :id="id"
         :model-value="asText"
+        :show-flag="field.flag === true"
         @update:model-value="emit('update:modelValue', $event)"
       />
 

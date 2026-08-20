@@ -38,6 +38,7 @@ export interface FieldDef {
   accept?: AssetKind
   wide?: boolean
   hidden?: boolean
+  flag?: boolean
 }
 
 export type CollectionMode = 'list' | 'singleton' | 'locale-keyed'
@@ -566,6 +567,7 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
         required: true,
         maxLength: 2,
         pattern: '^[A-Z]{2}$',
+        flag: true,
       },
       {
         name: 'level',
@@ -670,7 +672,7 @@ export const COLLECTIONS: Record<string, CollectionDef> = {
     subtitleField: 'place',
     fields: [
       { name: 'icon', type: 'icon', required: true, maxLength: 60 },
-      { name: 'country', type: 'country' },
+      { name: 'country', type: 'country', flag: true },
       {
         name: 'city',
         type: 'text',

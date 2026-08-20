@@ -175,7 +175,7 @@ describe.skipIf(!available)('registry mirrors the portfolio-ms DTOs', () => {
 
 const messages = { en, fr }
 
-describe('registry mirrors the portfolio-ms vocabularies', () => {
+describe.skipIf(!available)('registry mirrors the portfolio-ms vocabularies', () => {
   const VOCABULARIES = resolve(SERVICE_ROOT, '../common/dto/vocabularies.ts')
 
   function listedIn(name: string): string[] {

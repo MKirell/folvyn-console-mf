@@ -1,5 +1,12 @@
 <template>
-  <div>
+  <div class="flex items-center gap-2">
+    <span
+      v-if="showFlag"
+      class="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] border border-line/10 bg-bg-tint"
+    >
+      <FlagBadge :code="modelValue" :show-code="false" />
+    </span>
+
     <select
       :id="id"
       :value="modelValue"
@@ -16,10 +23,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import FlagBadge from '@/components/ui/FlagBadge.vue'
 import { ISO_3166_1_ALPHA_2 } from '@/registry/countries'
 import { useI18n } from 'vue-i18n'
 
-defineProps<{ id: string; modelValue: string }>()
+withDefaults(defineProps<{ id: string; modelValue: string; showFlag?: boolean }>(), {
+  showFlag: false,
+})
 const { t, locale } = useI18n()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 

@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { PREVIEW_PATH, SITE_URL } from '@/config/env'
+import { PORTFOLIO_URL, PREVIEW_PATH } from '@/config/env'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -53,12 +53,12 @@ const contentHeight = ref(MIN_HEIGHT)
 const grownHeight = ref(0)
 const connected = ref(false)
 
-const src = computed(() => `${SITE_URL}${PREVIEW_PATH}`)
+const src = computed(() => `${PORTFOLIO_URL}${PREVIEW_PATH}`)
 const origin = computed(() => {
   try {
     return new URL(src.value).origin
   } catch {
-    return SITE_URL
+    return PORTFOLIO_URL
   }
 })
 

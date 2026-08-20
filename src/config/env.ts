@@ -18,10 +18,12 @@ export const SITE_URL = trimSlash(import.meta.env.VITE_SITE_URL ?? 'https://folv
 
 export const PORTFOLIO_PREFIX = 'fol'
 
+export const PORTFOLIO_URL = trimSlash(import.meta.env.VITE_PORTFOLIO_URL ?? SITE_URL)
+
 export const PREVIEW_PATH = import.meta.env.VITE_PREVIEW_PATH ?? '/preview.html'
 
 export function portfolioUrl(slug: string): string {
-  return slug ? `${SITE_URL}/${PORTFOLIO_PREFIX}/${slug}` : SITE_URL
+  return slug ? `${PORTFOLIO_URL}/${PORTFOLIO_PREFIX}/${slug}` : PORTFOLIO_URL
 }
 
 export const ASSETS_BASE_URL = trimSlash(

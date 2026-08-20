@@ -60,6 +60,7 @@ jobs:
           VITE_COGNITO_DOMAIN: ${{ vars.COGNITO_DOMAIN }}
           VITE_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
           VITE_SITE_URL: ${{ vars.SITE_URL }}
+          VITE_PORTFOLIO_URL: ${{ vars.PORTFOLIO_URL }}
           VITE_ASSETS_BASE_URL: ${{ vars.SITE_URL }}
           VITE_PREVIEW_PATH: ${{ vars.PREVIEW_PATH }}
         run: npm run build -- --mode ${{ inputs.environment }}

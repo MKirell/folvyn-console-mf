@@ -203,7 +203,7 @@ describe('dashboard with data', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('needs work')
-    expect(wrapper.text()).toContain('heavy photo')
+    expect(wrapper.text()).toContain('oversized image')
     expect(wrapper.text()).toContain('Review your images')
   })
 

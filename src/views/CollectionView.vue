@@ -113,7 +113,7 @@
             :stroke-width="1.8"
             aria-hidden="true"
           />
-          <FlagBadge v-else-if="row.flagCode" :code="String(row.flagCode)" :show-code="false" />
+          <FlagBadge v-else-if="rowFlag(row)" :code="String(rowFlag(row))" :show-code="false" />
           <span v-else class="font-mono text-[0.62rem] text-muted">{{ index + 1 }}</span>
         </span>
 
@@ -270,6 +270,19 @@ const pendingTitle = computed(() =>
 
 function rowGlyph(doc: AdminDocument) {
   return typeof doc.icon === 'string' ? iconComponent(doc.icon) : undefined
+}
+
+const flagField = computed(
+  () =>
+    collection.value?.fields.find(
+      (field) => field.type === 'flag' || (field.type === 'country' && field.flag === true),
+    )?.name ?? null,
+)
+
+function rowFlag(doc: AdminDocument): string | null {
+  if (!flagField.value) return null
+  const value = doc[flagField.value]
+  return typeof value === 'string' && value ? value : null
 }
 
 function attachmentCount(doc: AdminDocument): number {

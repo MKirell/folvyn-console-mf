@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
-import { SITE_URL } from '@/config/env'
+import { PORTFOLIO_URL } from '@/config/env'
 import { useUiStore } from '@/stores/ui'
 import { useI18n } from 'vue-i18n'
 
@@ -52,7 +52,7 @@ const choice = ref<string | null>(read())
 
 const sameOrigin = computed(() => {
   try {
-    return new URL(SITE_URL).origin === window.location.origin
+    return new URL(PORTFOLIO_URL).origin === window.location.origin
   } catch {
     return true
   }
@@ -73,7 +73,7 @@ function withdraw(): void {
     localStorage.removeItem(CONSENT_KEY)
     localStorage.removeItem(VISITOR_KEY)
   } catch {
-    /* storage is unavailable; there was nothing to clear */
+    void 0
   }
 
   choice.value = null

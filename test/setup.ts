@@ -158,6 +158,14 @@ vi.mock('@/services/admin.api', () => ({
   exportPortfolio: vi.fn(() => Promise.resolve({})),
   erasePortfolio: vi.fn(() => Promise.resolve()),
   fetchAuditLog: vi.fn(() => Promise.resolve([])),
+  fetchPlatformTraffic: vi.fn(() => Promise.reject(new Error('no platform data'))),
+  fetchAccountDetail: vi.fn(() => Promise.reject(new Error('no platform data'))),
+  fetchModeration: vi.fn(() => Promise.resolve({ newlyPublished: [], thin: [], confusable: [] })),
+  fetchIngestReport: vi.fn(() => Promise.reject(new Error('no platform data'))),
+  fetchPlatformConfig: vi.fn(() => Promise.reject(new Error('no platform data'))),
+  fetchErasures: vi.fn(() => Promise.resolve([])),
+  queueErasure: vi.fn(() => Promise.resolve({})),
+  runErasure: vi.fn(() => Promise.resolve({})),
 }))
 
 beforeEach(() => {
