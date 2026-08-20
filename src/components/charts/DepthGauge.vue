@@ -25,7 +25,8 @@
         {{ t('ui.typicalRead') }}
       </p>
       <p class="font-disp text-[1.6rem] font-semibold leading-none tracking-tight">
-        {{ median }}<span class="text-[1rem]">%</span>
+        <template v-if="median > 0">{{ median }}<span class="text-[1rem]">%</span></template>
+        <template v-else>{{ t('ui.theHero') }}</template>
       </p>
       <p class="mt-1 text-[0.7rem] leading-snug text-muted">{{ verdict }}</p>
     </div>
@@ -68,9 +69,9 @@ const median = computed(() => {
 })
 
 const verdict = computed(() => {
-  if (median.value >= 75) return 'They read almost all of it.'
-  if (median.value >= 50) return 'Most get past the middle.'
-  if (median.value >= 25) return 'Most stop before halfway.'
-  return 'Most never leave the hero.'
+  if (median.value >= 75) return t('ui.readAlmostAll')
+  if (median.value >= 50) return t('ui.readPastMiddle')
+  if (median.value >= 25) return t('ui.readBeforeHalfway')
+  return t('ui.readHeroOnly')
 })
 </script>

@@ -350,7 +350,7 @@
       "verdictGood": "good",
       "verdictNeedsWork": "needs work",
       "advicePending": "Needs a few visits before there is anything to read.",
-      "adviceGood": "Visitors see your hero almost immediately. Nothing to do.",
+      "adviceGood": "Your main content is on screen well inside the two-and-a-half seconds most visitors will wait.",
       "adviceSlow": "That is slower than most visitors will wait — usually one oversized image, which you can replace with a smaller file.",
       "reviewImages": "Review your images",
       "neverOpened": "Never opened:",
@@ -806,7 +806,12 @@
     "backToSignIn": "Back to sign in",
     "loadingScreen": "Loading screen",
     "month": "Month",
-    "year": "Year"
+    "year": "Year",
+    "theHero": "the hero",
+    "readAlmostAll": "Half of your visitors reach the very end.",
+    "readPastMiddle": "Half get past the middle of the page.",
+    "readBeforeHalfway": "Half stop before halfway.",
+    "readHeroOnly": "Fewer than half scroll past the hero."
   },
   "blurbs": {
     "history": "Every save writes the previous document here before it leaves the browser.",

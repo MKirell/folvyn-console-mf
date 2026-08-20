@@ -350,7 +350,7 @@
       "verdictGood": "bon",
       "verdictNeedsWork": "à améliorer",
       "advicePending": "Quelques visites sont nécessaires avant d’avoir quelque chose à lire.",
-      "adviceGood": "Les visiteurs voient votre accroche presque immédiatement. Rien à faire.",
+      "adviceGood": "Votre contenu principal s’affiche bien avant les deux secondes et demie que la plupart des visiteurs acceptent d’attendre.",
       "adviceSlow": "C’est plus lent que ce que la plupart des visiteurs attendront — le plus souvent une image trop lourde, que vous pouvez remplacer par un fichier plus léger.",
       "reviewImages": "Revoir vos images",
       "neverOpened": "Jamais ouvert :",
@@ -806,7 +806,12 @@
     "backToSignIn": "Retour à la connexion",
     "loadingScreen": "Chargement de l’écran",
     "month": "Mois",
-    "year": "Année"
+    "year": "Année",
+    "theHero": "l’accroche",
+    "readAlmostAll": "La moitié de vos visiteurs va jusqu’au bout.",
+    "readPastMiddle": "La moitié dépasse le milieu de la page.",
+    "readBeforeHalfway": "La moitié s’arrête avant la moitié.",
+    "readHeroOnly": "Moins de la moitié dépasse l’accroche."
   },
   "blurbs": {
     "history": "Chaque enregistrement écrit ici le document précédent avant qu’il ne quitte le navigateur.",
