@@ -11,7 +11,7 @@
         </h1>
 
         <p class="mt-2 text-[0.85rem] leading-relaxed text-ink-soft">
-          {{ auth.refused || t('views.refused.description') }}
+          {{ t('views.refused.description') }}
         </p>
 
         <p class="mt-3 font-mono text-[0.72rem] text-muted">{{ auth.identity?.email }}</p>

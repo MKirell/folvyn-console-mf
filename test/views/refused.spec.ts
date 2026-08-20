@@ -11,14 +11,15 @@ describe('the refused screen', () => {
     vi.clearAllMocks()
   })
 
-  it('shows the reason the API gave rather than a generic message', async () => {
+  it('never quotes the request that was refused', async () => {
     const auth = useAuthStore()
-    auth.refused = 'This environment is limited to its testers'
+    auth.refused = '/admin/experiences responded 403'
 
     const wrapper = mount(RefusedView, { global: { plugins: [i18n] } })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('This environment is limited to its testers')
+    expect(wrapper.text()).not.toContain('/admin/experiences')
+    expect(wrapper.text()).not.toContain('403')
   })
 
   it('explains that nothing was created for the account', async () => {
