@@ -362,6 +362,11 @@
       "documents": "Documents légaux",
       "back": "Retour",
       "questionsTo": "Questions à"
+    },
+    "refused": {
+      "title": "Cette console n'est pas ouverte à votre compte",
+      "description": "Votre connexion a réussi, mais cet environnement est réservé à une liste nominative de testeurs. Rien n'a été créé pour vous.",
+      "signOut": "Se déconnecter"
     }
   },
   "groups": {

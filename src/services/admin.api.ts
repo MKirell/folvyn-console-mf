@@ -43,9 +43,11 @@ export class ApiError extends Error {
 
 type TokenProvider = () => Promise<string | null>
 type UnauthorizedHandler = () => Promise<boolean>
+type ForbiddenHandler = (message: string) => void
 
 let provideToken: TokenProvider = () => Promise.resolve(null)
 let handleUnauthorized: UnauthorizedHandler = () => Promise.resolve(false)
+let handleForbidden: ForbiddenHandler = () => {}
 
 export function setTokenProvider(provider: TokenProvider): void {
   provideToken = provider
@@ -53,6 +55,10 @@ export function setTokenProvider(provider: TokenProvider): void {
 
 export function setUnauthorizedHandler(handler: UnauthorizedHandler): void {
   handleUnauthorized = handler
+}
+
+export function setForbiddenHandler(handler: ForbiddenHandler): void {
+  handleForbidden = handler
 }
 
 interface RequestOptions {
@@ -129,6 +135,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     } catch (error) {
       if (error instanceof ApiError && error.status === 401 && options.auth !== false) {
         if (await handleUnauthorized()) return send<T>(path, options)
+        throw error
+      }
+
+      if (error instanceof ApiError && error.status === 403 && options.auth !== false) {
+        handleForbidden(error.message)
         throw error
       }
 

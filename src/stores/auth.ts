@@ -13,7 +13,7 @@ import {
   type IdTokenClaims,
   type TokenSet,
 } from '@/services/pkce'
-import { setTokenProvider, setUnauthorizedHandler } from '@/services/admin.api'
+import { setForbiddenHandler, setTokenProvider, setUnauthorizedHandler } from '@/services/admin.api'
 import { AUTH_CONFIGURED } from '@/config/env'
 
 const REFRESH_KEY = 'console_refresh_token'
@@ -48,6 +48,7 @@ function writeRefreshToken(token: string | null): void {
 
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
+  const refused = ref<string | null>(null)
   const claims = ref<AccessTokenClaims | null>(null)
   const identity = ref<IdTokenClaims | null>(null)
   const expiresAt = ref(0)
@@ -181,9 +182,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   setTokenProvider(currentToken)
   setUnauthorizedHandler(refresh)
+  setForbiddenHandler((message) => {
+    refused.value = message
+  })
 
   return {
     accessToken,
+    refused,
     claims,
     expiresAt,
     restoring,

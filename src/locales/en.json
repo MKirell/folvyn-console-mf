@@ -362,6 +362,11 @@
       "documents": "Legal documents",
       "back": "Back",
       "questionsTo": "Questions to"
+    },
+    "refused": {
+      "title": "This console is not open to your account",
+      "description": "Your sign-in worked, but this environment is limited to a named list of testers. Nothing has been created for you.",
+      "signOut": "Sign out"
     }
   },
   "groups": {

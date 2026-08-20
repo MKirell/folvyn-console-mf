@@ -23,6 +23,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/LegalView.vue'),
     meta: { public: true, chrome: false },
   },
+  {
+    path: '/refused',
+    name: 'refused',
+    component: () => import('@/views/RefusedView.vue'),
+    meta: { chrome: false },
+  },
   { path: '/legal', redirect: '/legal/privacy' },
   { path: '/', redirect: '/insights' },
   {
@@ -168,6 +174,10 @@ router.beforeEach(async (to) => {
 
   if (!auth.isAuthenticated) {
     return { name: 'login', query: { returnTo: to.fullPath } }
+  }
+
+  if (auth.refused) {
+    return to.name === 'refused' ? true : { name: 'refused' }
   }
 
   if (auth.isPlatform) {

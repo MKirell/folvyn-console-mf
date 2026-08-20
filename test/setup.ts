@@ -119,6 +119,7 @@ vi.mock('@/services/admin.api', () => ({
   },
   setTokenProvider: vi.fn(),
   setUnauthorizedHandler: vi.fn(),
+  setForbiddenHandler: vi.fn(),
   listDocuments: vi.fn(() => Promise.resolve([])),
   createDocument: vi.fn((_path: string, payload: object) =>
     Promise.resolve({ id: 'new-id', order: 9, ...payload }),

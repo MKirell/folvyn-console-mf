@@ -79,6 +79,13 @@ function onKeydown(event: KeyboardEvent): void {
 }
 
 watch(
+  () => auth.refused,
+  (refused) => {
+    if (refused && route.name !== 'refused') void router.replace({ name: 'refused' })
+  },
+)
+
+watch(
   () => auth.isAuthenticated && !auth.isPlatform,
   (isOwner) => {
     if (!isOwner) return
