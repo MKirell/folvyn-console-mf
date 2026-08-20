@@ -364,8 +364,8 @@
       "questionsTo": "Questions to"
     },
     "refused": {
-      "title": "This console is not open to your account",
-      "description": "Your sign-in worked, but this environment is limited to a named list of testers. Nothing has been created for you.",
+      "title": "This console could not be opened.",
+      "description": "This environment is limited to its testers.",
       "signOut": "Sign out"
     }
   },

@@ -22,14 +22,25 @@ describe('the refused screen', () => {
     expect(wrapper.text()).not.toContain('403')
   })
 
-  it('explains that nothing was created for the account', async () => {
+  it('says in one line why the console will not open', async () => {
     const auth = useAuthStore()
     auth.refused = ''
 
     const wrapper = mount(RefusedView, { global: { plugins: [i18n] } })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Nothing has been created for you')
+    expect(wrapper.text()).toContain('This environment is limited to its testers')
+  })
+
+  it('never shows the address that was refused', async () => {
+    const auth = useAuthStore()
+    auth.refused = 'nope'
+    auth.identity = { email: 'someone@example.com' } as never
+
+    const wrapper = mount(RefusedView, { global: { plugins: [i18n] } })
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('someone@example.com')
   })
 
   it('offers a way out', async () => {

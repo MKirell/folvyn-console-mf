@@ -14,8 +14,6 @@
           {{ t('views.refused.description') }}
         </p>
 
-        <p class="mt-3 font-mono text-[0.72rem] text-muted">{{ auth.identity?.email }}</p>
-
         <AppButton variant="primary" class="mt-5 w-full" @click="signOut">
           {{ t('views.refused.signOut') }}
         </AppButton>
