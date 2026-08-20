@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import PdfThumb from '@/components/ui/PdfThumb.vue'
 
@@ -163,6 +163,38 @@ describe('PdfThumb when the tile has no width yet', () => {
     tileWidth = 240
     resizes.forEach((callback) => callback())
     await settle()
+
+    expect(getPage).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('PdfThumb when it is never reported visible', () => {
+  beforeEach(() => {
+    document.body.innerHTML = ''
+    vi.clearAllMocks()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('draws anyway rather than waiting for an observer that stays silent', async () => {
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        observe(): void {}
+        disconnect(): void {}
+      },
+    )
+
+    const host = tile(200)
+    mount(PdfThumb, { props: { src: '/a.pdf' }, attachTo: host })
+    await vi.advanceTimersByTimeAsync(0)
+    expect(getPage).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1_500)
+    for (let i = 0; i < 12; i += 1) await Promise.resolve()
 
     expect(getPage).toHaveBeenCalledTimes(1)
   })

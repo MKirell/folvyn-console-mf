@@ -10,6 +10,7 @@ import { FileText } from '@lucide/vue'
 const props = defineProps<{ src: string | undefined }>()
 
 const REACH_MS = 20_000
+const PATIENCE_MS = 1_200
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 const failed = ref(false)
@@ -19,6 +20,7 @@ let drawing = false
 let seen = false
 let inView: IntersectionObserver | null = null
 let resized: ResizeObserver | null = null
+let waking: ReturnType<typeof setTimeout> | null = null
 let task: { cancel: () => void } | null = null
 let loading: { destroy: () => Promise<void> } | null = null
 
@@ -36,6 +38,9 @@ function stopWatching(): void {
   resized?.disconnect()
   inView = null
   resized = null
+
+  if (waking) clearTimeout(waking)
+  waking = null
 }
 
 async function draw(): Promise<void> {
@@ -97,6 +102,11 @@ onMounted(() => {
     resized = new ResizeObserver(() => void draw())
     resized.observe(host)
   }
+
+  waking = setTimeout(() => {
+    seen = true
+    void draw()
+  }, PATIENCE_MS)
 
   if (typeof IntersectionObserver === 'undefined') {
     seen = true
