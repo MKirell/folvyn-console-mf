@@ -42,6 +42,12 @@ export const useOwnerStore = defineStore('owner', () => {
         record.value = await fetchMe()
         setAssetPrefix(record.value.assetPrefix ?? '')
       } catch (cause) {
+        if (cause instanceof ApiError && cause.status === 404) {
+          record.value = null
+          setAssetPrefix('')
+          return
+        }
+
         error.value = cause instanceof Error ? cause.message : 'Could not read your account'
       } finally {
         loading.value = false

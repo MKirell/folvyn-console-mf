@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { lazyView } from '@/router/lazy'
 import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
+import { useOwnerStore } from '@/stores/owner'
 import { useUiStore } from '@/stores/ui'
 
 const routes: RouteRecordRaw[] = [
@@ -184,6 +185,13 @@ router.beforeEach(async (to) => {
     if (to.meta.platform !== true) return { name: 'platform' }
   } else {
     if (to.meta.platform === true) return { name: 'insights' }
+
+    const owner = useOwnerStore()
+    await owner.load()
+
+    if (!owner.record) {
+      return to.meta.onboarding === true ? true : { name: 'welcome' }
+    }
 
     const content = useContentStore()
     void content.loadAll()
