@@ -1,5 +1,10 @@
 <template>
-  <ol v-if="rows.length" class="grid min-h-0 flex-1 gap-2" :style="template" role="list">
+  <ol
+    v-if="rows.length"
+    class="grid min-h-0 flex-1 grid-cols-1 gap-2"
+    :style="template"
+    role="list"
+  >
     <li
       v-for="(row, index) in rows"
       :key="row.key"

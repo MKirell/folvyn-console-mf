@@ -20,6 +20,14 @@
         vector-effect="non-scaling-stroke"
       />
 
+      <circle
+        v-if="coords.length === 1"
+        :cx="coords[0].x"
+        :cy="coords[0].y"
+        r="4"
+        class="fill-accent"
+      />
+
       <path :d="area" class="fill-accent/12" />
       <path
         :d="line"

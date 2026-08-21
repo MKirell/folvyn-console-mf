@@ -1,5 +1,10 @@
 <template>
-  <ul v-if="meters.length" class="grid min-h-0 flex-1 gap-2.5" :style="template" role="list">
+  <ul
+    v-if="meters.length"
+    class="grid min-h-0 flex-1 grid-cols-1 gap-2.5"
+    :style="template"
+    role="list"
+  >
     <li v-for="meter in meters" :key="meter.key" class="flex min-w-0 items-center gap-3">
       <span class="min-w-0 basis-[36%] truncate text-[0.78rem]" :title="meter.key">{{
         meter.key

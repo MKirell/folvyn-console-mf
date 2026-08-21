@@ -172,6 +172,12 @@ describe('a chart that has something to say says it', () => {
     expect(wrapper.text()).toContain(EMPTY)
   })
 
+  it('still shows a single day rather than an empty frame', () => {
+    const wrapper = mount(SparkLine, { props: { points: [{ date: '2026-08-21', value: 19 }] } })
+
+    expect(wrapper.findAll('circle')).toHaveLength(1)
+  })
+
   it('marks a negative delta differently from a positive one', () => {
     const up = mount(StatTile, { props: { label: 'x', value: '1', delta: 3 } })
     const down = mount(StatTile, { props: { label: 'x', value: '1', delta: -3 } })

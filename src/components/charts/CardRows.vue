@@ -1,7 +1,7 @@
 <template>
   <ul
     v-if="rows.length"
-    class="grid min-h-0 flex-1 gap-2.5"
+    class="grid min-h-0 flex-1 grid-cols-1 gap-2.5"
     :style="{ gridTemplateRows: `repeat(${slots}, minmax(0, 1fr))` }"
     role="list"
   >
