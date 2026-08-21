@@ -208,6 +208,10 @@ export function unpublishPortfolio(): Promise<OwnerRecord> {
   return request<OwnerRecord>('/me/unpublish', { method: 'POST' })
 }
 
+export function fetchProposedAddress(): Promise<{ slug: string }> {
+  return request<{ slug: string }>('/me/proposed-address')
+}
+
 export function updateMe(payload: {
   consentMode?: ConsentMode
   slug?: string

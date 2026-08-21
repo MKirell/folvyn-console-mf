@@ -67,6 +67,8 @@ import { COLLECTIONS, type FieldDef } from '@/registry/collections'
 import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
 import { useOwnerStore } from '@/stores/owner'
+import { fetchProposedAddress } from '@/services/admin.api'
+import { portfolioUrl } from '@/config/env'
 import { useUiStore } from '@/stores/ui'
 import { useI18n } from 'vue-i18n'
 
@@ -98,7 +100,11 @@ const fields = Object.fromEntries(
 ) as Record<'code' | 'flagCode', FieldDef>
 
 const firstName = computed(() => auth.displayName?.split(/\s+/)[0] ?? '')
-const displayUrl = computed(() => owner.publicUrl.replace(/^https?:\/\//, ''))
+const proposed = ref('')
+
+const displayUrl = computed(() =>
+  portfolioUrl(owner.slug || proposed.value).replace(/^https?:\/\//, ''),
+)
 const ready = computed(() => Boolean(code.value && flagCode.value))
 
 watch(code, (next) => {
@@ -127,5 +133,12 @@ async function begin(): Promise<void> {
   }
 }
 
-onMounted(() => void owner.load())
+onMounted(async () => {
+  await owner.load()
+  if (owner.slug) return
+
+  proposed.value = await fetchProposedAddress()
+    .then((answer) => answer.slug)
+    .catch(() => '')
+})
 </script>

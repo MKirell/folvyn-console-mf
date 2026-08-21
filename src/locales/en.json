@@ -180,7 +180,7 @@
     "onboarding": {
       "welcome": "Welcome",
       "welcomeNamed": "Welcome, {name}",
-      "blurb": "Your portfolio already has an address. Pick the language you want to write in first and it is yours to fill in.",
+      "blurb": "Your portfolio has an address waiting. Pick the language you want to write in first and it is yours to fill in.",
       "addressLabel": "your address",
       "addressNote": "Taken from your name. You can change it later on the Portfolio screen, and any link you have already shared will stop working when you do.",
       "labelHint": "Shown on the language switcher",
