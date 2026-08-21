@@ -5,7 +5,6 @@ import CardRows from '@/components/charts/CardRows.vue'
 import DepthGauge from '@/components/charts/DepthGauge.vue'
 import DonutChart from '@/components/charts/DonutChart.vue'
 import FunnelColumns from '@/components/charts/FunnelColumns.vue'
-import FunnelRows from '@/components/charts/FunnelRows.vue'
 import FunnelShape from '@/components/charts/FunnelShape.vue'
 import HeatCalendar from '@/components/charts/HeatCalendar.vue'
 import RankList from '@/components/charts/RankList.vue'
@@ -16,7 +15,6 @@ import SegmentedMeter from '@/components/charts/SegmentedMeter.vue'
 import RadialBars from '@/components/charts/RadialBars.vue'
 import StatTile from '@/components/charts/StatTile.vue'
 import VolumeColumns from '@/components/charts/VolumeColumns.vue'
-import AccountRows from '@/components/platform/AccountRows.vue'
 import ConfigRows from '@/components/platform/ConfigRows.vue'
 
 const breakdown = [
@@ -34,20 +32,6 @@ const points = [
 const DEPTHS = ['Past the hero', 'Halfway down', 'Most of the way', 'To the very end']
 
 const EMPTY = 'nothing yet'
-
-function account(id: string, slug: string, status: string, publishedAt: string | null) {
-  return {
-    id,
-    slug,
-    status,
-    publishedAt,
-    email: null,
-    displayName: null,
-    createdAt: '2026-07-01T00:00:00.000Z',
-    sessions: 12,
-    visitors: 8,
-  }
-}
 
 const cases: { name: string; component: unknown; full: object; blank: object }[] = [
   {
@@ -89,12 +73,6 @@ const cases: { name: string; component: unknown; full: object; blank: object }[]
     component: FunnelShape,
     full: { rows: breakdown, sessions: 100, label: 'Activation', empty: EMPTY },
     blank: { rows: [], sessions: 0, label: 'Activation', empty: EMPTY },
-  },
-  {
-    name: 'FunnelRows',
-    component: FunnelRows,
-    full: { rows: breakdown, sessions: 20 },
-    blank: { rows: [], sessions: 0 },
   },
   {
     name: 'HeatCalendar',
@@ -156,20 +134,6 @@ const cases: { name: string; component: unknown; full: object; blank: object }[]
     blank: { points: [], empty: EMPTY },
   },
   {
-    name: 'AccountRows',
-    component: AccountRows,
-    full: {
-      rows: [
-        account('1', 'ada-lovelace', 'published', '2026-08-01T00:00:00.000Z'),
-        account('2', 'grace-hopper', 'suspended', null),
-        account('3', 'alan-turing', 'draft', null),
-      ],
-      slots: 5,
-      empty: EMPTY,
-    },
-    blank: { rows: [], empty: EMPTY },
-  },
-  {
     name: 'ConfigRows',
     component: ConfigRows,
     full: { rows: [{ key: 'slugMax', label: 'Slug max', value: '40' }], empty: EMPTY },
@@ -213,19 +177,5 @@ describe('a chart that has something to say says it', () => {
     const down = mount(StatTile, { props: { label: 'x', value: '1', delta: -3 } })
 
     expect(up.html()).not.toBe(down.html())
-  })
-
-  it('distinguishes a suspended portfolio from a published one', () => {
-    const wrapper = mount(AccountRows, {
-      props: {
-        rows: [
-          account('1', 'ada-lovelace', 'published', '2026-08-01T00:00:00.000Z'),
-          account('2', 'grace-hopper', 'suspended', null),
-        ],
-      },
-    })
-
-    expect(wrapper.text()).toContain('ada-lovelace')
-    expect(wrapper.text()).toContain('grace-hopper')
   })
 })

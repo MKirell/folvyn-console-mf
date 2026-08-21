@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import FunnelRows from '@/components/charts/FunnelRows.vue'
+import FunnelShape from '@/components/charts/FunnelShape.vue'
 import SparkLine from '@/components/charts/SparkLine.vue'
 import BarRows from '@/components/charts/BarRows.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
@@ -213,13 +213,15 @@ describe('server error mapping', () => {
 
 describe('charts', () => {
   it('scales the funnel against sessions, not the first row', () => {
-    const wrapper = mount(FunnelRows, {
+    const wrapper = mount(FunnelShape, {
       props: {
         rows: [
           { key: 'hero', count: 100 },
           { key: 'projects', count: 36 },
         ],
         sessions: 100,
+        label: 'Activation',
+        empty: 'Not enough data yet',
       },
     })
     expect(wrapper.text()).toContain('100%')
