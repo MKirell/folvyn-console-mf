@@ -1,5 +1,5 @@
 <template>
-  <ol v-if="rows.length" class="flex min-h-0 flex-1 flex-col gap-2" role="list">
+  <ol v-if="rows.length" class="flex min-h-0 flex-1 flex-col justify-between gap-2" role="list">
     <li
       v-for="(row, index) in rows"
       :key="row.key"

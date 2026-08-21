@@ -180,6 +180,10 @@ export function updateSingleton(path: string, payload: object): Promise<AdminDoc
   return request<AdminDocument>(`/${path}`, { method: 'PATCH', body: payload })
 }
 
+export function createSingleton(path: string, payload: object): Promise<AdminDocument> {
+  return request<AdminDocument>(`/${path}`, { method: 'PUT', body: payload })
+}
+
 export function fetchLocales(): Promise<AdminLocale[]> {
   return request<AdminLocale[]>('/admin/locales')
 }

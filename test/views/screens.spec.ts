@@ -451,12 +451,15 @@ describe('person screen', () => {
     expect(api.updateSingleton).not.toHaveBeenCalled()
   })
 
-  it('reports when the person document has not loaded', () => {
+  it('offers an empty form when the portfolio has no person yet', () => {
     const content = useContentStore()
     content.singletons = { person: null }
     content.loaded = true
 
-    expect(mount(SingletonView).text()).toContain('has not loaded')
+    const wrapper = mount(SingletonView)
+
+    expect(wrapper.text()).not.toContain('has not loaded')
+    expect(wrapper.find('form').exists()).toBe(true)
   })
 })
 

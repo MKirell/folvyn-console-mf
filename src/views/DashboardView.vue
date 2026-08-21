@@ -330,7 +330,7 @@ const ROW_BUDGET = {
   outbound: 4,
   shell: 4,
   langs: 4,
-  cards: 3,
+  cards: 4,
 } as const
 
 function capped(rows: AnalyticsBreakdown[] | undefined, limit: number): AnalyticsBreakdown[] {

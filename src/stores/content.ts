@@ -7,6 +7,7 @@ import {
   listDocuments,
   reorderDocuments,
   updateDocument,
+  createSingleton,
   updateSingleton,
 } from '@/services/admin.api'
 import {
@@ -245,7 +246,9 @@ export const useContentStore = defineStore('content', () => {
       )
     }
 
-    const updated = await updateSingleton(collection.path, changes)
+    const updated = before
+      ? await updateSingleton(collection.path, changes)
+      : await createSingleton(collection.path, changes)
     singletons.value = { ...singletons.value, [collection.key]: updated }
 
     if (before) {
