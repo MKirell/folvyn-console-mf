@@ -145,7 +145,6 @@ import FieldRenderer from '@/components/fields/FieldRenderer.vue'
 import PreviewFrame from '@/components/preview/PreviewFrame.vue'
 import { buildPreviewPayload, hasPreview } from '@/utils/preview-payload'
 import { COLLECTIONS, type CollectionDef } from '@/registry/collections'
-import { useAuthStore } from '@/stores/auth'
 import { useContentStore } from '@/stores/content'
 import { useUiStore } from '@/stores/ui'
 import { ApiError } from '@/services/admin.api'
@@ -167,7 +166,6 @@ const EMPTY: ValidationResult = { fields: {}, translations: {}, ok: true }
 
 const { t, te } = useI18n()
 const route = useRoute()
-const auth = useAuthStore()
 const content = useContentStore()
 const ui = useUiStore()
 
@@ -297,26 +295,13 @@ function setTranslation(key: string, code: string, field: string, value: unknown
   drafts.value = { ...drafts.value, [key]: { ...draft, translations } }
 }
 
-function named(document: AdminDocument): AdminDocument {
-  const identity = auth.identity
-  if (!identity || !('givenName' in document)) return document
-
-  return {
-    ...document,
-    givenName: document.givenName || identity.given_name || '',
-    familyName: document.familyName || identity.family_name || '',
-  }
-}
-
 function load(): void {
   const nextDrafts: Record<string, AdminDocument | null> = {}
   const nextOriginals: Record<string, AdminDocument | null> = {}
 
   for (const collection of collections.value) {
     const document = content.singleton(collection.key)
-    nextDrafts[collection.key] = document
-      ? clone(document)
-      : named(blankDocument(collection, langs.value))
+    nextDrafts[collection.key] = document ? clone(document) : blankDocument(collection, langs.value)
     nextOriginals[collection.key] = document ? clone(document) : null
   }
 
