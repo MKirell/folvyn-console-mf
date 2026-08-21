@@ -1,7 +1,12 @@
 <template>
   <div class="mx-auto grid min-h-screen w-full max-w-[560px] place-items-center px-pad py-10">
     <div class="w-full animate-fade-up">
-      <img :src="logoMark" alt="" aria-hidden="true" class="h-11 w-11 rounded-[12px]" />
+      <div class="flex items-center gap-2.5">
+        <img :src="logoMark" alt="" aria-hidden="true" class="h-11 w-11 shrink-0 rounded-[12px]" />
+        <span class="min-w-0 truncate font-disp text-[1.05rem] font-semibold tracking-tight"
+          >{{ t('app.brand') }}<span class="mx-1.5 text-muted">·</span>{{ t('app.name') }}</span
+        >
+      </div>
 
       <h1 class="mt-4 font-disp text-[1.6rem] font-semibold tracking-tight">
         {{
