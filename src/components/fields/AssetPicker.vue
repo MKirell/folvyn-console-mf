@@ -117,7 +117,7 @@
             v-model="manual"
             type="text"
             class="h-[38px] min-w-0 flex-1 rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50 max-480:basis-full"
-            placeholder="or type a key, for example degree-bachelor-2024.pdf"
+            :placeholder="t('assets.keyPlaceholder')"
             :aria-label="t('assets.fileKey')"
             @keydown.enter.prevent="pick(manual.trim())"
           />

@@ -1,4 +1,5 @@
-import { fieldLabel, type CollectionDef, type FieldDef } from '@/registry/collections'
+import type { CollectionDef, FieldDef } from '@/registry/collections'
+import { fieldLabel, validationMessage } from '@/i18n/labels'
 import type { AdminDocument, FieldValue, TranslationEntry } from '@/types/admin'
 
 const LIST_TYPES = new Set(['tags', 'string-list', 'asset-list'])
@@ -195,46 +196,50 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function validateField(field: FieldDef, value: unknown): string | null {
   const label = fieldLabel(field)
+  const say = (key: string, values: Record<string, string | number> = {}): string =>
+    validationMessage(key, { label, ...values })
 
   if (isBlank(value)) {
-    return field.required ? `${label} is required` : null
+    return field.required ? say('required') : null
   }
 
   if (typeof value === 'string') {
     if (field.maxLength && value.length > field.maxLength) {
-      return `${label} must be at most ${field.maxLength} characters`
+      return say('tooLong', { max: field.maxLength })
     }
     if (field.pattern && !new RegExp(field.pattern).test(value)) {
-      return `${label} has an invalid format`
+      return say('badFormat')
     }
     if (field.type === 'email' && !EMAIL_PATTERN.test(value)) {
-      return `${label} must be an email address`
+      return say('notEmail')
     }
     if (field.type === 'url') {
-      if (!URL_PATTERN.test(value)) return `${label} must be an absolute http(s) URL`
+      if (!URL_PATTERN.test(value)) return say('notUrl')
       if (field.protocol === 'https' && !value.toLowerCase().startsWith('https://')) {
-        return `${label} must use https`
+        return say('notHttps')
       }
     }
   }
 
   if (typeof value === 'number') {
-    if (field.min !== undefined && value < field.min)
-      return `${label} must be at least ${field.min}`
-    if (field.max !== undefined && value > field.max) return `${label} must be at most ${field.max}`
-    if (!Number.isInteger(value)) return `${label} must be a whole number`
+    if (field.min !== undefined && value < field.min) return say('tooSmall', { min: field.min })
+    if (field.max !== undefined && value > field.max) return say('tooLarge', { max: field.max })
+    if (!Number.isInteger(value)) return say('notWhole')
   }
 
   if (Array.isArray(value)) {
     if (field.maxItems && value.length > field.maxItems) {
-      return `${label} allows at most ${field.maxItems} entries`
+      return say('tooMany', { max: field.maxItems })
     }
     if (field.itemMaxLength) {
       const tooLong = value.find(
         (item) => typeof item === 'string' && item.length > field.itemMaxLength!,
       )
       if (tooLong !== undefined) {
-        return `Each ${label.toLowerCase()} entry must be at most ${field.itemMaxLength} characters`
+        return validationMessage('entryTooLong', {
+          label: label.toLowerCase(),
+          max: field.itemMaxLength,
+        })
       }
     }
   }
@@ -269,7 +274,7 @@ export function validateDraft(
     })
 
     if (filledLangs.length === 0) {
-      fields.translations = 'At least one language must be filled in'
+      fields.translations = validationMessage('noLanguage', {})
     }
 
     for (const lang of filledLangs) {

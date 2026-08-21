@@ -29,7 +29,7 @@
     </EmptyState>
 
     <template v-else>
-      <PanelCard :title="t('views.portfolio.address')">
+      <PanelCard :title="t('views.portfolio.address')" :hint="t('views.portfolio.addressHint')">
         <div v-if="!renaming" class="flex flex-wrap items-center gap-3">
           <p class="min-w-0 flex-1 break-all font-mono text-[0.9rem] max-600:basis-full">
             {{ displayUrl }}
@@ -65,7 +65,7 @@
                 autocomplete="off"
                 spellcheck="false"
                 class="min-w-0 flex-1 bg-transparent outline-none"
-                placeholder="your-name"
+                :placeholder="t('views.portfolio.slugPlaceholder')"
                 @keydown.enter.prevent="commitRename"
                 @keydown.esc="renaming = false"
               />
@@ -82,7 +82,7 @@
             {{ check.reason }}
           </p>
           <p v-else-if="check?.available && changed" class="mt-1.5 text-[0.78rem] text-sage">
-            {{ check.slug }} is free
+            {{ t('views.portfolio.slugFree', { slug: check.slug }) }}
           </p>
 
           <p class="mt-2.5 text-[0.78rem] text-muted">
@@ -104,12 +104,14 @@
         </div>
 
         <p v-if="!renaming" class="mt-2.5 text-[0.78rem] text-muted">
-          Taken from your name when you first signed in. You can change it, but a link you have
-          already shared will stop working.
+          {{ t('views.portfolio.addressNote') }}
         </p>
       </PanelCard>
 
-      <PanelCard :title="t('views.portfolio.publishing')">
+      <PanelCard
+        :title="t('views.portfolio.publishing')"
+        :hint="t('views.portfolio.publishingHint')"
+      >
         <div class="flex flex-wrap items-center gap-3">
           <span
             class="shrink-0 rounded-[6px] px-2 py-[2px] font-mono text-[0.66rem] uppercase tracking-[0.1em]"
@@ -154,7 +156,10 @@
         </p>
       </PanelCard>
 
-      <PanelCard :title="t('views.portfolio.measurement')">
+      <PanelCard
+        :title="t('views.portfolio.measurement')"
+        :hint="t('views.portfolio.measurementHint')"
+      >
         <div class="space-y-2">
           <label
             v-for="mode in CONSENT_MODES"
@@ -183,7 +188,7 @@
         </div>
       </PanelCard>
 
-      <PanelCard :title="t('views.portfolio.dangerZone')">
+      <PanelCard :title="t('views.portfolio.dangerZone')" :hint="t('views.portfolio.dangerHint')">
         <div class="flex flex-wrap items-center gap-3">
           <p class="min-w-0 flex-1 text-[0.82rem] text-ink-soft max-600:basis-full">
             {{ t('views.portfolio.exportBlurb') }}

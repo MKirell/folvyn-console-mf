@@ -19,8 +19,9 @@
 
         <label v-if="confirmWord" class="mt-4 block">
           <span class="text-[0.78rem] text-ink-soft">
-            {{ t('ui.typeWord') }} <span class="font-mono text-ink">“{{ confirmWord }}”</span> to
-            confirm
+            {{ t('ui.typeWord') }}
+            <span class="font-mono text-ink">“{{ confirmWord }}”</span>
+            {{ t('ui.toConfirm') }}
           </span>
           <input
             ref="inputRef"

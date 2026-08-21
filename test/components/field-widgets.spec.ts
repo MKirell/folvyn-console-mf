@@ -33,22 +33,57 @@ describe('MonthField', () => {
     expect(wrapper.get('input').element.value).toBe('2026')
   })
 
-  it('emits nothing usable until both halves are given', async () => {
+  it('emits nothing until both halves are given', async () => {
     const partial = mount(MonthField, { props: { id: 'm', modelValue: '' } })
 
     await partial.get('select').setValue('08')
-    expect(partial.emitted('update:modelValue')?.at(-1)?.[0]).toBe('')
-
     await partial.get('input').setValue('20')
-    expect(partial.emitted('update:modelValue')?.at(-1)?.[0]).toBe('')
+    expect(partial.emitted('update:modelValue')).toBeUndefined()
 
     const withMonth = mount(MonthField, { props: { id: 'm', modelValue: '2020-08' } })
     await withMonth.get('input').setValue('2026')
     expect(withMonth.emitted('update:modelValue')?.at(-1)?.[0]).toBe('2026-08')
   })
 
+  it('clears the value when a half is taken back out', async () => {
+    const wrapper = mount(MonthField, { props: { id: 'm', modelValue: '2026-08' } })
+
+    await wrapper.get('input').setValue('')
+
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('')
+  })
+
   it('reads an empty value without inventing a month', () => {
     const wrapper = mount(MonthField, { props: { id: 'm', modelValue: '' } })
+
+    expect(wrapper.get('select').element.value).toBe('')
+    expect(wrapper.get('input').element.value).toBe('')
+  })
+
+  it('holds the half already given while the other is still being typed', async () => {
+    const wrapper = mount(MonthField, { props: { id: 'm', modelValue: '' } })
+
+    await wrapper.get('select').setValue('08')
+    await wrapper.get('input').setValue('2026')
+
+    expect(wrapper.get('select').element.value).toBe('08')
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('2026-08')
+  })
+
+  it('holds the year while a month is being chosen', async () => {
+    const wrapper = mount(MonthField, { props: { id: 'm', modelValue: '' } })
+
+    await wrapper.get('input').setValue('2026')
+    await wrapper.get('select').setValue('08')
+
+    expect(wrapper.get('input').element.value).toBe('2026')
+    expect(wrapper.emitted('update:modelValue')?.at(-1)?.[0]).toBe('2026-08')
+  })
+
+  it('takes a value cleared from outside', async () => {
+    const wrapper = mount(MonthField, { props: { id: 'm', modelValue: '2026-08' } })
+
+    await wrapper.setProps({ modelValue: '' })
 
     expect(wrapper.get('select').element.value).toBe('')
     expect(wrapper.get('input').element.value).toBe('')

@@ -10,7 +10,7 @@
           v-if="index > 0"
           class="w-12 shrink-0 text-end font-mono text-[0.66rem] tabular-nums"
           :class="drop(index) > 30 ? 'text-gold' : 'text-muted'"
-          :title="`Drop-off from ${rows[index - 1].key}`"
+          :title="t('ui.dropOffFrom', { step: rows[index - 1].key })"
           >−{{ drop(index) }}%</span
         >
       </div>

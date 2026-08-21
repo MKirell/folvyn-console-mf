@@ -6,8 +6,7 @@
           {{ t('platform.portfolios.title') }}
         </h2>
         <p class="mt-0.5 text-[0.78rem] text-muted">
-          Every account, and the ones worth a second look. Draft content stays private — suspension
-          takes a portfolio offline, it never opens it.
+          {{ t('platform.portfolios.blurb') }}
         </p>
       </div>
 
@@ -24,18 +23,14 @@
     <div
       class="mb-3 flex flex-wrap items-center gap-1.5"
       role="group"
-      aria-:label="t('platform.portfolios.segments')"
+      :aria-label="t('platform.portfolios.segments')"
     >
       <button
         v-for="entry in segments"
         :key="entry.key"
         type="button"
         class="flex items-center gap-1.5 rounded-[9px] border px-2.5 py-[5px] text-[0.76rem] transition-colors motion-reduce:transition-none"
-        :class="
-          entry.key === segment
-            ? 'border-accent/40 bg-accent/12 text-accent-deep'
-            : 'border-line/8 bg-surface text-ink-soft hover:border-line/20 hover:text-ink'
-        "
+        :class="segmentClass(entry.key)"
         :aria-pressed="entry.key === segment"
         @click="select(entry.key)"
       >
@@ -68,9 +63,9 @@
       <li
         v-for="entry in visible"
         :key="entry.row.id"
-        class="flex flex-wrap items-center gap-3 rounded-[11px] border border-line/8 bg-surface px-3 py-2.5"
+        class="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 rounded-[11px] border border-line/8 bg-surface px-3 py-2.5"
       >
-        <span class="min-w-0 flex-1">
+        <span class="min-w-0 flex-1 basis-[14rem]">
           <RouterLink
             :to="`/platform/portfolios/${entry.row.id}`"
             class="block truncate font-mono text-[0.8rem] hover:text-accent-deep"
@@ -116,14 +111,25 @@
 
     <ConfirmDialog
       :open="pending !== null"
-      :title="pending?.action === 'erase' ? 'Queue an erasure?' : 'Suspend this portfolio?'"
+      :title="
+        pending?.action === 'erase'
+          ? t('platform.portfolios.eraseTitle')
+          : t('platform.portfolios.suspendTitle')
+      "
       :message="
         pending?.action === 'erase'
-          ? `/${pending?.row.slug} joins the erasure queue with a ${DEADLINE_DAYS}-day clock. Nothing is deleted until the cascade is run from that screen, and the request is recorded either way.`
-          : `/${pending?.row.slug} goes offline immediately. The owner keeps their content and can be restored at any time.`
+          ? t('platform.portfolios.eraseMessage', {
+              slug: pending?.row.slug,
+              days: DEADLINE_DAYS,
+            })
+          : t('platform.portfolios.suspendMessage', { slug: pending?.row.slug })
       "
       :confirm-word="pending?.action === 'erase' ? pending.row.slug : ''"
-      :confirm-label="pending?.action === 'erase' ? 'Queue erasure' : 'Suspend'"
+      :confirm-label="
+        pending?.action === 'erase'
+          ? t('platform.portfolios.queueErasure')
+          : t('platform.portfolios.suspend')
+      "
       @cancel="pending = null"
       @confirm="commit"
     >
@@ -131,7 +137,7 @@
         v-model="reason"
         type="text"
         :placeholder="t('platform.portfolios.reasonPlaceholder')"
-        aria-:label="t('platform.portfolios.reason')"
+        :aria-label="t('platform.portfolios.reason')"
         class="w-full h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 text-[0.82rem] outline-none focus:border-accent/50"
       />
     </ConfirmDialog>
@@ -157,7 +163,18 @@ import { useUiStore } from '@/stores/ui'
 import { useI18n } from 'vue-i18n'
 import type { ModerationBoard, PortfolioRow } from '@/types/analytics'
 
-type Segment = 'all' | 'published' | 'draft' | 'suspended' | 'recent' | 'thin' | 'silent' | 'risky'
+const SEGMENT_KEYS = [
+  'all',
+  'published',
+  'draft',
+  'suspended',
+  'recent',
+  'thin',
+  'silent',
+  'risky',
+] as const
+
+type Segment = (typeof SEGMENT_KEYS)[number]
 
 interface Entry {
   row: PortfolioRow
@@ -172,61 +189,43 @@ const STATE_CLASS: Record<string, string> = {
   suspended: 'bg-rust/15 text-rust',
 }
 
+const SEGMENT_ON: Partial<Record<Segment, string>> = {
+  published: 'border-sage/40 bg-sage/15 text-sage',
+  draft: 'border-line/25 bg-line/10 text-ink-soft',
+  suspended: 'border-rust/40 bg-rust/15 text-rust',
+}
+
+const SEGMENT_OFF: Partial<Record<Segment, string>> = {
+  published: 'border-line/8 bg-surface text-sage/75 hover:border-sage/30 hover:text-sage',
+  draft: 'border-line/8 bg-surface text-muted hover:border-line/20 hover:text-ink-soft',
+  suspended: 'border-line/8 bg-surface text-rust/75 hover:border-rust/30 hover:text-rust',
+}
+
+function segmentClass(key: Segment): string {
+  if (key === segment.value) {
+    return SEGMENT_ON[key] ?? 'border-accent/40 bg-accent/12 text-accent-deep'
+  }
+  return (
+    SEGMENT_OFF[key] ?? 'border-line/8 bg-surface text-ink-soft hover:border-line/20 hover:text-ink'
+  )
+}
+
 const STATE_SEGMENTS: Segment[] = ['published', 'draft', 'suspended']
 
-const COPY: Record<
-  Segment,
-  { label: string; hint: string; emptyTitle: string; emptyBody: string }
-> = {
-  all: {
-    label: 'All',
-    hint: '',
-    emptyTitle: 'No portfolio matches',
-    emptyBody: 'Nobody has signed up under that search yet.',
-  },
-  published: {
-    label: 'Published',
-    hint: '',
-    emptyTitle: 'Nothing is published',
-    emptyBody: 'No account has taken its portfolio public yet.',
-  },
-  draft: {
-    label: 'Draft',
-    hint: '',
-    emptyTitle: 'No draft',
-    emptyBody: 'Every account has published.',
-  },
-  suspended: {
-    label: 'Suspended',
-    hint: '',
-    emptyTitle: 'Nothing is suspended',
-    emptyBody: 'No operator has taken a portfolio offline.',
-  },
-  recent: {
-    label: 'Newly published',
-    hint: 'Went public in the last fourteen days — the window where a first look is worth the most.',
-    emptyTitle: 'Nothing new',
-    emptyBody: 'No portfolio has gone public in the last fortnight.',
-  },
-  thin: {
-    label: 'Thin',
-    hint: 'Published with almost nothing written. Usually an abandoned sign-up rather than abuse.',
-    emptyTitle: 'No thin portfolio',
-    emptyBody: 'Every published portfolio carries real content.',
-  },
-  silent: {
-    label: 'Never visited',
-    hint: 'Published, but no session has ever been recorded. Worth checking the address resolves.',
-    emptyTitle: 'Everything gets traffic',
-    emptyBody: 'Every published portfolio has been visited at least once.',
-  },
-  risky: {
-    label: 'Confusable address',
-    hint: 'One edit away from a word the platform reserves. Not blocked, but worth a human glance.',
-    emptyTitle: 'No confusable address',
-    emptyBody: 'No address sits close enough to a reserved word to mislead anyone.',
-  },
-}
+const copy = computed(
+  () =>
+    Object.fromEntries(
+      SEGMENT_KEYS.map((key) => [
+        key,
+        {
+          label: t(`platform.portfolios.segment.${key}.label`),
+          hint: t(`platform.portfolios.segment.${key}.hint`),
+          emptyTitle: t(`platform.portfolios.segment.${key}.emptyTitle`),
+          emptyBody: t(`platform.portfolios.segment.${key}.emptyBody`),
+        },
+      ]),
+    ) as Record<Segment, { label: string; hint: string; emptyTitle: string; emptyBody: string }>,
+)
 
 const ui = useUiStore()
 
@@ -278,14 +277,14 @@ const buckets = computed<Record<Segment, Entry[]>>(() => ({
 }))
 
 const segments = computed(() =>
-  (Object.keys(COPY) as Segment[]).map((key) => ({
+  SEGMENT_KEYS.map((key) => ({
     key,
-    label: COPY[key].label,
+    label: copy.value[key].label,
     count: buckets.value[key].length,
   })),
 )
 
-const active = computed(() => COPY[segment.value])
+const active = computed(() => copy.value[segment.value])
 const visible = computed(() => buckets.value[segment.value])
 
 function published(row: PortfolioRow): string {

@@ -49,7 +49,7 @@ onMounted(async () => {
     const target = await auth.completeLogin(code, state)
     await router.replace(target)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'The authorization code could not be exchanged.'
+    error.value = e instanceof Error ? e.message : t('views.callback.exchangeFailed')
   }
 })
 </script>

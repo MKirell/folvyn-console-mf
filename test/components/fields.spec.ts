@@ -95,7 +95,7 @@ describe('string list input', () => {
 describe('icon picker', () => {
   it('warns when the portfolio cannot render the chosen icon', () => {
     const wrapper = mount(IconPicker, { props: { modelValue: 'NotAnIcon' } })
-    expect(wrapper.text()).toContain('has no mapping')
+    expect(wrapper.text()).toContain('has no icon called')
   })
 
   it('stays quiet for an icon the portfolio maps', () => {

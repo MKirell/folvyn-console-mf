@@ -16,46 +16,48 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.erasure.waiting')"
         :value="String(counts.pending)"
-        hint="not yet run"
+        :hint="t('platform.erasure.waitingHint')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.erasure.dueWeek')"
         :value="String(counts.urgent)"
-        hint="the clock is short"
+        :hint="t('platform.erasure.dueHint')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.erasure.completed')"
         :value="String(counts.done)"
-        hint="cascade finished"
+        :hint="t('platform.erasure.completedHint')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.erasure.failed')"
         :value="String(counts.failed)"
-        hint="needs a retry"
+        :hint="t('platform.erasure.failedHint')"
       />
 
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.erasure.requests')"
-        :hint="`${rows.length} in the queue`"
+        :hint="t('platform.erasure.queueHint', { count: rows.length })"
       >
         <ul v-if="rows.length" class="flex min-h-0 flex-1 flex-col gap-2" role="list">
           <li
             v-for="row in rows"
             :key="row.id"
-            class="flex flex-col gap-1.5 rounded-[9px] border px-3 py-2.5"
+            class="flex min-w-0 flex-col gap-1.5 rounded-[9px] border px-3 py-2.5"
             :class="tone(row)"
           >
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="min-w-0 flex-1 truncate font-mono text-[0.8rem]">/{{ row.slug }}</span>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <span class="min-w-0 flex-1 basis-[11rem] truncate font-mono text-[0.8rem]"
+                >/{{ row.slug }}</span
+              >
 
               <span
                 class="shrink-0 rounded-[5px] px-1.5 py-[1px] font-mono text-[0.62rem] uppercase"
                 :class="badge(row)"
-                >{{ row.state }}</span
+                >{{ state(row) }}</span
               >
 
               <span
@@ -91,9 +93,13 @@
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
               <p class="min-w-0 flex-1 truncate text-[0.74rem] text-muted">
                 {{ row.reason
-                }}<span v-if="row.requestedBy"> — asked by {{ row.requestedBy }}</span>
+                }}<span v-if="row.requestedBy">
+                  — {{ t('platform.erasure.askedBy', { actor: row.requestedBy }) }}</span
+                >
               </p>
-              <span class="shrink-0 font-mono text-[0.7rem] text-muted">{{ cascade(row) }}</span>
+              <span class="min-w-0 font-mono text-[0.7rem] break-words text-muted">{{
+                cascade(row)
+              }}</span>
             </div>
 
             <p v-if="row.failure" class="text-[0.74rem] text-rust">{{ row.failure }}</p>
@@ -104,8 +110,7 @@
           <div>
             <p class="text-[0.86rem] text-ink">{{ t('platform.erasure.none') }}</p>
             <p class="mt-1 max-w-[46ch] text-[0.78rem] text-muted">
-              A request gets {{ deadlineDays }} days. Queue one from an account, run the cascade,
-              and this screen records what each store removed.
+              {{ t('platform.erasure.noneDesc', { days: deadlineDays }) }}
             </p>
           </div>
         </div>
@@ -127,7 +132,7 @@ import { useUiStore } from '@/stores/ui'
 import type { ErasureRow } from '@/types/analytics'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const deadlineDays = 30
 
 const rows = ref<ErasureRow[]>([])
@@ -170,14 +175,20 @@ function elapsed(row: ErasureRow): number {
 }
 
 function clock(row: ErasureRow): string {
-  if (row.state === 'done') return `done ${row.completedAt?.slice(0, 10) ?? ''}`
-  if (row.daysLeft < 0) return `${Math.abs(row.daysLeft)}d overdue`
-  return `${row.daysLeft}d left`
+  if (row.state === 'done') return row.completedAt?.slice(0, 10) ?? ''
+  if (row.daysLeft < 0) return t('platform.erasure.overdue', { days: Math.abs(row.daysLeft) })
+  return t('platform.erasure.daysLeft', { days: row.daysLeft })
+}
+
+function state(row: ErasureRow): string {
+  return te(`platform.erasure.state.${row.state}`)
+    ? t(`platform.erasure.state.${row.state}`)
+    : row.state
 }
 
 function cascade(row: ErasureRow): string {
   const entries = Object.entries(row.cascade)
-  if (entries.length === 0) return 'not run yet'
+  if (entries.length === 0) return t('platform.erasure.cascadeNotRun')
   return entries.map(([store, count]) => `${store} ${count}`).join(' · ')
 }
 

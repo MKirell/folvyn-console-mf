@@ -23,7 +23,7 @@
         <button
           type="button"
           class="absolute end-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-scrim/60 text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 max-700:opacity-100"
-          :aria-label="`Remove ${key}`"
+          :aria-label="t('assets.removeFile', { key })"
           @click="removeAt(index)"
         >
           <X :size="11" :stroke-width="2.4" />

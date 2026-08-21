@@ -51,10 +51,24 @@ describe('skeletons', () => {
 describe('charts at their edges', () => {
   it('draws a gauge when every band is full and when none is', () => {
     expect(
-      mount(DepthGauge, { props: { quartiles: [10, 10, 10, 10], sessions: 10 } }).html(),
+      mount(DepthGauge, {
+        props: {
+          quartiles: [10, 10, 10, 10],
+          sessions: 10,
+          labels: ['a', 'b', 'c', 'd'],
+          empty: 'nothing yet',
+        },
+      }).html(),
     ).toBeTruthy()
     expect(
-      mount(DepthGauge, { props: { quartiles: [0, 0, 0, 0], sessions: 5 } }).html(),
+      mount(DepthGauge, {
+        props: {
+          quartiles: [0, 0, 0, 0],
+          sessions: 5,
+          labels: ['a', 'b', 'c', 'd'],
+          empty: 'nothing yet',
+        },
+      }).html(),
     ).toBeTruthy()
   })
 

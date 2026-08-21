@@ -54,7 +54,7 @@
       </ul>
 
       <p v-else class="px-4 py-6 text-center text-[0.82rem] text-muted">
-        Nothing matches “{{ query }}”.
+        {{ t('palette.noMatch', { query }) }}
       </p>
     </div>
   </div>

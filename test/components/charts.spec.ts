@@ -6,11 +6,14 @@ import DepthGauge from '@/components/charts/DepthGauge.vue'
 import DonutChart from '@/components/charts/DonutChart.vue'
 import FunnelColumns from '@/components/charts/FunnelColumns.vue'
 import FunnelRows from '@/components/charts/FunnelRows.vue'
+import FunnelShape from '@/components/charts/FunnelShape.vue'
 import HeatCalendar from '@/components/charts/HeatCalendar.vue'
 import RankList from '@/components/charts/RankList.vue'
 import SparkLine from '@/components/charts/SparkLine.vue'
 import SplitStat from '@/components/charts/SplitStat.vue'
 import StackedBar from '@/components/charts/StackedBar.vue'
+import SegmentedMeter from '@/components/charts/SegmentedMeter.vue'
+import RadialBars from '@/components/charts/RadialBars.vue'
 import StatTile from '@/components/charts/StatTile.vue'
 import VolumeColumns from '@/components/charts/VolumeColumns.vue'
 import AccountRows from '@/components/platform/AccountRows.vue'
@@ -27,6 +30,8 @@ const points = [
   { date: '2026-08-02', value: 0 },
   { date: '2026-08-03', value: 9 },
 ]
+
+const DEPTHS = ['Past the hero', 'Halfway down', 'Most of the way', 'To the very end']
 
 const EMPTY = 'nothing yet'
 
@@ -64,8 +69,8 @@ const cases: { name: string; component: unknown; full: object; blank: object }[]
   {
     name: 'DepthGauge',
     component: DepthGauge,
-    full: { quartiles: [10, 8, 4, 1], sessions: 10, empty: EMPTY },
-    blank: { quartiles: [0, 0, 0, 0], sessions: 0, empty: EMPTY },
+    full: { quartiles: [10, 8, 4, 1], sessions: 10, labels: DEPTHS, empty: EMPTY },
+    blank: { quartiles: [0, 0, 0, 0], sessions: 0, labels: DEPTHS, empty: EMPTY },
   },
   {
     name: 'DonutChart',
@@ -78,6 +83,12 @@ const cases: { name: string; component: unknown; full: object; blank: object }[]
     component: FunnelColumns,
     full: { rows: breakdown, sessions: 20, empty: EMPTY },
     blank: { rows: [], sessions: 0, empty: EMPTY },
+  },
+  {
+    name: 'FunnelShape',
+    component: FunnelShape,
+    full: { rows: breakdown, sessions: 100, label: 'Activation', empty: EMPTY },
+    blank: { rows: [], sessions: 0, label: 'Activation', empty: EMPTY },
   },
   {
     name: 'FunnelRows',
@@ -113,6 +124,18 @@ const cases: { name: string; component: unknown; full: object; blank: object }[]
       verdicts: { strong: 'strong', even: 'even', weak: 'weak' },
     },
     blank: { rows: [], empty: EMPTY },
+  },
+  {
+    name: 'RadialBars',
+    component: RadialBars,
+    full: { rows: breakdown, label: 'Contact', empty: EMPTY },
+    blank: { rows: [], label: 'Contact', empty: EMPTY },
+  },
+  {
+    name: 'SegmentedMeter',
+    component: SegmentedMeter,
+    full: { rows: breakdown, slots: 4, empty: EMPTY },
+    blank: { rows: [], slots: 4, empty: EMPTY },
   },
   {
     name: 'StackedBar',

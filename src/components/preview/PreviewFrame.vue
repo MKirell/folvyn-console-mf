@@ -21,7 +21,7 @@
       </div>
     </div>
     <p v-if="!connected" class="mt-2 font-mono text-[0.66rem] text-muted">
-      Waiting for {{ origin }} — the portfolio has to be running for the preview to render.
+      {{ t('ui.previewWaiting', { origin }) }}
     </p>
   </div>
 </template>

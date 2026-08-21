@@ -42,20 +42,43 @@
         v-for="group in groups"
         :key="group.title"
         :title="groupTitle(group.title)"
-        :hint="group.assets ? t('views.singleton.filesHint') : ''"
+        :hint="group.assets ? filesHint : groupHint(group.title)"
       >
+        <template v-if="translatable(group)" #actions>
+          <span
+            class="shrink-0 rounded-[5px] border px-1.5 py-[1px] font-mono text-[0.62rem] tabular-nums"
+            :class="
+              completeCount === langs.length
+                ? 'border-accent/30 bg-accent/12 text-accent-deep'
+                : 'border-dashed border-line/25 text-muted'
+            "
+            :title="t('views.entity.complete', { done: completeCount, total: langs.length })"
+            >{{ completeCount }}/{{ langs.length }}</span
+          >
+        </template>
+
         <div
           :class="
             group.assets
-              ? 'grid grid-cols-1 gap-x-4 gap-y-3.5'
+              ? group.columns > 1
+                ? 'grid grid-cols-5 gap-x-4 gap-y-3.5 max-900:grid-cols-1'
+                : 'grid grid-cols-1 gap-x-4 gap-y-3.5'
               : 'grid grid-cols-2 gap-x-4 gap-y-3.5 max-700:grid-cols-1'
           "
+          :style="group.preview ? assetRows(group.entries.length) : undefined"
         >
+          <AssetPreview
+            v-if="group.preview"
+            :model-value="assetText(draftOf()?.[group.preview.name])"
+          />
+
           <FieldRenderer
             v-for="entry in group.entries"
             :key="`${entry.translated ? editingLang : 'shared'}:${entry.field.name}`"
             :field="entry.field"
             :full="entry.full"
+            :span="entry.span"
+            :bare="entry.field.name === group.preview?.name"
             :locale="entry.translated ? editingLang : ''"
             :translated="entry.translated && hasValue(translationOf(entry.field.name))"
             :model-value="valueOf(entry)"
@@ -141,6 +164,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import SkeletonForm from '@/components/ui/SkeletonForm.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
+import AssetPreview from '@/components/fields/AssetPreview.vue'
 import FieldRenderer from '@/components/fields/FieldRenderer.vue'
 import PreviewFrame from '@/components/preview/PreviewFrame.vue'
 import { buildPreviewPayload, hasPreview } from '@/utils/preview-payload'
@@ -152,6 +176,7 @@ import { changedFields, clone, deepEqual, writableKeys } from '@/utils/diff'
 import {
   blankDocument,
   blankTranslation,
+  isTranslationComplete,
   mapServerErrors,
   payloadFrom,
   validateDraft,
@@ -159,8 +184,13 @@ import {
 } from '@/utils/entity'
 import type { AdminDocument, TranslationEntry } from '@/types/admin'
 import { useI18n } from 'vue-i18n'
-import { fieldGroups, hasValue, type FieldEntry } from '@/utils/field-groups'
-import { collectionBlurb, collectionLabel } from '@/i18n/labels'
+import { fieldGroups, hasValue, type FieldEntry, type FieldGroup } from '@/utils/field-groups'
+import {
+  collectionBlurb,
+  collectionFilesHint,
+  collectionGroupHint,
+  collectionLabel,
+} from '@/i18n/labels'
 
 const EMPTY: ValidationResult = { fields: {}, translations: {}, ok: true }
 
@@ -197,6 +227,21 @@ const dirty = computed(() =>
 
 const groups = computed(() => fieldGroups(collection.value))
 
+const completeCount = computed(
+  () =>
+    langs.value.filter((code) => {
+      const draft = draftOf()
+      return draft ? isTranslationComplete(collection.value, draft, code) : false
+    }).length,
+)
+
+function translatable(group: FieldGroup): boolean {
+  return collection.value.i18n && group.entries.some((entry) => entry.translated)
+}
+const filesHint = computed(() =>
+  collectionFilesHint(collection.value, t('views.singleton.filesHint')),
+)
+
 function draftOf(): AdminDocument | null {
   return drafts.value[collection.value.key] ?? null
 }
@@ -224,6 +269,18 @@ function write(entry: FieldEntry, value: unknown): void {
   setField(collection.value.key, entry.field.name, value)
 }
 
+function assetRows(count: number): Record<string, string> {
+  return { gridTemplateRows: `repeat(${count}, auto)` }
+}
+
+function assetText(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
+function groupHint(title: string): string {
+  return collection.value ? collectionGroupHint(collection.value, title) : ''
+}
+
 function groupTitle(title: string): string {
   return te(`groups.${title}`) ? t(`groups.${title}`) : title
 }
@@ -233,10 +290,10 @@ const TABS = computed(() => [
   { key: 'preview' as const, label: t('views.singleton.tabPreview') },
 ])
 
-const VIEWPORTS = [
-  { key: 'desktop' as const, label: 'Desktop', width: 1512 },
-  { key: 'mobile' as const, label: 'Mobile', width: 390 },
-]
+const VIEWPORTS = computed(() => [
+  { key: 'desktop' as const, label: t('ui.desktop'), width: 1512 },
+  { key: 'mobile' as const, label: t('ui.mobile'), width: 390 },
+])
 
 const tab = ref<'fields' | 'preview'>('fields')
 const viewport = ref<'desktop' | 'mobile'>('desktop')
@@ -245,11 +302,11 @@ const narrowHost = ref(false)
 const previewable = computed(() => hasPreview(collection.value.key))
 
 const offeredViewports = computed(() =>
-  narrowHost.value ? VIEWPORTS.filter((option) => option.key === 'mobile') : VIEWPORTS,
+  narrowHost.value ? VIEWPORTS.value.filter((option) => option.key === 'mobile') : VIEWPORTS.value,
 )
 
 const viewportWidth = computed(
-  () => VIEWPORTS.find((option) => option.key === viewport.value)?.width ?? 1512,
+  () => VIEWPORTS.value.find((option) => option.key === viewport.value)?.width ?? 1512,
 )
 
 const previewPayload = computed(() => {

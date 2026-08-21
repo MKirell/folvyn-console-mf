@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-wrap items-center gap-2">
     <span
+      v-if="!bare"
       class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-[8px] border border-line/10 bg-bg-tint"
     >
       <img
@@ -17,33 +18,35 @@
       :id="id"
       :value="modelValue"
       type="text"
-      class="min-w-0 flex-1 basis-[12ch] h-[38px] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50"
+      class="h-[38px] min-w-0 flex-1 basis-[12ch] rounded-[9px] border border-line/10 bg-bg px-3 py-2 font-mono text-[0.78rem] outline-none focus:border-accent/50 max-600:basis-[6ch]"
       :placeholder="accept === 'pdf' ? 'document.pdf' : 'image.jpg'"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
 
-    <AppButton size="sm" @click="pickerOpen = true">{{ t('assets.choose') }}</AppButton>
-    <a
-      v-if="modelValue"
-      :href="assetUrl(modelValue)"
-      target="_blank"
-      rel="noreferrer"
-      class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
-      :title="t('assets.openFile')"
-      :aria-label="t('assets.openFile')"
-    >
-      <ExternalLink :size="14" :stroke-width="1.9" />
-    </a>
-    <button
-      v-if="modelValue"
-      type="button"
-      class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
-      :title="t('assets.clear')"
-      :aria-label="t('assets.clearFile')"
-      @click="emit('update:modelValue', '')"
-    >
-      <X :size="14" :stroke-width="2" />
-    </button>
+    <span class="flex items-center gap-2">
+      <AppButton size="sm" @click="pickerOpen = true">{{ t('assets.choose') }}</AppButton>
+      <a
+        v-if="modelValue"
+        :href="assetUrl(modelValue)"
+        target="_blank"
+        rel="noreferrer"
+        class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
+        :title="t('assets.openFile')"
+        :aria-label="t('assets.openFile')"
+      >
+        <ExternalLink :size="14" :stroke-width="1.9" />
+      </a>
+      <button
+        v-if="modelValue"
+        type="button"
+        class="grid h-7 w-7 shrink-0 place-items-center rounded-[7px] text-muted transition-colors hover:bg-bg-tint hover:text-rust"
+        :title="t('assets.clear')"
+        :aria-label="t('assets.clearFile')"
+        @click="emit('update:modelValue', '')"
+      >
+        <X :size="14" :stroke-width="2" />
+      </button>
+    </span>
 
     <AssetPicker
       :open="pickerOpen"
@@ -64,10 +67,10 @@ import { assetUrl, isImageKey } from '@/utils/assets'
 import type { AssetKind } from '@/registry/collections'
 import { useI18n } from 'vue-i18n'
 
-withDefaults(defineProps<{ modelValue: string; accept?: AssetKind; id?: string }>(), {
-  accept: undefined,
-  id: undefined,
-})
+withDefaults(
+  defineProps<{ modelValue: string; accept?: AssetKind; id?: string; bare?: boolean }>(),
+  { accept: undefined, id: undefined, bare: false },
+)
 
 const { t } = useI18n()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()

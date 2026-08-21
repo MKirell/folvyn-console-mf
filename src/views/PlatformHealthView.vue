@@ -26,7 +26,7 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.health.database')"
         :value="health.database"
-        :hint="health.database === 'up' ? 'accepting queries' : 'the API is degraded'"
+        :hint="health.database === 'up' ? t('platform.health.dbUp') : t('platform.health.dbDown')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
@@ -38,7 +38,12 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.health.storage')"
         :value="`${used} MB`"
-        :hint="`${health.storage.share}% of the ${health.storage.ceilingMb} MB tier`"
+        :hint="
+          t('platform.health.storageShare', {
+            pct: health.storage.share,
+            mb: health.storage.ceilingMb,
+          })
+        "
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
@@ -50,7 +55,7 @@
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.waitedFor')"
-        hint="p75 across every portfolio"
+        :hint="t('platform.health.p75Hint')"
       >
         <ul class="flex min-h-0 flex-1 flex-col justify-center gap-2" role="list">
           <li
@@ -129,7 +134,7 @@
           <div>
             <p class="text-[0.86rem] text-ink">{{ t('platform.health.noErrors') }}</p>
             <p class="mt-1 text-[0.78rem] text-muted">
-              One broken deploy is one row, not one per account.
+              {{ t('platform.health.noErrorsDesc') }}
             </p>
           </div>
         </div>
@@ -138,7 +143,7 @@
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.rawEvents')"
-        :hint="`a day, last ${period} days`"
+        :hint="t('platform.health.perDay', { days: period })"
       >
         <VolumeColumns
           :points="volume"
@@ -243,8 +248,8 @@ const topErrorGroups = computed(() => (health.value?.errorGroups ?? []).slice(0,
 
 const errorHint = computed(() => {
   const groups = health.value?.errorGroups ?? []
-  if (groups.length <= ERROR_ROWS) return 'grouped by message'
-  return `${groups.length - ERROR_ROWS} more, grouped by message`
+  if (groups.length <= ERROR_ROWS) return t('platform.health.errorsGrouped')
+  return t('platform.health.errorsMore', { count: groups.length - ERROR_ROWS })
 })
 
 const renderState = computed(() => {
@@ -255,9 +260,9 @@ const renderState = computed(() => {
 
 const renderHint = computed(() => {
   const prerender = health.value?.prerender
-  if (!prerender?.configured) return 'no renderer in this environment'
-  if (prerender.failing > 0) return 'portfolios whose page is stale'
-  return `${prerender.attempts.length} recent, none failing`
+  if (!prerender?.configured) return t('platform.health.renderOff')
+  if (prerender.failing > 0) return t('platform.health.renderStale')
+  return t('platform.health.renderOk', { count: prerender.attempts.length })
 })
 
 const vitals = computed(() =>

@@ -17,13 +17,12 @@
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
       <AppButton size="sm" @click="expanded = !expanded">
-        {{ expanded ? 'Hide' : 'Browse' }}
+        {{ expanded ? t('ui.hide') : t('ui.browse') }}
       </AppButton>
     </div>
 
     <p v-if="modelValue && !renderable" class="mt-1.5 text-[0.72rem] text-gold">
-      The portfolio has no mapping for “{{ modelValue }}” — it will render nothing until the icon is
-      added to the section component.
+      {{ t('ui.iconFallback', { name: modelValue }) }}
     </p>
 
     <div

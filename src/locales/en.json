@@ -25,7 +25,8 @@
     "leaveTitle": "Leave without saving?",
     "leaveAnyway": "Leave without saving",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "and": "and"
   },
   "nav": {
     "aria": "Console navigation",
@@ -59,7 +60,9 @@
     "openUrl": "Open {url}",
     "apiUp": "The portfolio API is responding",
     "apiDown": "The portfolio API is not responding",
-    "apiChecking": "Checking the portfolio API"
+    "apiChecking": "Checking the portfolio API",
+    "showTools": "Show the toolbar",
+    "hideTools": "Hide the toolbar"
   },
   "palette": {
     "aria": "Command palette",
@@ -69,7 +72,8 @@
     "entries": "Entries",
     "empty": "Nothing matches that",
     "scopeScreen": "screen",
-    "scopeEntry": "entry"
+    "scopeEntry": "entry",
+    "noMatch": "Nothing matches “{query}”."
   },
   "loading": {
     "screen": "Loading screen",
@@ -138,7 +142,7 @@
       "tabFields": "Fields",
       "tabPreview": "Live preview",
       "files": "Files",
-      "filesHint": "stored as keys, served from the bucket",
+      "filesHint": "The document that backs this entry up.",
       "translations": "Translations",
       "translationsHint": "{count} locales",
       "previewHint": "as {lang} reads it",
@@ -151,7 +155,7 @@
       "saveFailed": "Save failed"
     },
     "entity": {
-      "filesHint": "stored as keys, served from the bucket",
+      "filesHint": "The document that backs this entry up.",
       "complete": "{done}/{total} languages complete",
       "gone": "This {singular} no longer exists",
       "goneDesc": "It may have been deleted in another tab.",
@@ -162,15 +166,19 @@
       "unknownTitle": "Unknown collection",
       "unknownDesc": "The sidebar lists every editable screen.",
       "goneDesc2": "It may have been deleted in another tab.",
-      "backToList": "Back to the list"
+      "backToList": "Back to the list",
+      "saveFailed": "The save failed"
     },
     "login": {
       "title": "Folvyn Console",
-      "missingConfig": "Sign-in is not configured"
+      "missingConfig": "Sign-in is not configured",
+      "signIn": "sign in",
+      "continueWith": "Continue with {provider}"
     },
     "callback": {
       "failed": "Sign-in did not complete",
-      "working": "Completing sign-in…"
+      "working": "Completing sign-in…",
+      "exchangeFailed": "The authorization code could not be exchanged."
     },
     "notFound": {
       "title": "There is nothing at this address",
@@ -220,7 +228,8 @@
       "keyCopied": "Key copied",
       "noClipboard": "The clipboard is not available",
       "deleted": "File deleted",
-      "deleteFailed": "Delete failed"
+      "deleteFailed": "Delete failed",
+      "referenced": "{count} referenced file | {count} referenced files"
     },
     "history": {
       "title": "History",
@@ -294,7 +303,14 @@
         "enhancedLabel": "Enhanced — needs a consent banner",
         "enhancedDesc": "Adds returning visitors and true unique counts per document, which needs an identifier that lasts. Your visitors get a banner they can refuse, and the legal exposure is yours."
       },
-      "blurb": "Your address, whether it is live, and everything that only you can decide."
+      "blurb": "Your address, whether it is live, and everything that only you can decide.",
+      "slugFree": "{slug} is free",
+      "addressNote": "Taken from your name when you first signed in. You can change it, but a link you have already shared will stop working.",
+      "slugPlaceholder": "your-name",
+      "addressHint": "where your portfolio lives",
+      "publishingHint": "who can read it",
+      "measurementHint": "what your visitors leave behind",
+      "dangerHint": "no undo past this point"
     },
     "insights": {
       "title": "Insights",
@@ -325,7 +341,7 @@
       "loadSpeed": "How fast it loads",
       "languages": "Languages",
       "hintSections": "share of sessions reaching each section",
-      "hintScroll": "share of sessions reaching each depth",
+      "hintScroll": "by depth",
       "hintCountries": "top countries",
       "hintDocuments": "opens over the period",
       "hintOutbound": "outbound links",
@@ -333,7 +349,7 @@
       "hintShell": "{rate}% of visitors",
       "hintContact": "{rate}% of sessions",
       "cardsHintEmpty": "needs a few visits",
-      "cardsHint": "opened, out of the times it was seen",
+      "cardsHint": "opened vs seen",
       "bestProject": "is opened by {rate}% of the people who see it. Put it first.",
       "emptyBrowsers": "No browser data yet",
       "emptyCountries": "No country data yet",
@@ -352,11 +368,18 @@
       "verdictNeedsWork": "needs work",
       "advicePending": "Needs a few visits before there is anything to read.",
       "adviceGood": "Your main content is on screen well inside the two-and-a-half seconds most visitors will wait.",
-      "adviceSlow": "That is slower than most visitors will wait — usually one oversized image, which you can replace with a smaller file.",
+      "adviceSlow": "Slower than most visitors will wait. Usually one oversized image.",
       "reviewImages": "Review your images",
       "neverOpened": "Never opened:",
       "andMore": " and {count} more",
-      "weigh": "Weigh this against the backlog"
+      "weigh": "Weigh this against the backlog",
+      "depth": {
+        "past": "Past the hero",
+        "halfway": "Halfway down",
+        "most": "Most of the way",
+        "end": "To the very end",
+        "empty": "Nobody has scrolled yet"
+      }
     },
     "legal": {
       "documents": "Legal documents",
@@ -388,48 +411,91 @@
     "person": {
       "label": "Person",
       "singular": "Person",
-      "blurb": "Who you are: the identity, the about paragraphs and the contact blurb."
+      "blurb": "Who you are: the identity, the about paragraphs and the contact blurb.",
+      "filesHint": "Your portrait, and the CV each language offers.",
+      "groupHints": {
+        "Identity": "Your name, your affiliation, and the line under them.",
+        "Contact": "Where visitors write to, and the profiles they open.",
+        "Location": "The city and country the page places you in.",
+        "About": "The paragraphs that run beside your portrait."
+      }
     },
     "profile": {
       "label": "Hero",
       "singular": "Hero",
-      "blurb": "The opening screen: the subtitles that type themselves, the tagline and the chips."
+      "blurb": "The opening screen: the subtitles that type themselves, the tagline and the chips.",
+      "groupHints": {
+        "Hero": "The subtitles that type themselves, and the line under them."
+      }
     },
     "locale": {
       "label": "Site locales",
-      "singular": "Site locale"
+      "singular": "Site locale",
+      "groupHints": {
+        "Details": "The language, its flag, and whether the site offers it."
+      }
     },
     "experience": {
       "label": "Experiences",
-      "singular": "Experience"
+      "singular": "Experience",
+      "filesHint": "The work certificate that backs this role.",
+      "groupHints": {
+        "Details": "The role, the company, and what you did there."
+      }
     },
     "project": {
       "label": "Projects",
-      "singular": "Project"
+      "singular": "Project",
+      "groupHints": {
+        "Details": "What you built, when, and where it lives."
+      }
     },
     "skillCategory": {
       "label": "Skill categories",
-      "singular": "Skill category"
+      "singular": "Skill category",
+      "groupHints": {
+        "Details": "A category name, its icon, and the technologies under it."
+      }
     },
     "degree": {
       "label": "Degrees",
-      "singular": "Degree"
+      "singular": "Degree",
+      "filesHint": "The diploma that proves this qualification.",
+      "groupHints": {
+        "Details": "The qualification, the school, and the years it covers."
+      }
     },
     "certification": {
       "label": "Certifications",
-      "singular": "Certification"
+      "singular": "Certification",
+      "filesHint": "The certificate visitors open from this card.",
+      "groupHints": {
+        "Details": "What was certified, by whom, and when."
+      }
     },
     "spokenLanguage": {
       "label": "Spoken languages",
-      "singular": "Spoken language"
+      "singular": "Spoken language",
+      "filesHint": "The language certificate that backs this level.",
+      "groupHints": {
+        "Details": "The language, and how well you speak it."
+      }
     },
     "volunteering": {
       "label": "Volunteering",
-      "singular": "Volunteering entry"
+      "singular": "Volunteering entry",
+      "filesHint": "The attestation that backs this commitment.",
+      "groupHints": {
+        "Details": "The organisation, your role, and what came of it."
+      }
     },
     "award": {
       "label": "Awards",
-      "singular": "Award"
+      "singular": "Award",
+      "filesHint": "The photos visitors open from this award.",
+      "groupHints": {
+        "Details": "What you won, where, and when."
+      }
     }
   },
   "navGroups": {
@@ -660,7 +726,9 @@
     "unreachableDesc": "{error} — you can still type a filename below. The database stores the key, so the value works either way.",
     "repoNote": "These are the files your portfolio serves from its own public folder. Uploading needs an asset bucket, which is not configured yet — you can still type a key below.",
     "repoWritableNote": "These are the files your portfolio serves locally. Uploading writes into its public folder on this machine only.",
-    "useKey": "Use key"
+    "useKey": "Use key",
+    "keyPlaceholder": "or type a key, for example degree-bachelor-2024.pdf",
+    "removeFile": "Remove {key}"
   },
   "list": {
     "moveUp": "Move up",
@@ -689,7 +757,13 @@
       "whichBrowser": "Which browser",
       "whichLanguage": "Which language",
       "traffic": "Traffic",
-      "open": "Open →"
+      "open": "Open →",
+      "vsPrevious": "vs previous {days} days",
+      "bounceHint": "under ten seconds",
+      "funnelHint": "every portfolio, added together",
+      "topCountries": "top countries",
+      "perLocale": "sessions per locale",
+      "visitorsUnit": "visitors"
     },
     "overview": {
       "title": "Overview",
@@ -706,7 +780,64 @@
       "noVisit": "No portfolio has received a visit yet.",
       "draft": "Drafts",
       "suspended": "Suspended",
-      "activation": "From sign-up to an audience"
+      "activation": "From sign-up to an audience",
+      "blurb": "The whole platform at a glance. Draft content stays private to the person who wrote it.",
+      "noAccountDesc": "No account has signed up.",
+      "liveHint": "{pct}% live",
+      "publishedHint": "published",
+      "draftHint": "never published",
+      "suspendedHint": "held by an operator",
+      "statesHint": "by state",
+      "signupsHint": "new accounts",
+      "signupsRecent": "last 7 days",
+      "signupsEarlier": "earlier this month",
+      "signupsUnit": "accounts",
+      "signupsBusy": "Most of this month’s sign-ups arrived in the last seven days.",
+      "signupsSteady": "Sign-ups are arriving at a steady rate this month.",
+      "signupsQuiet": "The last seven days have been quieter than the rest of the month.",
+      "noSignups": "Nobody has signed up in the last month.",
+      "stepSignedUp": "signed up",
+      "stepPublished": "published a portfolio",
+      "stepVisited": "received a visit",
+      "activationHint": "{pct}% reach an audience",
+      "activationHintNone": "no account yet",
+      "whereFromHint": "referrers",
+      "funnelHint": "by section",
+      "busyHint": "sessions a day, {days} days",
+      "busiestHint": "{count} with traffic",
+      "attentionClear": "all clear",
+      "attentionHint": "{needs} of {total} need you",
+      "attentionMore": "{count} more also need you — open Health or Portfolios.",
+      "attentionAllPassed": "Every check passed against the last {days} days.",
+      "attentionOthersClear": "{count} other checks clear.",
+      "checks": {
+        "suspended": {
+          "label": "Suspended portfolios",
+          "clear": "No portfolio is held offline by an operator.",
+          "raised": "{count} held offline, and invisible to visitors until restored."
+        },
+        "errors": {
+          "label": "JavaScript errors",
+          "clear": "No portfolio reported a script error in this window.",
+          "raised": "{count} distinct messages reported. Health names the accounts each one hit."
+        },
+        "speed": {
+          "label": "Load speed",
+          "pending": "Not measured yet — needs a few more visits.",
+          "clear": "Main content arrives in {seconds}s, inside the {budget}s budget.",
+          "raised": "Main content takes {seconds}s, over the {budget}s budget. Usually uploaded photos."
+        },
+        "activation": {
+          "label": "Activation",
+          "clear": "Every account has published. Activation is {pct}%.",
+          "raised": "{count} accounts have never published. Activation is {pct}%."
+        },
+        "idle": {
+          "label": "Published but unvisited",
+          "clear": "Every published portfolio has been visited at least once.",
+          "raised": "{count} published portfolios never received a session. Worth checking the address resolves."
+        }
+      }
     },
     "portfolios": {
       "title": "Portfolios",
@@ -719,7 +850,62 @@
       "suspend": "Suspend",
       "restore": "Restore",
       "queueErasure": "Queue erasure",
-      "sessionsWindow": "Visitors in the last 30 days — one per person per day"
+      "sessionsWindow": "Visitors in the last 30 days — one per person per day",
+      "blurb": "Every account, and the ones worth a second look. Draft content stays private — suspension takes a portfolio offline, it never opens it.",
+      "segment": {
+        "all": {
+          "label": "All",
+          "hint": "",
+          "emptyTitle": "No portfolio matches",
+          "emptyBody": "Nobody has signed up under that search yet."
+        },
+        "published": {
+          "label": "Published",
+          "hint": "",
+          "emptyTitle": "Nothing is published",
+          "emptyBody": "No account has taken its portfolio public yet."
+        },
+        "draft": {
+          "label": "Draft",
+          "hint": "",
+          "emptyTitle": "No draft",
+          "emptyBody": "Every account has published."
+        },
+        "suspended": {
+          "label": "Suspended",
+          "hint": "",
+          "emptyTitle": "Nothing is suspended",
+          "emptyBody": "No operator has taken a portfolio offline."
+        },
+        "recent": {
+          "label": "Newly published",
+          "hint": "Went public in the last fourteen days — the window where a first look is worth the most.",
+          "emptyTitle": "Nothing new",
+          "emptyBody": "No portfolio has gone public in the last fortnight."
+        },
+        "thin": {
+          "label": "Thin",
+          "hint": "Published with almost nothing written. Usually an abandoned sign-up rather than abuse.",
+          "emptyTitle": "No thin portfolio",
+          "emptyBody": "Every published portfolio carries real content."
+        },
+        "silent": {
+          "label": "Never visited",
+          "hint": "Published, but no session has ever been recorded. Worth checking the address resolves.",
+          "emptyTitle": "Everything gets traffic",
+          "emptyBody": "Every published portfolio has been visited at least once."
+        },
+        "risky": {
+          "label": "Confusable address",
+          "hint": "One edit away from a word the platform reserves. Not blocked, but worth a human glance.",
+          "emptyTitle": "No confusable address",
+          "emptyBody": "No address sits close to a reserved word."
+        }
+      },
+      "eraseTitle": "Queue an erasure?",
+      "suspendTitle": "Suspend this portfolio?",
+      "eraseMessage": "/{slug} joins the erasure queue with a {days}-day clock. Nothing is deleted until the cascade is run from that screen, and the request is recorded either way.",
+      "suspendMessage": "/{slug} goes offline immediately. The owner keeps their content and can be restored at any time."
     },
     "account": {
       "notFound": "Account not found",
@@ -730,13 +916,21 @@
       "documents": "Documents",
       "status": "Status",
       "measurement": "Measurement",
-      "noOperator": "No operator has ever touched this account."
+      "noOperator": "No operator has ever touched this account.",
+      "allAccounts": "All accounts"
     },
     "trafficScreen": {
       "blurb": "Every portfolio's audience, added together. The shape of the whole product.",
       "none": "No traffic yet",
       "comeBack": "Do people come back",
-      "noReturn": "Nobody has returned yet — this fills once an owner enables enhanced measurement and a visitor accepts"
+      "noReturn": "Nobody has returned yet — this fills once an owner enables enhanced measurement and a visitor accepts",
+      "noneDesc": "No portfolio has been visited in this window.",
+      "returning": "returning",
+      "firstVisit": "first visit",
+      "consentHint": "needs the visitor’s consent",
+      "returningStrong": "Most people who arrive have been here before.",
+      "returningEven": "About as many return as arrive for the first time.",
+      "returningWeak": "Almost everyone is arriving for the first time."
     },
     "health": {
       "blurb": "Is the platform serving, is the pipeline writing, and is retention actually enforced.",
@@ -746,18 +940,30 @@
       "errorRate": "Error rate",
       "atlasTier": "Atlas free tier",
       "errorsPerSession": "JavaScript errors per session",
-      "ttl": "TTL indexes and the rollup clock",
+      "ttl": "TTL and rollup",
       "dataIndexes": "Data and indexes",
       "rollupLag": "Rollup lag",
       "beacons": "Beacons refused",
       "noContent": "No content stored yet",
       "nothingWritten": "The collector has written nothing",
       "noErrors": "No portfolio reported a JavaScript error.",
-      "renders": "Renders"
+      "renders": "Renders",
+      "noErrorsDesc": "One broken deploy is one row, not one per account.",
+      "dbUp": "accepting queries",
+      "dbDown": "the API is degraded",
+      "storageShare": "{pct}% of {mb} MB",
+      "p75Hint": "p75, every portfolio",
+      "perDay": "a day, last {days} days",
+      "errorsGrouped": "grouped by message",
+      "errorsMore": "{count} more, grouped",
+      "renderOff": "no renderer here",
+      "renderStale": "pages going stale",
+      "renderOk": "{count} recent, none failing"
     },
     "audit": {
       "title": "Audit",
-      "none": "Nothing has happened yet"
+      "none": "Nothing has happened yet",
+      "noneDesc": "Suspensions, erasures and exports are recorded here."
     },
     "config": {
       "title": "Platform config",
@@ -770,7 +976,14 @@
       "reserved": "Reserved addresses",
       "privacy": "Privacy posture",
       "erasureDeadline": "Erasure deadline",
-      "refuses": "What the collector refuses"
+      "refuses": "What the collector refuses",
+      "imageHint": "what is serving requests",
+      "reservedHint": "refused as an address",
+      "deadlineHint": "clock on every request",
+      "runtimeHint": "what this process runs",
+      "addressHint": "enforced on every write",
+      "ingestHint": "by construction",
+      "privacyHint": "what is kept, how long"
     },
     "erasure": {
       "title": "Erasure queue",
@@ -781,7 +994,22 @@
       "failed": "Failed",
       "requests": "Requests",
       "none": "No erasure is waiting.",
-      "runNow": "Run now"
+      "runNow": "Run now",
+      "askedBy": "asked by {actor}",
+      "noneDesc": "A request gets {days} days. Queue one from an account, run the cascade, and this screen records what each store removed.",
+      "waitingHint": "not yet run",
+      "dueHint": "the clock is short",
+      "completedHint": "cascade finished",
+      "failedHint": "needs a retry",
+      "queueHint": "{count} in the queue",
+      "daysLeft": "{days}d left",
+      "overdue": "{days}d overdue",
+      "cascadeNotRun": "nothing removed yet",
+      "state": {
+        "queued": "queued",
+        "done": "done",
+        "failed": "failed"
+      }
     },
     "accountAudited": "Opening this page is itself recorded, so the next visit will show one entry.",
     "auditBlurb": "Every platform action, append-only. Nothing here can be edited or removed.",
@@ -811,13 +1039,29 @@
     "backToSignIn": "Back to sign in",
     "loadingScreen": "Loading screen",
     "month": "Month",
-    "year": "Year"
+    "year": "Year",
+    "browse": "Browse",
+    "hide": "Hide",
+    "toConfirm": "to confirm",
+    "iconFallback": "The portfolio has no icon called “{name}” — it shows a neutral one instead.",
+    "previewWaiting": "Waiting for {origin} — the portfolio has to be running for the preview to render.",
+    "dropOffFrom": "Drop-off from {step}",
+    "notEnoughData": "Not enough data yet",
+    "noTraffic": "No traffic recorded yet",
+    "desktop": "Desktop",
+    "mobile": "Mobile",
+    "nothingConfigured": "Nothing configured",
+    "topSources": "top sources",
+    "byDevice": "by device",
+    "byBrowser": "by browser",
+    "byLocale": "by locale"
   },
   "blurbs": {
     "history": "Every save writes the previous document here before it leaves the browser.",
     "locales": "Every locale here costs one translation per entry — drag a row to reorder.",
     "login": "Your first sign-in creates your portfolio.",
-    "loginMisconfigured": "This build has no Cognito client id. Set"
+    "loginMisconfigured": "This build has no Cognito client id. Set",
+    "loginMisconfiguredEnd": "before signing in."
   },
   "vocabularies": {
     "honors": {
@@ -861,5 +1105,29 @@
     "school": "School – University : Institute – TU Berlin",
     "issuer": "Issuer, platform in brackets : Acme (Coursera)",
     "org": "Organisation : Robotics Club"
+  },
+  "validation": {
+    "required": "{label} is required",
+    "tooLong": "{label} must be at most {max} characters",
+    "badFormat": "{label} has an invalid format",
+    "notEmail": "{label} must be an email address",
+    "notUrl": "{label} must be an absolute http(s) URL",
+    "notHttps": "{label} must use https",
+    "tooSmall": "{label} must be at least {min}",
+    "tooLarge": "{label} must be at most {max}",
+    "notWhole": "{label} must be a whole number",
+    "tooMany": "{label} allows at most {max} entries",
+    "entryTooLong": "Each {label} entry must be at most {max} characters",
+    "noLanguage": "At least one language must be filled in"
+  },
+  "groupHints": {
+    "Identity": "your name, and the line under it",
+    "Hero": "the words that open the page",
+    "About": "the paragraphs beside your portrait",
+    "Career": "the role, and the years it covers",
+    "Education": "the school, and what it awarded",
+    "Details": "everything this entry shows",
+    "Contact": "the addresses visitors write to",
+    "Location": "the city the page shows"
   }
 }

@@ -26,51 +26,51 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.health.image')"
         :value="image"
-        hint="what is serving requests"
+        :hint="t('platform.config.imageHint')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.config.reserved')"
         :value="String(config.reservedSlugs.length)"
-        hint="refused as a portfolio address"
+        :hint="t('platform.config.reservedHint')"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.config.erasureDeadline')"
         :value="`${config.limits.erasureDeadlineDays}d`"
-        hint="clock on every request"
+        :hint="t('platform.config.deadlineHint')"
       />
 
       <PanelCard
         class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.config.runtime')"
-        hint="what this process is actually running"
+        :hint="t('platform.config.runtimeHint')"
       >
-        <ConfigRows :rows="config.runtime" />
+        <ConfigRows :rows="config.runtime" :empty="t('ui.nothingConfigured')" />
       </PanelCard>
 
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.config.addressRules')"
-        hint="enforced on every write"
+        :hint="t('platform.config.addressHint')"
       >
-        <ConfigRows :rows="addressRules" />
+        <ConfigRows :rows="addressRules" :empty="t('ui.nothingConfigured')" />
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.config.refuses')"
-        hint="ingest rules, by construction"
+        :hint="t('platform.config.ingestHint')"
       >
-        <ConfigRows :rows="config.ingest" />
+        <ConfigRows :rows="config.ingest" :empty="t('ui.nothingConfigured')" />
       </PanelCard>
 
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.config.privacy')"
-        hint="what is kept, and for how long"
+        :hint="t('platform.config.privacyHint')"
       >
-        <ConfigRows :rows="config.privacy" />
+        <ConfigRows :rows="config.privacy" :empty="t('ui.nothingConfigured')" />
       </PanelCard>
     </div>
   </div>

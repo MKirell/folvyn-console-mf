@@ -144,7 +144,7 @@ test.describe('operator overview', () => {
       .filter({ has: page.getByRole('heading', { level: 2, name: 'From sign-up to an audience' }) })
 
     await expect(panel.getByRole('listitem')).toHaveCount(3)
-    await expect(panel.getByText('published a portfolio')).toBeVisible()
+    await expect(panel.getByText('published a portfolio', { exact: true })).toBeVisible()
   })
 
   test('never scrolls sideways, at any width', async ({ page }) => {

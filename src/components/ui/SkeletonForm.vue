@@ -10,6 +10,7 @@
 
     <div class="space-y-4">
       <PanelCard v-for="group in GROUPS" :key="group.title" :title="group.title">
+        <template #hint><SkeletonBar class="ms-auto h-[9px] w-32" /></template>
         <div class="grid grid-cols-3 gap-x-4 gap-y-3.5 max-900:grid-cols-2 max-700:grid-cols-1">
           <div v-for="field in group.fields" :key="field" class="space-y-1.5">
             <SkeletonBar class="h-[9px] w-20" />
@@ -19,6 +20,7 @@
       </PanelCard>
 
       <PanelCard :title="t('views.singleton.translations')">
+        <template #hint><SkeletonBar class="ms-auto h-[9px] w-32" /></template>
         <div class="space-y-3">
           <div v-for="row in 3" :key="row" class="space-y-1.5">
             <SkeletonBar class="h-[9px] w-24" />
@@ -34,13 +36,14 @@
 import AppButton from '@/components/ui/AppButton.vue'
 import PanelCard from '@/components/ui/PanelCard.vue'
 import SkeletonBar from '@/components/ui/SkeletonBar.vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 withDefaults(defineProps<{ heading?: string; blurb?: string }>(), { heading: '', blurb: '' })
 
 const { t } = useI18n()
-const GROUPS = [
-  { title: 'Details', fields: 6 },
-  { title: 'Files', fields: 2 },
-]
+const GROUPS = computed(() => [
+  { title: t('groups.Details'), fields: 6 },
+  { title: t('groups.Files'), fields: 2 },
+])
 </script>

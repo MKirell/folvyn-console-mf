@@ -11,19 +11,23 @@
       <Menu :size="18" :stroke-width="2" />
     </button>
 
-    <h1 class="min-w-0 shrink truncate font-disp text-[1.02rem] font-semibold tracking-tight">
+    <h1
+      class="min-w-0 shrink truncate font-disp text-[1.02rem] font-semibold tracking-tight"
+      :class="tools ? 'max-700:hidden' : ''"
+    >
       {{ title }}
     </h1>
 
     <span
       v-if="ui.dirty"
       class="flex shrink-0 items-center gap-1.5 rounded-full bg-gold/14 px-2.5 py-[3px] font-mono text-[0.62rem] uppercase tracking-[0.12em] text-gold"
+      :class="tools ? 'max-700:hidden' : ''"
     >
       <span class="h-1.5 w-1.5 rounded-full bg-gold animate-breathe"></span>
       unsaved
     </span>
 
-    <div class="ms-auto flex shrink-0 items-center gap-1.5">
+    <div class="ms-auto flex shrink-0 items-center gap-1.5" :class="tools ? '' : 'max-700:hidden'">
       <div
         v-if="locales.length > 1"
         class="flex items-center gap-0.5 rounded-[9px] border border-line/8 bg-surface p-[3px]"
@@ -117,13 +121,28 @@
         <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-muted">api</span>
       </span>
     </div>
+
+    <button
+      type="button"
+      class="hidden max-700:grid ms-auto h-8 w-8 shrink-0 place-items-center rounded-[8px] text-muted transition-colors hover:bg-bg-tint hover:text-ink"
+      :aria-label="tools ? t('topbar.hideTools') : t('topbar.showTools')"
+      :aria-expanded="tools"
+      @click="tools = !tools"
+    >
+      <ChevronLeft
+        :size="18"
+        :stroke-width="2"
+        class="transition-transform duration-300 motion-reduce:transition-none"
+        :class="tools ? 'rotate-180' : ''"
+      />
+    </button>
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { ExternalLink, Menu, Search, Undo2 } from '@lucide/vue'
+import { ChevronLeft, ExternalLink, Menu, Search, Undo2 } from '@lucide/vue'
 import { COLLECTIONS } from '@/registry/collections'
 import { useAuthStore } from '@/stores/auth'
 import { useOwnerStore } from '@/stores/owner'
@@ -142,6 +161,8 @@ const content = useContentStore()
 const history = useHistoryStore()
 const ui = useUiStore()
 const { state } = useHealth()
+
+const tools = ref(false)
 
 const locales = computed(() => content.locales)
 const editingLang = computed(() => ui.editingLang || content.referenceLang)

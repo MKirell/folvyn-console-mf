@@ -25,7 +25,8 @@
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveAnyway": "Quitter sans enregistrer",
     "on": "Activé",
-    "off": "Désactivé"
+    "off": "Désactivé",
+    "and": "et"
   },
   "nav": {
     "aria": "Navigation de la console",
@@ -59,7 +60,9 @@
     "openUrl": "Ouvrir {url}",
     "apiUp": "L’API du portfolio répond",
     "apiDown": "L’API du portfolio ne répond pas",
-    "apiChecking": "Vérification de l’API du portfolio"
+    "apiChecking": "Vérification de l’API du portfolio",
+    "showTools": "Afficher la barre d’outils",
+    "hideTools": "Masquer la barre d’outils"
   },
   "palette": {
     "aria": "Palette de commandes",
@@ -69,7 +72,8 @@
     "entries": "Entrées",
     "empty": "Aucun résultat",
     "scopeScreen": "écran",
-    "scopeEntry": "entrée"
+    "scopeEntry": "entrée",
+    "noMatch": "Aucun résultat pour « {query} »."
   },
   "loading": {
     "screen": "Chargement de l’écran",
@@ -102,7 +106,7 @@
       "emptyDesc": "Tout ce que le portfolio affiche dans cette section vient d’ici.",
       "createFirst": "Créer le premier",
       "noMatchTitle": "Aucun résultat pour ce filtre",
-      "noMatchDesc": "Videz la recherche ou le filtre de traduction.",
+      "noMatchDesc": "Effacez la recherche ou le filtre de traduction.",
       "hasAttachments": "Contient des pièces jointes",
       "shown": "{shown} sur {total} affichés · glissez une ligne pour réordonner",
       "deleteTitle": "Supprimer ce {singular} ?",
@@ -138,7 +142,7 @@
       "tabFields": "Champs",
       "tabPreview": "Aperçu en direct",
       "files": "Fichiers",
-      "filesHint": "stockés sous forme de clés, servis depuis le bucket",
+      "filesHint": "Le document qui justifie cette entrée.",
       "translations": "Traductions",
       "translationsHint": "{count} langues",
       "previewHint": "tel que {lang} le lit",
@@ -151,7 +155,7 @@
       "saveFailed": "Échec de l’enregistrement"
     },
     "entity": {
-      "filesHint": "stockés sous forme de clés, servis depuis le bucket",
+      "filesHint": "Le document qui justifie cette entrée.",
       "complete": "{done}/{total} langues complètes",
       "gone": "Cet élément ({singular}) n’existe plus",
       "goneDesc": "Il a peut-être été supprimé dans un autre onglet.",
@@ -162,15 +166,19 @@
       "unknownTitle": "Collection inconnue",
       "unknownDesc": "La barre latérale liste tous les écrans modifiables.",
       "goneDesc2": "Il a peut-être été supprimé dans un autre onglet.",
-      "backToList": "Retour à la liste"
+      "backToList": "Retour à la liste",
+      "saveFailed": "L’enregistrement a échoué"
     },
     "login": {
       "title": "Console Folvyn",
-      "missingConfig": "La connexion n’est pas configurée"
+      "missingConfig": "La connexion n’est pas configurée",
+      "signIn": "connexion",
+      "continueWith": "Continuer avec {provider}"
     },
     "callback": {
       "failed": "La connexion n’a pas abouti",
-      "working": "Connexion en cours…"
+      "working": "Connexion en cours…",
+      "exchangeFailed": "Le code d’autorisation n’a pas pu être échangé."
     },
     "notFound": {
       "title": "Il n’y a rien à cette adresse",
@@ -204,23 +212,24 @@
       "missingRepo": "que votre portfolio ne sert pas",
       "repoTitle": "Servis depuis le dépôt de votre portfolio",
       "repoDesc": "Aucun bucket n’est configuré : voici les fichiers que votre portfolio sert depuis son propre dossier public — ils sont en lecture seule ici.",
-      "repoWritableDesc": "Aucun bucket n’est configuré : les envois et les suppressions écrivent directement dans le dossier public local.",
+      "repoWritableDesc": "Aucun bucket n’est configuré : les imports et les suppressions écrivent directement dans le dossier public local.",
       "repoReadOnly": "Lecture seule — ce fichier vit dans le dépôt",
       "emptyRepoTitle": "Aucun fichier référencé",
       "emptyRepoDesc": "Renseignez un nom de fichier dans un champ de type fichier et il apparaîtra ici.",
-      "upload": "Envoyer",
+      "upload": "Importer",
       "open": "Ouvrir",
       "copyKey": "Copier la clé",
       "stillReferenced": "Encore référencé",
       "emptyTitle": "Aucun fichier ici",
-      "emptyDesc": "Déposez des fichiers n’importe où dans ce panneau, ou utilisez le bouton d’envoi.",
+      "emptyDesc": "Déposez des fichiers n’importe où dans ce panneau, ou utilisez le bouton d’import.",
       "deleteTitle": "Supprimer ce fichier ?",
-      "uploaded": "{name} envoyé",
-      "uploadFailed": "Échec de l’envoi de {name}",
+      "uploaded": "{name} importé",
+      "uploadFailed": "Échec de l’import de {name}",
       "keyCopied": "Clé copiée",
       "noClipboard": "Le presse-papiers n’est pas disponible",
       "deleted": "Fichier supprimé",
-      "deleteFailed": "Échec de la suppression"
+      "deleteFailed": "Échec de la suppression",
+      "referenced": "{count} fichier référencé | {count} fichiers référencés"
     },
     "history": {
       "title": "Historique",
@@ -294,7 +303,14 @@
         "enhancedLabel": "Étendue — nécessite une bannière de consentement",
         "enhancedDesc": "Ajoute les visiteurs récurrents et un vrai comptage unique par document, ce qui exige un identifiant durable. Vos visiteurs voient une bannière qu’ils peuvent refuser, et la responsabilité juridique vous revient."
       },
-      "blurb": "Votre adresse, son état de publication, et tout ce que vous seul pouvez décider."
+      "blurb": "Votre adresse, son état de publication, et tout ce que vous seul pouvez décider.",
+      "slugFree": "{slug} est disponible",
+      "addressNote": "Déduite de votre nom à votre première connexion. Vous pouvez la changer, mais tout lien déjà partagé cessera de fonctionner.",
+      "slugPlaceholder": "votre-nom",
+      "addressHint": "où vit votre portfolio",
+      "publishingHint": "qui peut le lire",
+      "measurementHint": "ce que vos visiteurs laissent",
+      "dangerHint": "aucun retour en arrière ici"
     },
     "insights": {
       "title": "Statistiques",
@@ -325,15 +341,15 @@
       "loadSpeed": "Vitesse de chargement",
       "languages": "Langues",
       "hintSections": "part des sessions atteignant chaque section",
-      "hintScroll": "part des sessions atteignant chaque profondeur",
+      "hintScroll": "par profondeur",
       "hintCountries": "principaux pays",
       "hintDocuments": "ouvertures sur la période",
       "hintOutbound": "liens sortants",
       "hintVitals": "ce que les visiteurs attendent",
       "hintShell": "{rate} % des visiteurs",
       "hintContact": "{rate} % des sessions",
-      "cardsHintEmpty": "quelques visites nécessaires",
-      "cardsHint": "ouvert, sur le nombre de fois où il a été vu",
+      "cardsHintEmpty": "quelques visites de plus",
+      "cardsHint": "ouvert / vu",
       "bestProject": "ouvert par {rate} % de ceux qui le voient. À mettre en premier.",
       "emptyBrowsers": "Pas encore de données navigateur",
       "emptyCountries": "Pas encore de données pays",
@@ -352,11 +368,18 @@
       "verdictNeedsWork": "à améliorer",
       "advicePending": "Quelques visites sont nécessaires avant d’avoir quelque chose à lire.",
       "adviceGood": "Votre contenu principal s’affiche bien avant les deux secondes et demie que la plupart des visiteurs acceptent d’attendre.",
-      "adviceSlow": "C’est plus lent que ce que la plupart des visiteurs attendront — le plus souvent une image trop lourde, que vous pouvez remplacer par un fichier plus léger.",
+      "adviceSlow": "Plus lent que ce que la plupart des visiteurs acceptent. Souvent une image trop lourde.",
       "reviewImages": "Revoir vos images",
       "neverOpened": "Jamais ouvert :",
       "andMore": " et {count} de plus",
-      "weigh": "À mettre en balance avec le reste"
+      "weigh": "À mettre en balance avec le reste",
+      "depth": {
+        "past": "Au-delà de l’accroche",
+        "halfway": "À mi-hauteur",
+        "most": "Presque en bas",
+        "end": "Jusqu’au bout",
+        "empty": "Personne n’a encore fait défiler"
+      }
     },
     "legal": {
       "documents": "Documents légaux",
@@ -364,7 +387,7 @@
       "questionsTo": "Questions à"
     },
     "refused": {
-      "title": "Cette console n'a pas pu être ouverte.",
+      "title": "Cette console n’a pas pu être ouverte.",
       "description": "Cet environnement est réservé à ses testeurs.",
       "signOut": "Se déconnecter"
     }
@@ -388,55 +411,98 @@
     "person": {
       "label": "Identité",
       "singular": "Identité",
-      "blurb": "Qui vous êtes : l’identité, les paragraphes à propos et le texte de contact."
+      "blurb": "Qui vous êtes : l’identité, les paragraphes à propos et le texte de contact.",
+      "filesHint": "Votre portrait, et le CV proposé dans chaque langue.",
+      "groupHints": {
+        "Identity": "Votre nom, votre rattachement, et la ligne en dessous.",
+        "Contact": "Où l’on vous écrit, et les profils que l’on ouvre.",
+        "Location": "La ville et le pays où la page vous situe.",
+        "About": "Les paragraphes qui accompagnent votre portrait."
+      }
     },
     "profile": {
       "label": "Accroche",
       "singular": "Accroche",
-      "blurb": "L’écran d’ouverture : les sous-titres qui s’écrivent seuls, le slogan et les puces."
+      "blurb": "L’écran d’ouverture : les sous-titres qui s’écrivent seuls, le slogan et les étiquettes.",
+      "groupHints": {
+        "Hero": "Les sous-titres qui s’écrivent seuls, et la ligne en dessous."
+      }
     },
     "locale": {
       "label": "Langues du site",
-      "singular": "Langue du site"
+      "singular": "Langue du site",
+      "groupHints": {
+        "Details": "La langue, son drapeau, et si le site la propose."
+      }
     },
     "experience": {
       "label": "Expériences",
-      "singular": "expérience"
+      "singular": "expérience",
+      "filesHint": "Le certificat de travail qui atteste ce poste.",
+      "groupHints": {
+        "Details": "Le poste, l’entreprise, et ce que vous y avez fait."
+      }
     },
     "project": {
       "label": "Projets",
-      "singular": "projet"
+      "singular": "projet",
+      "groupHints": {
+        "Details": "Ce que vous avez construit, quand, et où le trouver."
+      }
     },
     "skillCategory": {
       "label": "Compétences",
-      "singular": "catégorie de compétences"
+      "singular": "catégorie de compétences",
+      "groupHints": {
+        "Details": "Un nom de catégorie, son icône, et les technologies qu’elle regroupe."
+      }
     },
     "degree": {
       "label": "Diplômes",
-      "singular": "diplôme"
+      "singular": "diplôme",
+      "filesHint": "Le diplôme qui atteste cette formation.",
+      "groupHints": {
+        "Details": "Le diplôme, l’établissement, et les années couvertes."
+      }
     },
     "certification": {
       "label": "Certifications",
-      "singular": "certification"
+      "singular": "certification",
+      "filesHint": "Le certificat que les visiteurs ouvrent depuis cette carte.",
+      "groupHints": {
+        "Details": "Ce qui a été certifié, par qui, et quand."
+      }
     },
     "spokenLanguage": {
       "label": "Langues parlées",
-      "singular": "langue parlée"
+      "singular": "langue parlée",
+      "filesHint": "La certification de langue qui justifie ce niveau.",
+      "groupHints": {
+        "Details": "La langue, et à quel niveau vous la parlez."
+      }
     },
     "volunteering": {
       "label": "Bénévolat",
-      "singular": "engagement bénévole"
+      "singular": "engagement bénévole",
+      "filesHint": "L’attestation qui justifie cet engagement.",
+      "groupHints": {
+        "Details": "L’organisation, votre rôle, et ce qui en est sorti."
+      }
     },
     "award": {
       "label": "Distinctions",
-      "singular": "distinction"
+      "singular": "distinction",
+      "filesHint": "Les photos que les visiteurs ouvrent depuis cette distinction.",
+      "groupHints": {
+        "Details": "Ce que vous avez remporté, où, et quand."
+      }
     }
   },
   "navGroups": {
     "Identity": "Identité",
     "Career": "Parcours",
     "Education": "Formation",
-    "Achievements": "Distinctions",
+    "Achievements": "Réalisations",
     "Workshop": "Atelier",
     "Platform": "Plateforme"
   },
@@ -477,7 +543,7 @@
     "aboutParagraphs": "Paragraphes à propos",
     "subtitles": "Sous-titres",
     "tagline": "Slogan",
-    "accentTags": "Tags mis en avant",
+    "accentTags": "Étiquettes mises en avant",
     "code": "Langue",
     "label": "Libellé court",
     "flagCode": "Pays",
@@ -527,7 +593,7 @@
           "bullets": [
             "Un compte Cognito, créé lors de votre première connexion avec Google. Il contient votre e-mail, votre nom et l’URL de votre photo de profil ; Google est le seul endroit où votre mot de passe existe — cette plateforme ne le voit jamais.",
             "Un enregistrement propriétaire : l’identifiant Cognito, votre adresse publique, l’état de publication du portfolio et votre choix de mesure. Votre e-mail n’y figure que pour faciliter le support, et n’est jamais recoupé avec autre chose.",
-            "Le contenu du portfolio que vous saisissez, et les fichiers que vous envoyez."
+            "Le contenu du portfolio que vous saisissez, et les fichiers que vous importez."
           ]
         },
         {
@@ -603,7 +669,7 @@
         {
           "heading": "Ce dont vous êtes responsable",
           "bullets": [
-            "Que le contenu soit le vôtre, y compris chaque image et chaque document que vous envoyez.",
+            "Que le contenu soit le vôtre, y compris chaque image et chaque document que vous importez.",
             "Qu’il soit licite, et qu’il ne s’agisse pas du travail d’autrui présenté comme le vôtre.",
             "Conserver l’accès à votre compte Google, puisque c’est la seule porte d’entrée."
           ]
@@ -645,22 +711,24 @@
     "chooseDocument": "Choisir un document",
     "chooseImage": "Choisir une image",
     "noMatchTitle": "Aucun fichier correspondant",
-    "noMatchDesc": "Envoyez-en un, ou videz le filtre.",
-    "uploaded": "Fichier envoyé",
-    "uploadFailed": "Échec de l’envoi",
+    "noMatchDesc": "Importez-en un, ou effacez le filtre.",
+    "uploaded": "Fichier importé",
+    "uploadFailed": "Échec de l’import",
     "openFile": "Ouvrir le fichier",
     "clear": "Effacer",
     "clearFile": "Retirer le fichier",
     "choose": "Choisir…",
     "chooseFile": "Choisir un fichier",
     "fileKey": "Clé du fichier",
-    "upload": "Envoyer",
+    "upload": "Importer",
     "loading": "Chargement des fichiers…",
     "unreachable": "Vos fichiers n’ont pas pu être listés",
     "unreachableDesc": "{error} — vous pouvez tout de même saisir un nom de fichier ci-dessous. La base enregistre la clé, la valeur reste donc valable.",
-    "repoNote": "Voici les fichiers que votre portfolio sert depuis son dossier public. L’envoi nécessite un bucket, qui n’est pas encore configuré — vous pouvez saisir une clé ci-dessous.",
-    "repoWritableNote": "Voici les fichiers que votre portfolio sert en local. L’envoi écrit dans son dossier public, sur cette machine uniquement.",
-    "useKey": "Utiliser la clé"
+    "repoNote": "Voici les fichiers que votre portfolio sert depuis son dossier public. L’import nécessite un bucket, qui n’est pas encore configuré — vous pouvez saisir une clé ci-dessous.",
+    "repoWritableNote": "Voici les fichiers que votre portfolio sert en local. L’import écrit dans son dossier public, sur cette machine uniquement.",
+    "useKey": "Utiliser la clé",
+    "keyPlaceholder": "ou saisissez une clé, par exemple degree-bachelor-2024.pdf",
+    "removeFile": "Retirer {key}"
   },
   "list": {
     "moveUp": "Monter",
@@ -689,7 +757,13 @@
       "whichBrowser": "Quel navigateur",
       "whichLanguage": "Quelle langue",
       "traffic": "Trafic",
-      "open": "Ouvrir →"
+      "open": "Ouvrir →",
+      "vsPrevious": "vs {days} jours précédents",
+      "bounceHint": "moins de dix secondes",
+      "funnelHint": "tous les portfolios, cumulés",
+      "topCountries": "principaux pays",
+      "perLocale": "sessions par langue",
+      "visitorsUnit": "visiteurs"
     },
     "overview": {
       "title": "Vue d’ensemble",
@@ -706,7 +780,64 @@
       "noVisit": "Aucun portfolio n’a encore reçu de visite.",
       "draft": "Brouillons",
       "suspended": "Suspendus",
-      "activation": "De l’inscription à une audience"
+      "activation": "De l’inscription à une audience",
+      "blurb": "Toute la plateforme d’un coup d’œil. Le contenu en brouillon reste privé à qui l’a écrit.",
+      "noAccountDesc": "Aucun compte inscrit.",
+      "liveHint": "{pct} % en ligne",
+      "publishedHint": "publiés",
+      "draftHint": "jamais publiés",
+      "suspendedHint": "retenus par un exploitant",
+      "statesHint": "par état",
+      "signupsHint": "nouveaux comptes",
+      "signupsRecent": "7 derniers jours",
+      "signupsEarlier": "plus tôt ce mois-ci",
+      "signupsUnit": "comptes",
+      "signupsBusy": "La plupart des inscriptions du mois sont arrivées ces sept derniers jours.",
+      "signupsSteady": "Les inscriptions arrivent à un rythme régulier ce mois-ci.",
+      "signupsQuiet": "Les sept derniers jours ont été plus calmes que le reste du mois.",
+      "noSignups": "Personne ne s’est inscrit le mois dernier.",
+      "stepSignedUp": "inscrits",
+      "stepPublished": "ont publié un portfolio",
+      "stepVisited": "ont reçu une visite",
+      "activationHint": "{pct} % touchent un public",
+      "activationHintNone": "aucun compte",
+      "whereFromHint": "sources",
+      "funnelHint": "par section",
+      "busyHint": "sessions par jour, {days} jours",
+      "busiestHint": "{count} avec du trafic",
+      "attentionClear": "rien à signaler",
+      "attentionHint": "{needs} sur {total} à traiter",
+      "attentionMore": "{count} de plus à traiter — ouvrez Santé ou Portfolios.",
+      "attentionAllPassed": "Tous les contrôles passent sur les {days} derniers jours.",
+      "attentionOthersClear": "{count} autres contrôles au vert.",
+      "checks": {
+        "suspended": {
+          "label": "Portfolios suspendus",
+          "clear": "Aucun portfolio n’est retenu hors ligne par un exploitant.",
+          "raised": "{count} retenus hors ligne, invisibles aux visiteurs jusqu’à rétablissement."
+        },
+        "errors": {
+          "label": "Erreurs JavaScript",
+          "clear": "Aucun portfolio n’a signalé d’erreur de script sur cette période.",
+          "raised": "{count} messages distincts signalés. Santé nomme les comptes touchés par chacun."
+        },
+        "speed": {
+          "label": "Vitesse de chargement",
+          "pending": "Pas encore mesurée — quelques visites de plus sont nécessaires.",
+          "clear": "Le contenu principal arrive en {seconds} s, sous le budget de {budget} s.",
+          "raised": "Le contenu principal met {seconds} s, au-delà du budget de {budget} s. Le plus souvent des photos importées."
+        },
+        "activation": {
+          "label": "Activation",
+          "clear": "Tous les comptes ont publié. L’activation est de {pct} %.",
+          "raised": "{count} comptes n’ont jamais publié. L’activation est de {pct} %."
+        },
+        "idle": {
+          "label": "Publiés mais jamais visités",
+          "clear": "Chaque portfolio publié a été visité au moins une fois.",
+          "raised": "{count} portfolios publiés n’ont reçu aucune session. Vérifiez que l’adresse répond."
+        }
+      }
     },
     "portfolios": {
       "title": "Portfolios",
@@ -719,7 +850,62 @@
       "suspend": "Suspendre",
       "restore": "Rétablir",
       "queueErasure": "Mettre en file d’effacement",
-      "sessionsWindow": "Visiteurs sur les 30 derniers jours — un par personne et par jour"
+      "sessionsWindow": "Visiteurs sur les 30 derniers jours — un par personne et par jour",
+      "blurb": "Tous les comptes, et ceux qui méritent un second regard. Le contenu en brouillon reste privé — la suspension met un portfolio hors ligne, elle ne l’ouvre jamais.",
+      "segment": {
+        "all": {
+          "label": "Tous",
+          "hint": "",
+          "emptyTitle": "Aucun portfolio ne correspond",
+          "emptyBody": "Personne ne s’est inscrit sous cette recherche."
+        },
+        "published": {
+          "label": "Publiés",
+          "hint": "",
+          "emptyTitle": "Rien n’est publié",
+          "emptyBody": "Aucun compte n’a encore rendu son portfolio public."
+        },
+        "draft": {
+          "label": "Brouillons",
+          "hint": "",
+          "emptyTitle": "Aucun brouillon",
+          "emptyBody": "Tous les comptes ont publié."
+        },
+        "suspended": {
+          "label": "Suspendus",
+          "hint": "",
+          "emptyTitle": "Rien n’est suspendu",
+          "emptyBody": "Aucun exploitant n’a mis un portfolio hors ligne."
+        },
+        "recent": {
+          "label": "Publiés récemment",
+          "hint": "Rendus publics ces quatorze derniers jours, la période où un premier regard compte le plus.",
+          "emptyTitle": "Rien de nouveau",
+          "emptyBody": "Aucun portfolio n’est devenu public ces deux dernières semaines."
+        },
+        "thin": {
+          "label": "Vides",
+          "hint": "Publiés avec presque rien d’écrit. Le plus souvent une inscription abandonnée plutôt qu’un abus.",
+          "emptyTitle": "Aucun portfolio vide",
+          "emptyBody": "Chaque portfolio publié porte un vrai contenu."
+        },
+        "silent": {
+          "label": "Jamais visités",
+          "hint": "Publiés, mais aucune session enregistrée. Vérifiez que l’adresse répond.",
+          "emptyTitle": "Tout reçoit du trafic",
+          "emptyBody": "Chaque portfolio publié a été visité au moins une fois."
+        },
+        "risky": {
+          "label": "Adresse ambiguë",
+          "hint": "À une lettre d’un mot réservé par la plateforme. Non bloquée, mais à regarder.",
+          "emptyTitle": "Aucune adresse ambiguë",
+          "emptyBody": "Aucune adresse ne frôle un mot réservé."
+        }
+      },
+      "eraseTitle": "Mettre un effacement en file ?",
+      "suspendTitle": "Suspendre ce portfolio ?",
+      "eraseMessage": "/{slug} rejoint la file d’effacement avec un délai de {days} jours. Rien n’est supprimé tant que la cascade n’a pas été lancée depuis cet écran, et la demande est consignée dans tous les cas.",
+      "suspendMessage": "/{slug} passe hors ligne immédiatement. Le propriétaire garde son contenu et peut être rétabli à tout moment."
     },
     "account": {
       "notFound": "Compte introuvable",
@@ -730,13 +916,21 @@
       "documents": "Documents",
       "status": "État",
       "measurement": "Mesure",
-      "noOperator": "Aucun exploitant n’est jamais intervenu sur ce compte."
+      "noOperator": "Aucun exploitant n’est jamais intervenu sur ce compte.",
+      "allAccounts": "Tous les comptes"
     },
     "trafficScreen": {
       "blurb": "L’audience de tous les portfolios, cumulée. La forme du produit dans son ensemble.",
       "none": "Pas encore de trafic",
       "comeBack": "Est-ce qu’ils reviennent",
-      "noReturn": "Personne n’est encore revenu — cela se remplit quand un propriétaire active la mesure étendue et qu’un visiteur accepte"
+      "noReturn": "Personne n’est encore revenu — cela se remplit quand un propriétaire active la mesure étendue et qu’un visiteur accepte",
+      "noneDesc": "Aucun portfolio n’a été visité sur cette période.",
+      "returning": "visiteurs de retour",
+      "firstVisit": "première visite",
+      "consentHint": "nécessite le consentement du visiteur",
+      "returningStrong": "La plupart des visiteurs sont déjà venus.",
+      "returningEven": "Autant de retours que de premières visites.",
+      "returningWeak": "Presque tout le monde arrive pour la première fois."
     },
     "health": {
       "blurb": "La plateforme répond-elle, le pipeline écrit-il, et la rétention est-elle vraiment appliquée.",
@@ -746,18 +940,30 @@
       "errorRate": "Taux d’erreur",
       "atlasTier": "Offre gratuite Atlas",
       "errorsPerSession": "Erreurs JavaScript par session",
-      "ttl": "Index TTL et horloge d’agrégation",
+      "ttl": "TTL et agrégation",
       "dataIndexes": "Données et index",
       "rollupLag": "Retard d’agrégation",
       "beacons": "Balises refusées",
       "noContent": "Aucun contenu stocké",
       "nothingWritten": "Le collecteur n’a rien écrit",
       "noErrors": "Aucun portfolio n’a signalé d’erreur JavaScript.",
-      "renders": "Rendus"
+      "renders": "Rendus",
+      "noErrorsDesc": "Un déploiement cassé fait une ligne, pas une par compte.",
+      "dbUp": "requêtes acceptées",
+      "dbDown": "l’API est dégradée",
+      "storageShare": "{pct} % de {mb} Mo",
+      "p75Hint": "p75, tous portfolios",
+      "perDay": "par jour, {days} jours",
+      "errorsGrouped": "groupées par message",
+      "errorsMore": "{count} de plus, groupées",
+      "renderOff": "aucun rendu ici",
+      "renderStale": "pages qui vieillissent",
+      "renderOk": "{count} récents, aucun échec"
     },
     "audit": {
       "title": "Audit",
-      "none": "Rien ne s’est encore produit"
+      "none": "Rien ne s’est encore produit",
+      "noneDesc": "Les suspensions, effacements et exports sont consignés ici."
     },
     "config": {
       "title": "Configuration",
@@ -770,7 +976,14 @@
       "reserved": "Adresses réservées",
       "privacy": "Posture de confidentialité",
       "erasureDeadline": "Délai d’effacement",
-      "refuses": "Ce que le collecteur refuse"
+      "refuses": "Ce que le collecteur refuse",
+      "imageHint": "ce qui répond aux requêtes",
+      "reservedHint": "refusées comme adresse",
+      "deadlineHint": "délai sur chaque demande",
+      "runtimeHint": "ce que ce processus exécute",
+      "addressHint": "appliqué à chaque écriture",
+      "ingestHint": "par construction",
+      "privacyHint": "ce qui est gardé, combien de temps"
     },
     "erasure": {
       "title": "File d’effacement",
@@ -781,7 +994,22 @@
       "failed": "Échouées",
       "requests": "Demandes",
       "none": "Aucun effacement en attente.",
-      "runNow": "Lancer"
+      "runNow": "Lancer",
+      "askedBy": "demandé par {actor}",
+      "noneDesc": "Une demande dispose de {days} jours. Mettez-en une en file depuis un compte, lancez la cascade, et cet écran consigne ce que chaque magasin a supprimé.",
+      "waitingHint": "pas encore lancé",
+      "dueHint": "délai court",
+      "completedHint": "cascade terminée",
+      "failedHint": "à relancer",
+      "queueHint": "{count} en file",
+      "daysLeft": "{days} j restants",
+      "overdue": "{days} j de retard",
+      "cascadeNotRun": "rien de supprimé",
+      "state": {
+        "queued": "en file",
+        "done": "terminé",
+        "failed": "échoué"
+      }
     },
     "accountAudited": "L’ouverture de cette page est elle-même consignée : la prochaine visite affichera une entrée.",
     "auditBlurb": "Chaque action de la plateforme, en ajout seul. Rien ici ne peut être modifié ni supprimé.",
@@ -811,13 +1039,29 @@
     "backToSignIn": "Retour à la connexion",
     "loadingScreen": "Chargement de l’écran",
     "month": "Mois",
-    "year": "Année"
+    "year": "Année",
+    "browse": "Parcourir",
+    "hide": "Masquer",
+    "toConfirm": "pour confirmer",
+    "iconFallback": "Le portfolio n’a pas d’icône nommée « {name} » — il en affiche une neutre à la place.",
+    "previewWaiting": "En attente de {origin} — le portfolio doit tourner pour que l’aperçu s’affiche.",
+    "dropOffFrom": "Perte depuis {step}",
+    "notEnoughData": "Pas encore assez de données",
+    "noTraffic": "Aucun trafic enregistré",
+    "desktop": "Ordinateur",
+    "mobile": "Mobile",
+    "nothingConfigured": "Rien de configuré",
+    "topSources": "principales sources",
+    "byDevice": "par appareil",
+    "byBrowser": "par navigateur",
+    "byLocale": "par langue"
   },
   "blurbs": {
     "history": "Chaque enregistrement écrit ici le document précédent avant qu’il ne quitte le navigateur.",
     "locales": "Chaque langue ajoutée coûte une traduction par entrée — glissez une ligne pour réordonner.",
     "login": "Votre première connexion crée votre portfolio.",
-    "loginMisconfigured": "Cette version n’a pas d’identifiant client Cognito. Définissez"
+    "loginMisconfigured": "Cette version n’a pas d’identifiant client Cognito. Définissez",
+    "loginMisconfiguredEnd": "avant de vous connecter."
   },
   "vocabularies": {
     "honors": {
@@ -850,7 +1094,7 @@
     "subtitles": "Un rôle par entrée : Ingénieur backend",
     "tagline": "Une phrase, **en gras** l’essentiel : Je construis des services **résilients**.",
     "company": "Employeur : Acme Corp",
-    "tags": "Un par puce : Go, Postgres, Docker",
+    "tags": "Une par étiquette : Go, Postgres, Docker",
     "link": "Leur page : https://www.linkedin.com/company/acme",
     "role": "Intitulé tel qu’affiché : Ingénieur backend",
     "bullets": "Un résultat par entrée : Créé un **service de facturation**, erreurs en baisse de 30 %.",
@@ -861,5 +1105,29 @@
     "school": "École – Université : Institut – TU Berlin",
     "issuer": "Émetteur, plateforme entre parenthèses : Acme (Coursera)",
     "org": "Organisation : Club de robotique"
+  },
+  "validation": {
+    "required": "{label} est obligatoire",
+    "tooLong": "{label} ne doit pas dépasser {max} caractères",
+    "badFormat": "{label} a un format invalide",
+    "notEmail": "{label} doit être une adresse e-mail",
+    "notUrl": "{label} doit être une URL http(s) absolue",
+    "notHttps": "{label} doit utiliser https",
+    "tooSmall": "{label} doit valoir au moins {min}",
+    "tooLarge": "{label} ne doit pas dépasser {max}",
+    "notWhole": "{label} doit être un nombre entier",
+    "tooMany": "{label} accepte au plus {max} entrées",
+    "entryTooLong": "Chaque entrée de {label} ne doit pas dépasser {max} caractères",
+    "noLanguage": "Au moins une langue doit être renseignée"
+  },
+  "groupHints": {
+    "Identity": "votre nom, et la ligne en dessous",
+    "Hero": "les mots qui ouvrent la page",
+    "About": "les paragraphes à côté de votre portrait",
+    "Career": "le poste, et les années couvertes",
+    "Education": "l’établissement, et ce qu’il a délivré",
+    "Details": "tout ce que cette entrée affiche",
+    "Contact": "les adresses où l’on vous écrit",
+    "Location": "la ville qu’affiche la page"
   }
 }

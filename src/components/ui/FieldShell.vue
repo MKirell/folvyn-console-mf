@@ -1,5 +1,5 @@
 <template>
-  <div :class="field.wide || full ? 'col-span-full' : ''">
+  <div :class="spanClass">
     <div class="mb-1.5 flex items-baseline gap-2">
       <label :for="id" class="text-[0.76rem] font-medium text-ink-soft">
         {{ label }}
@@ -49,9 +49,23 @@ const props = withDefaults(
     locale?: string
     translated?: boolean
     full?: boolean
+    span?: number
   }>(),
-  { error: '', length: undefined, locale: '', translated: false, full: false },
+  { error: '', length: undefined, locale: '', translated: false, full: false, span: undefined },
 )
+
+const SPANS: Record<number, string> = {
+  1: 'col-span-1',
+  2: 'col-span-2',
+  3: 'col-span-3',
+  4: 'col-span-4',
+  5: 'col-span-full',
+}
+
+const spanClass = computed(() => {
+  if (props.span) return `${SPANS[props.span] ?? 'col-span-full'} max-900:col-span-full`
+  return props.field.wide || props.full ? 'col-span-full' : ''
+})
 
 const { t } = useI18n()
 

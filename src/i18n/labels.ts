@@ -31,6 +31,21 @@ export function collectionBlurb(collection: CollectionDef, fallback: string): st
   return translate(`collections.${collection.key}.blurb`, fallback)
 }
 
+export function collectionFilesHint(collection: CollectionDef, fallback: string): string {
+  return translate(`collections.${collection.key}.filesHint`, fallback)
+}
+
+export function collectionGroupHint(collection: CollectionDef, title: string): string {
+  return translate(
+    `collections.${collection.key}.groupHints.${title}`,
+    translate(`groupHints.${title}`, ''),
+  )
+}
+
 export function statusLabel(status: string): string {
   return translate(`status.${status}`, status)
+}
+
+export function validationMessage(key: string, values: Record<string, string | number>): string {
+  return i18n.global.t(`validation.${key}`, values)
 }

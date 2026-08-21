@@ -57,6 +57,7 @@ test.describe('small screens', () => {
     await signedIn.goto('/c/certification')
     await signedIn.waitForLoadState('networkidle')
 
+    await signedIn.getByRole('button', { name: 'Show the toolbar' }).click()
     await signedIn.getByRole('button', { name: 'Open command palette' }).click()
 
     const palette = signedIn.getByRole('dialog', { name: 'Command palette' })
@@ -93,6 +94,21 @@ test.describe('small screens', () => {
     await expect(icon).toBeInViewport()
 
     expect(await sidewaysOverflow(signedIn)).toBeLessThanOrEqual(1)
+  })
+
+  test('folds the topbar tools away until they are asked for', async ({ signedIn }) => {
+    await signedIn.goto('/c/certification')
+    await signedIn.waitForLoadState('networkidle')
+
+    const search = signedIn.getByRole('button', { name: 'Open command palette' })
+    await expect(search).toBeHidden()
+
+    await signedIn.getByRole('button', { name: 'Show the toolbar' }).click()
+    await expect(search).toBeVisible()
+    expect(await sidewaysOverflow(signedIn)).toBeLessThanOrEqual(1)
+
+    await signedIn.getByRole('button', { name: 'Hide the toolbar' }).click()
+    await expect(search).toBeHidden()
   })
 
   test('collapses the rail into a drawer', async ({ signedIn }) => {

@@ -4,12 +4,15 @@ export interface FieldEntry {
   field: FieldDef
   translated: boolean
   full: boolean
+  span?: number
 }
 
 export interface FieldGroup {
   title: string
   entries: FieldEntry[]
   assets: boolean
+  columns: number
+  preview: FieldDef | null
 }
 
 const FLOW = [
@@ -70,9 +73,19 @@ const RANK: Record<string, number> = {
 const UNRANKED = 45
 const ASSET_GROUP = 'Files'
 const FALLBACK_GROUP = 'Details'
+const ASSET_COLUMNS = 5
 
 function isAsset(field: FieldDef): boolean {
   return field.type.startsWith('asset')
+}
+
+function isSquare(entry: FieldEntry): boolean {
+  return entry.field.type === 'asset' && entry.field.accept === 'image'
+}
+
+function spread(entries: FieldEntry[], preview: FieldDef | null): FieldEntry[] {
+  const span = preview ? ASSET_COLUMNS - 1 : ASSET_COLUMNS
+  return entries.map((entry) => ({ ...entry, span }))
 }
 
 function groupOf(entry: FieldEntry): string {
@@ -102,17 +115,24 @@ export function fieldGroups(collection: CollectionDef): FieldGroup[] {
   const weigh = (entry: FieldEntry): number => RANK[entry.field.name] ?? UNRANKED
 
   return [...buckets.entries()]
-    .map(([title, list]) => ({
-      title,
-      assets: title === ASSET_GROUP,
-      entries: pack(
-        [...list].sort(
-          (a, b) =>
-            weigh(a) - weigh(b) ||
-            (declared.get(a.field.name) ?? 0) - (declared.get(b.field.name) ?? 0),
-        ),
-      ),
-    }))
+    .map(([title, list]) => {
+      const assets = title === ASSET_GROUP
+      const sorted = [...list].sort(
+        (a, b) =>
+          weigh(a) - weigh(b) ||
+          (declared.get(a.field.name) ?? 0) - (declared.get(b.field.name) ?? 0),
+      )
+
+      const preview = assets && sorted.length > 1 ? (sorted.find(isSquare)?.field ?? null) : null
+
+      return {
+        title,
+        assets,
+        preview,
+        columns: preview ? ASSET_COLUMNS : 1,
+        entries: assets ? spread(sorted, preview) : pack(sorted),
+      }
+    })
     .sort((a, b) => flowRank(a.title) - flowRank(b.title) || a.title.localeCompare(b.title))
 }
 

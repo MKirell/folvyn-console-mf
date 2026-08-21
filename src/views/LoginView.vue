@@ -14,7 +14,7 @@
               {{ t('views.login.title') }}
             </h1>
             <p class="mt-0.5 font-mono text-[0.66rem] uppercase tracking-[0.18em] text-muted">
-              sign in
+              {{ t('views.login.signIn') }}
             </p>
           </div>
         </div>
@@ -36,13 +36,14 @@
           @click="signIn(provider as IdentityProvider)"
         >
           <ProviderMark :name="provider" />
-          Continue with {{ provider }}
+          {{ t('views.login.continueWith', { provider }) }}
         </AppButton>
 
         <p v-if="!AUTH_CONFIGURED" class="mt-3 text-[0.75rem] text-gold">
           {{ t('blurbs.loginMisconfigured') }}
-          <span class="font-mono">VITE_COGNITO_CLIENT_ID</span> and
-          <span class="font-mono">VITE_COGNITO_DOMAIN</span> before signing in.
+          <span class="font-mono">VITE_COGNITO_CLIENT_ID</span> {{ t('common.and') }}
+          <span class="font-mono">VITE_COGNITO_DOMAIN</span>
+          {{ t('blurbs.loginMisconfiguredEnd') }}
         </p>
 
         <p class="mt-5 border-t border-line/8 pt-3.5 text-center text-[0.78rem] text-muted">

@@ -83,7 +83,7 @@
       class="mb-4 rounded-[10px] border border-rust/30 bg-rust/[0.06] px-3.5 py-3"
     >
       <p class="text-[0.82rem] font-medium text-rust">
-        {{ media.missing.length }} referenced file{{ media.missing.length === 1 ? '' : 's' }}
+        {{ t('views.media.referenced', { count: media.missing.length }, media.missing.length) }}
         {{
           readOnly || media.source === 'repo'
             ? t('views.media.missingRepo')

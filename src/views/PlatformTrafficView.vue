@@ -22,7 +22,7 @@
       v-else-if="!traffic"
       icon="Activity"
       :title="t('platform.trafficScreen.none')"
-      description="No portfolio has been visited in this window."
+      :description="t('platform.trafficScreen.noneDesc')"
     />
 
     <div v-else class="grid grid-cols-12 gap-3 max-1000:grid-cols-6 max-600:grid-cols-2">
@@ -31,7 +31,7 @@
         :label="t('platform.common.visitors')"
         :value="traffic.totals.visitors.toLocaleString()"
         :delta="traffic.deltas.visitors"
-        :hint="`vs previous ${traffic.days} days`"
+        :hint="t('platform.common.vsPrevious', { days: traffic.days })"
       />
       <StatTile
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
@@ -49,7 +49,7 @@
         class="col-span-3 max-1000:col-span-3 max-600:col-span-1"
         :label="t('platform.common.bounced')"
         :value="`${bounceRate}%`"
-        hint="under ten seconds"
+        :hint="t('platform.common.bounceHint')"
       />
 
       <PanelCard
@@ -63,6 +63,7 @@
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.common.referrers')"
+        :hint="t('ui.topSources')"
       >
         <BarRows
           :rows="referrers"
@@ -75,14 +76,19 @@
       <PanelCard
         class="col-span-12 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.common.funnel')"
-        hint="every portfolio, added together"
+        :hint="t('platform.common.funnelHint')"
       >
-        <FunnelColumns :rows="traffic.sections" :sessions="traffic.totals.sessions" />
+        <FunnelColumns
+          :rows="traffic.sections"
+          :sessions="traffic.totals.sessions"
+          :empty="t('ui.funnelEmpty')"
+        />
       </PanelCard>
 
       <PanelCard
         class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
         :title="t('platform.common.readOn')"
+        :hint="t('ui.byDevice')"
       >
         <DonutChart
           :rows="traffic.devices"
@@ -94,7 +100,7 @@
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.common.whereThey')"
-        hint="top countries"
+        :hint="t('platform.common.topCountries')"
       >
         <BarRows
           :rows="countries"
@@ -107,6 +113,7 @@
       <PanelCard
         class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
         :title="t('platform.common.whichBrowser')"
+        :hint="t('ui.byBrowser')"
       >
         <DonutChart
           :rows="traffic.browsers"
@@ -118,7 +125,7 @@
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.common.whichLanguage')"
-        hint="sessions per locale"
+        :hint="t('platform.common.perLocale')"
       >
         <StackedBar :rows="langs" :empty="t('platform.common.noLanguage')" />
       </PanelCard>
@@ -126,9 +133,14 @@
       <PanelCard
         class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('platform.trafficScreen.comeBack')"
-        hint="needs the visitor's consent"
+        :hint="t('platform.trafficScreen.consentHint')"
       >
-        <SplitStat :rows="returningSplit" :empty="t('platform.trafficScreen.noReturn')" />
+        <SplitStat
+          :rows="returningSplit"
+          :unit="t('platform.common.visitorsUnit')"
+          :verdicts="returningVerdicts"
+          :empty="t('platform.trafficScreen.noReturn')"
+        />
       </PanelCard>
     </div>
   </div>
@@ -174,10 +186,16 @@ const returningSplit = computed(() => {
   if (returning + fresh === 0) return []
 
   return [
-    { key: 'returning', count: returning },
-    { key: 'first visit', count: fresh },
+    { key: t('platform.trafficScreen.returning'), count: returning },
+    { key: t('platform.trafficScreen.firstVisit'), count: fresh },
   ]
 })
+
+const returningVerdicts = computed(() => ({
+  strong: t('platform.trafficScreen.returningStrong'),
+  even: t('platform.trafficScreen.returningEven'),
+  weak: t('platform.trafficScreen.returningWeak'),
+}))
 const langs = computed(() => foldOther(traffic.value?.langs ?? [], ROW_BUDGET.langs))
 
 const bounceRate = computed(() => {
@@ -195,7 +213,7 @@ async function load(days: number = period.value): Promise<void> {
     traffic.value = await fetchPlatformTraffic(days)
   } catch (e) {
     traffic.value = null
-    error.value = e instanceof Error ? e.message : 'Traffic is not available'
+    error.value = e instanceof Error ? e.message : t('errors.traffic')
   } finally {
     loading.value = false
   }

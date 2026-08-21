@@ -95,11 +95,11 @@
       <PanelCard
         class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
         :title="t('views.insights.referrers')"
+        :hint="t('ui.topSources')"
       >
-        <BarRows
+        <RankList
           :rows="referrers"
           :slots="ROW_BUDGET.referrers"
-          show-share
           :empty="t('views.insights.emptyReferrers')"
         />
       </PanelCard>
@@ -109,7 +109,11 @@
         :title="t('views.insights.funnel')"
         :hint="t('views.insights.hintSections')"
       >
-        <FunnelColumns :rows="summary.sections" :sessions="summary.totals.sessions" />
+        <FunnelColumns
+          :rows="summary.sections"
+          :sessions="summary.totals.sessions"
+          :empty="t('ui.funnelEmpty')"
+        />
       </PanelCard>
 
       <PanelCard
@@ -133,7 +137,12 @@
         :title="t('views.insights.scroll')"
         :hint="t('views.insights.hintScroll')"
       >
-        <DepthGauge :quartiles="summary.scrollQuartiles" :sessions="summary.totals.sessions" />
+        <DepthGauge
+          :quartiles="summary.scrollQuartiles"
+          :sessions="summary.totals.sessions"
+          :labels="depthLabels"
+          :empty="t('views.insights.depth.empty')"
+        />
       </PanelCard>
 
       <PanelCard
@@ -147,6 +156,7 @@
       <PanelCard
         class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
         :title="t('views.insights.devices')"
+        :hint="t('ui.byDevice')"
       >
         <DonutChart
           :rows="summary.devices"
@@ -171,6 +181,7 @@
       <PanelCard
         class="col-span-3 max-1000:col-span-3 max-600:col-span-2"
         :title="t('views.insights.browsers')"
+        :hint="t('ui.byBrowser')"
       >
         <DonutChart
           :rows="summary.browsers"
@@ -184,7 +195,7 @@
         :title="t('views.insights.documents')"
         :hint="t('views.insights.hintDocuments')"
       >
-        <BarRows
+        <SegmentedMeter
           :rows="documents"
           :slots="ROW_BUDGET.documents"
           :empty="t('views.insights.emptyDocuments')"
@@ -207,15 +218,15 @@
         :title="t('views.insights.contact')"
         :hint="t('views.insights.hintContact', { rate: summary.contactRate })"
       >
-        <RankList
+        <RadialBars
           :rows="contact"
-          :slots="ROW_BUDGET.contact"
+          :label="t('views.insights.contact')"
           :empty="t('views.insights.emptyContact')"
         />
       </PanelCard>
 
       <PanelCard
-        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
+        class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
         :title="t('views.insights.terminal')"
         :hint="t('views.insights.hintShell', { rate: shellRate })"
       >
@@ -227,7 +238,7 @@
       </PanelCard>
 
       <PanelCard
-        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
+        class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
         :title="t('views.insights.outbound')"
         :hint="t('views.insights.hintOutbound')"
       >
@@ -240,7 +251,7 @@
       </PanelCard>
 
       <PanelCard
-        class="col-span-8 max-1000:col-span-6 max-600:col-span-2"
+        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('views.insights.loadSpeed')"
         :hint="t('views.insights.hintVitals')"
       >
@@ -270,8 +281,9 @@
       </PanelCard>
 
       <PanelCard
-        class="col-span-4 max-1000:col-span-6 max-600:col-span-2"
+        class="col-span-6 max-1000:col-span-6 max-600:col-span-2"
         :title="t('views.insights.languages')"
+        :hint="t('ui.byLocale')"
       >
         <StackedBar :rows="langs" :empty="t('views.insights.emptyLanguages')" />
         <RouterLink
@@ -303,6 +315,8 @@ import FunnelColumns from '@/components/charts/FunnelColumns.vue'
 import HeatCalendar from '@/components/charts/HeatCalendar.vue'
 import RankList from '@/components/charts/RankList.vue'
 import StackedBar from '@/components/charts/StackedBar.vue'
+import SegmentedMeter from '@/components/charts/SegmentedMeter.vue'
+import RadialBars from '@/components/charts/RadialBars.vue'
 import SparkLine from '@/components/charts/SparkLine.vue'
 import StatTile from '@/components/charts/StatTile.vue'
 import { foldOther } from '@/utils/breakdown'
@@ -315,6 +329,13 @@ import { useUiStore } from '@/stores/ui'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+
+const depthLabels = computed(() => [
+  t('views.insights.depth.past'),
+  t('views.insights.depth.halfway'),
+  t('views.insights.depth.most'),
+  t('views.insights.depth.end'),
+])
 const LCP_GOOD = 2500
 
 const analytics = useAnalyticsStore()

@@ -28,18 +28,21 @@
 import { computed } from 'vue'
 
 const DEPTHS = [25, 50, 75, 100]
-const LABELS = ['Past the hero', 'Halfway down', 'Most of the way', 'To the very end']
 const WEIGHTS = [0.34, 0.55, 0.78, 1]
 
-const props = withDefaults(
-  defineProps<{ quartiles: number[]; sessions: number; empty?: string }>(),
-  { empty: 'Nobody has scrolled yet' },
-)
+const props = defineProps<{
+  quartiles: number[]
+  sessions: number
+  labels: string[]
+  empty: string
+}>()
+
+const LABELS = computed(() => props.labels)
 
 const bands = computed(() =>
   DEPTHS.map((depth, index) => ({
     depth,
-    label: LABELS[index],
+    label: LABELS.value[index],
     weight: WEIGHTS[index],
     share:
       props.sessions === 0

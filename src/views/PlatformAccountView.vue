@@ -8,7 +8,7 @@
         <RouterLink
           to="/platform/portfolios"
           class="shrink-0 font-mono text-[0.74rem] text-muted hover:text-ink"
-          >← All accounts</RouterLink
+          >← {{ t('platform.account.allAccounts') }}</RouterLink
         >
       </template>
     </PlatformHeader>
@@ -149,7 +149,7 @@ async function load(): Promise<void> {
     detail.value = await fetchAccountDetail(String(route.params.id))
   } catch (e) {
     detail.value = null
-    error.value = e instanceof Error ? e.message : 'The account is not available'
+    error.value = e instanceof Error ? e.message : t('errors.account')
   } finally {
     loading.value = false
   }

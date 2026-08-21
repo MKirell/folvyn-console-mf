@@ -9,6 +9,8 @@
 
     <div class="space-y-4">
       <PanelCard v-for="panel in 2" :key="panel">
+        <template #title><SkeletonBar class="h-[11px] w-28" /></template>
+        <template #hint><SkeletonBar class="ms-auto h-[9px] w-32" /></template>
         <div class="grid grid-cols-3 gap-x-4 gap-y-3.5 max-900:grid-cols-2 max-700:grid-cols-1">
           <div v-for="field in 6" :key="field" class="space-y-1.5">
             <SkeletonBar class="h-[9px] w-20" />

@@ -6,6 +6,7 @@
     :locale="locale"
     :translated="translated"
     :full="full"
+    :span="span"
   >
     <template #default="{ id }">
       <textarea
@@ -140,6 +141,7 @@
         :id="id"
         :model-value="asText"
         :accept="field.accept"
+        :bare="bare"
         @update:model-value="emit('update:modelValue', $event)"
       />
 
@@ -199,8 +201,10 @@ const props = withDefaults(
     locale?: string
     translated?: boolean
     full?: boolean
+    span?: number
+    bare?: boolean
   }>(),
-  { error: '', locale: '', translated: false, full: false },
+  { error: '', locale: '', translated: false, full: false, span: undefined, bare: false },
 )
 
 const emit = defineEmits<{ 'update:modelValue': [unknown] }>()
